@@ -1,0 +1,14 @@
+# ABOUTME: Dependabot config to keep npm dependencies updated automatically
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+    ignore:
+      - dependency-name: "react"
+        versions: ["19.x"] # stick to 18 until ecosystem ready
