@@ -1,5 +1,6 @@
 import Home from "@/pages/Home";
 import UsersPage from "@/pages/UsersPage";
+import { AuthCallback } from "@/pages/AuthCallback";
 import { Link, Route, Routes } from "react-router-dom";
 
 export default function App() {
@@ -18,6 +19,10 @@ export default function App() {
         <Route
           path="/users"
           element={<UsersPage />}
+        />
+        <Route
+          path="/auth/callback"
+          element={<AuthCallback />}
         />
       </Routes>
     </div>

@@ -4,7 +4,10 @@
       "Bash(npm install:*)",
       "Bash(npm test:*)",
       "Bash(claude mcp add:*)",
-      "Bash(claude mcp get:*)"
+      "Bash(claude mcp get:*)",
+      "Bash(claude mcp:*)",
+      "Bash(mkdir:*)",
+      "Bash(supabase:*)"
     ],
     "deny": [],
     "ask": []

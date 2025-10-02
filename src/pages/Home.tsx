@@ -1,10 +1,69 @@
-// ABOUTME: Simple home page component displayed at root route
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { SignInButton } from '@/components/SignInButton';
 
 export default function Home() {
+  const { user, loading, signOut } = useAuth();
+  const { data: profile, isLoading: profileLoading, error: profileError } = useProfile();
+
+  if (loading || (user && profileLoading)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-500 border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-2">
-      <h1 className="text-3xl font-bold">Welcome</h1>
-      <p>This is the starter template. Use the nav to explore sample pages.</p>
+    <div className="flex min-h-screen flex-col items-center justify-center space-y-6">
+      <div className="text-center space-y-4">
+        <h1 className="text-5xl font-bold tracking-tight">Moodeight</h1>
+        <p className="text-lg text-gray-400">Collect, arrange, and share your visual inspiration</p>
+      </div>
+
+      {user ? (
+        <div className="space-y-4 text-center">
+          {profileError && (
+            <div className="rounded-lg bg-red-900/20 border border-red-500 p-4 mb-4">
+              <p className="text-sm text-red-400">
+                Failed to load profile: {profileError instanceof Error ? profileError.message : 'Unknown error'}
+              </p>
+            </div>
+          )}
+          {profile?.avatar_url && (
+            <img
+              src={profile.avatar_url}
+              alt={profile.display_name || 'User avatar'}
+              className="mx-auto h-16 w-16 rounded-full"
+            />
+          )}
+          <div>
+            {profile?.display_name && (
+              <p className="text-lg font-medium text-white">{profile.display_name}</p>
+            )}
+            <p className="text-sm text-gray-400">{user.email}</p>
+            {profile && (
+              <p className="text-xs text-gray-500 mt-1">Theme: {profile.theme}</p>
+            )}
+          </div>
+          <div className="space-x-4">
+            <a
+              href="/staging"
+              className="inline-block rounded-lg bg-violet-600 px-6 py-3 font-medium text-white transition-colors hover:bg-violet-700"
+            >
+              Go to Boards
+            </a>
+            <button
+              onClick={() => signOut()}
+              className="rounded-lg border border-gray-600 px-6 py-3 font-medium text-gray-300 transition-colors hover:bg-gray-800"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      ) : (
+        <SignInButton />
+      )}
     </div>
   );
 }
