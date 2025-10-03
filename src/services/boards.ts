@@ -5,10 +5,10 @@ import { boardWithImagesSchema, type BoardWithImages } from '@/schemas/boardWith
 import { BoardNotFoundError, BoardOwnershipError, ValidationError } from '@/lib/errors';
 
 /**
- * Fetches all boards for the current authenticated user
+ * Fetches all boards for the current authenticated user with their images
  * Ordered by updated_at DESC (most recently updated first)
  */
-export async function getBoards(): Promise<Board[]> {
+export async function getBoards(): Promise<BoardWithImages[]> {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -17,7 +17,10 @@ export async function getBoards(): Promise<Board[]> {
 
   const { data, error } = await supabase
     .from('boards')
-    .select('*')
+    .select(`
+      *,
+      images (*)
+    `)
     .eq('owner_id', user.id)
     .order('updated_at', { ascending: false });
 
@@ -25,8 +28,8 @@ export async function getBoards(): Promise<Board[]> {
     throw new Error(`Failed to fetch boards: ${error.message}`);
   }
 
-  // Validate array of boards
-  const parsed = z.array(boardSchema).safeParse(data);
+  // Validate array of boards with images
+  const parsed = z.array(boardWithImagesSchema).safeParse(data);
   if (!parsed.success) {
     throw new ValidationError(`Invalid boards data: ${parsed.error.message}`);
   }

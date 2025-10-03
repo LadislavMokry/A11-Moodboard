@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
@@ -5,6 +6,7 @@ import { ThemeToggle, themeOptions } from '@/components/ThemeToggle';
 import { SignInButton } from '@/components/SignInButton';
 import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/ui/button';
+import { CreateBoardModal } from '@/components/CreateBoardModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +33,7 @@ export function Header() {
   const { user, loading, signOut, signInWithGoogle } = useAuth();
   const { data: profile } = useProfile();
   const { theme, effectiveTheme, setTheme } = useTheme();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const newBoardClasses = effectiveTheme === 'dark'
     ? 'bg-neutral-900 text-neutral-100 hover:bg-neutral-800'
@@ -71,14 +74,12 @@ export function Header() {
             ) : user ? (
               <>
                 <Button
-                  asChild
                   size="sm"
                   className={cn('hidden sm:inline-flex', newBoardClasses)}
+                  onClick={() => setIsCreateModalOpen(true)}
                 >
-                  <Link to="/staging">
-                    <Plus className="mr-2 h-4 w-4" />
-                    New Board
-                  </Link>
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Board
                 </Button>
 
                 <ThemeToggle />
@@ -153,11 +154,13 @@ export function Header() {
                 onSignOut={handleSignOut}
                 onSignIn={handleSignIn}
                 isAuthenticated={!!user}
+                onNewBoard={() => setIsCreateModalOpen(true)}
               />
             )}
           </div>
         </div>
       </div>
+      <CreateBoardModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
     </header>
   );
 }
@@ -171,6 +174,7 @@ interface MobileMenuProps {
   onThemeChange: (theme: Theme) => void;
   onSignOut: () => Promise<void> | void;
   onSignIn: () => Promise<void> | void;
+  onNewBoard: () => void;
 }
 
 function MobileMenu({
@@ -182,6 +186,7 @@ function MobileMenu({
   onThemeChange,
   onSignOut,
   onSignIn,
+  onNewBoard,
 }: MobileMenuProps) {
   return (
     <DropdownMenu>
@@ -215,11 +220,15 @@ function MobileMenu({
               </div>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/staging" className="cursor-pointer">
-                <Plus className="mr-2 h-4 w-4" />
-                New Board
-              </Link>
+            <DropdownMenuItem
+              onSelect={(event) => {
+                event.preventDefault();
+                onNewBoard();
+              }}
+              className="cursor-pointer"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create board
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/profile" className="cursor-pointer">
