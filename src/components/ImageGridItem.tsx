@@ -1,15 +1,35 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type CSSProperties } from 'react';
+import type { DraggableAttributes, SyntheticListenerMap } from '@dnd-kit/core';
 import { MoreVertical } from 'lucide-react';
 import { type Image } from '@/schemas/image';
 import { getSupabaseThumbnail, getSupabasePublicUrl } from '@/lib/imageUtils';
+import { cn } from '@/lib/utils';
 
 interface ImageGridItemProps {
   image: Image;
   onClick?: () => void;
   onMenuClick?: (e: React.MouseEvent) => void;
+  setRef?: (node: HTMLDivElement | null) => void;
+  dragAttributes?: DraggableAttributes;
+  dragListeners?: SyntheticListenerMap;
+  style?: CSSProperties;
+  className?: string;
+  isDragging?: boolean;
+  dataTestId?: string;
 }
 
-export function ImageGridItem({ image, onClick, onMenuClick }: ImageGridItemProps) {
+export function ImageGridItem({
+  image,
+  onClick,
+  onMenuClick,
+  setRef,
+  dragAttributes,
+  dragListeners,
+  style,
+  className,
+  isDragging = false,
+  dataTestId,
+}: ImageGridItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [shouldMarquee, setShouldMarquee] = useState(false);
   const captionRef = useRef<HTMLDivElement>(null);
@@ -35,7 +55,16 @@ export function ImageGridItem({ image, onClick, onMenuClick }: ImageGridItemProp
 
   return (
     <div
-      className="group relative mb-4 break-inside-avoid cursor-pointer"
+      ref={(node) => setRef?.(node)}
+      data-testid={dataTestId}
+      {...(dragAttributes ?? {})}
+      {...(dragListeners ?? {})}
+      style={style}
+      className={cn(
+        'group relative mb-4 break-inside-avoid cursor-pointer',
+        isDragging && 'ring-2 ring-violet-500/60',
+        className,
+      )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}

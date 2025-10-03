@@ -50,7 +50,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Phase 6: Drag-and-Drop Reordering
 
-- [ ] **6.1** Install @dnd-kit & Basic Sortable Grid
+- [x] **6.1** Install @dnd-kit & Basic Sortable Grid
 - [ ] **6.2** Custom Drag Overlay & Visual Polish
 
 ---

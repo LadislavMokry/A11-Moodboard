@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Share2, MoreVertical } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { BoardPageHeader } from '@/components/BoardPageHeader';
-import { ImageGrid } from '@/components/ImageGrid';
+import { SortableImageGrid } from '@/components/SortableImageGrid';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { useBoard } from '@/hooks/useBoard';
@@ -133,7 +133,8 @@ export default function BoardPage() {
                 }
               />
 
-              <ImageGrid
+              <SortableImageGrid
+                boardId={board.id}
                 images={board.images}
                 onImageClick={handleImageClick}
                 onImageMenuClick={handleImageMenuClick}

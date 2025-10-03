@@ -9,6 +9,7 @@ This document outlines the testing patterns and setup requirements for the Moode
 - [React Component Testing](#react-component-testing)
 - [Service Layer Testing](#service-layer-testing)
 - [Hook Testing](#hook-testing)
+- [Drag-and-Drop Testing](#drag-and-drop-testing)
 - [Best Practices](#best-practices)
 
 ## General Testing Principles
@@ -329,6 +330,18 @@ it('fetches board data', async () => {
 ```
 
 ## Best Practices
+
+### Drag-and-Drop Testing
+
+- Prefer mocking `@dnd-kit` hooks/components rather than triggering pointer events. `src/__tests__/SortableImageGrid.test.tsx` demonstrates hoisting handler refs so tests can call `onDragStart`/`onDragEnd` directly.
+- Mock `arrayMove` from `@dnd-kit/sortable` to ensure deterministic ordering.
+- Verify both DOM order and the reorder callback (`queueReorder`) to cover UI updates and mutation scheduling.
+
+### Hook Testing Enhancements
+
+- Hooks with debounced effects (e.g., `useImageReorder`) should be tested with fake timers. Use `vi.useFakeTimers()` in `beforeEach` and `vi.useRealTimers()` in `afterEach`.
+- Advance timers inside an `act()` block and `await Promise.resolve()` to flush queued microtasks after `vi.advanceTimersByTime`.
+- When mutating TanStack Query cache optimistically, snapshot the query data before the mutation and assert both optimistic and reverted states.
 
 ### 1. Mock Data Organization
 

@@ -44,6 +44,14 @@
 - `src/__tests__/useClipboardPaste.test.tsx` – unit coverage for event listener lifecycle and filtering.
 - `src/__tests__/BoardPagePaste.test.tsx` – integration coverage ensuring paste events trigger uploads and respect upload state gating.
 
+### Phase 6 - Drag-and-Drop Reordering (in progress)
+
+**Step 6.1 status:**
+- Introduced dnd-kit sortable grid (`src/components/SortableImageGrid.tsx`) and sortable item wrapper (`src/components/SortableImageItem.tsx`) replacing the static grid on the board page.
+- Added optimistic reorder pipeline and debounce-backed mutation hook (`src/hooks/useImageReorder.ts`) leveraging new service RPC wrapper (`src/services/imageReorder.ts`).
+- Board page now renders `SortableImageGrid` with animated drag overlay support.
+- Tests: `src/__tests__/imageReorder.test.ts`, `src/__tests__/SortableImageGrid.test.tsx`, and `src/__tests__/useImageReorder.test.tsx` cover service call, drag integration, optimistic updates, debounce, and error recovery.
+
 ## Earlier Implementation Details (Phases 1-3)
 
 ### 1.1 Supabase Client Setup & Environment Configuration ✅
