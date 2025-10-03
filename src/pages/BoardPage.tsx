@@ -7,6 +7,7 @@ import { ImageGrid } from '@/components/ImageGrid';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { useBoard } from '@/hooks/useBoard';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { ImageUploadButton } from '@/components/ImageUploadButton';
 import { ImageDropZone } from '@/components/ImageDropZone';
@@ -19,6 +20,7 @@ type BoardRouteParams = {
 
 export default function BoardPage() {
   const { boardId } = useParams<BoardRouteParams>();
+  const { user } = useAuth();
   const { data: board, isLoading, error } = useBoard(boardId);
   const {
     uploadImages,
@@ -26,6 +28,8 @@ export default function BoardPage() {
     progress,
     accept,
   } = useImageUpload(board?.id);
+
+  const isOwner = board && user ? board.owner_id === user.id : false;
 
   const activeUploads = useMemo(
     () => Object.values(progress).filter((value) => value < 100).length,
@@ -55,8 +59,11 @@ export default function BoardPage() {
   return (
     <Layout>
       <ImageDropZone
-        disabled={!board}
+        disabled={!board || !isOwner}
         onDropFiles={(files) => {
+          if (!isOwner) {
+            return;
+          }
           if (files.length > 0) {
             uploadImages(files);
           }
@@ -84,16 +91,19 @@ export default function BoardPage() {
                 board={board}
                 actions={
                   <>
-                    <ImageUploadButton
-                      onSelectFiles={(files) => {
-                        if (files) {
+                    {isOwner ? (
+                      <ImageUploadButton
+                        onSelectFiles={(files) => {
+                          if (!files) {
+                            return;
+                          }
                           uploadImages(files);
-                        }
-                      }}
-                      uploading={uploading}
-                      accept={accept}
-                      inProgressCount={activeUploads}
-                    />
+                        }}
+                        uploading={uploading}
+                        accept={accept}
+                        inProgressCount={activeUploads}
+                      />
+                    ) : null}
                     <Button
                       onClick={handleShareClick}
                       variant="outline"

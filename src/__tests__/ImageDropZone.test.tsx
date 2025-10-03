@@ -19,6 +19,8 @@ function createDragEvent(type: string, files: File[]): DragEvent {
   return event;
 }
 
+const dragTarget = typeof window !== 'undefined' ? window : globalThis;
+
 describe('ImageDropZone', () => {
   it('shows overlay on drag enter and hides after drop', () => {
     const handleDrop = vi.fn();
@@ -31,15 +33,13 @@ describe('ImageDropZone', () => {
     const file = createFile('photo.jpg', 'image/jpeg');
 
     act(() => {
-      const dragEnter = createDragEvent('dragenter', [file]);
-      global.dispatchEvent(dragEnter);
+      dragTarget.dispatchEvent(createDragEvent('dragenter', [file]));
     });
 
     expect(screen.getByText('Drop images here')).toBeInTheDocument();
 
     act(() => {
-      const dropEvent = createDragEvent('drop', [file]);
-      global.dispatchEvent(dropEvent);
+      dragTarget.dispatchEvent(createDragEvent('drop', [file]));
     });
 
     expect(handleDrop).toHaveBeenCalledWith([file]);
@@ -57,8 +57,8 @@ describe('ImageDropZone', () => {
     const invalidFile = createFile('notes.txt', 'text/plain');
 
     act(() => {
-      global.dispatchEvent(createDragEvent('dragenter', [invalidFile]));
-      global.dispatchEvent(createDragEvent('drop', [invalidFile]));
+      dragTarget.dispatchEvent(createDragEvent('dragenter', [invalidFile]));
+      dragTarget.dispatchEvent(createDragEvent('drop', [invalidFile]));
     });
 
     expect(handleDrop).not.toHaveBeenCalled();
@@ -76,8 +76,8 @@ describe('ImageDropZone', () => {
     const file = createFile('photo.jpg', 'image/jpeg');
 
     act(() => {
-      global.dispatchEvent(createDragEvent('dragenter', [file]));
-      global.dispatchEvent(createDragEvent('drop', [file]));
+      dragTarget.dispatchEvent(createDragEvent('dragenter', [file]));
+      dragTarget.dispatchEvent(createDragEvent('drop', [file]));
     });
 
     expect(screen.queryByText('Drop images here')).not.toBeInTheDocument();

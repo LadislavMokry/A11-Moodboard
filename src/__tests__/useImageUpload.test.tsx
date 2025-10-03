@@ -8,12 +8,10 @@ vi.mock('@/components/UploadProgressToast', () => ({
   UploadProgressToast: () => null,
 }));
 
-const toastMocks = vi.hoisted(() => {
-  return {
-    customMock: vi.fn(),
-    dismissMock: vi.fn(),
-  };
-});
+const toastMocks = vi.hoisted(() => ({
+  customMock: vi.fn(),
+  dismissMock: vi.fn(),
+}));
 
 vi.mock('react-hot-toast', () => ({
   toast: {
@@ -194,5 +192,24 @@ describe('useImageUpload', () => {
 
     expect(uploadImageMock).not.toHaveBeenCalled();
     expect(Object.values(result.current.errors)[0]).toMatch('Unsupported file type');
+  });
+
+  it('maps row level security failures to a friendly message', async () => {
+    uploadImageMock.mockRejectedValue(new Error('new row violates row-level security policy'));
+
+    const { result } = renderHook(() => useImageUpload('board-1'), {
+      wrapper: createWrapper(),
+    });
+
+    const file = new File(['data'], 'image.jpg', { type: 'image/jpeg' });
+
+    await act(async () => {
+      result.current.uploadImages([file]);
+    });
+
+    await waitFor(() => {
+      const messages = Object.values(result.current.errors);
+      expect(messages[0]).toBe('You do not have permission to upload to this board.');
+    });
   });
 });

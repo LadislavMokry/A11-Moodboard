@@ -12,6 +12,7 @@ import {
 } from '@/lib/imageValidation';
 
 const MAX_CONCURRENT_UPLOADS = 4;
+const RLS_ERROR_TEXT = 'You do not have permission to upload to this board.';
 
 export type UploadStatus = 'pending' | 'uploading' | 'processing' | 'success' | 'error' | 'cancelled';
 
@@ -41,6 +42,23 @@ export interface UseImageUploadResult {
   allowedMimeTypes: readonly string[];
   maxFileSize: number;
   accept: string;
+}
+
+function normalizeErrorMessage(error: unknown): string {
+  if (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') {
+    const message = (error as any).message as string;
+    if (message.toLowerCase().includes('row-level security')) {
+      return RLS_ERROR_TEXT;
+    }
+    return message;
+  }
+  if (error instanceof Error) {
+    if (error.message.toLowerCase().includes('row-level security')) {
+      return RLS_ERROR_TEXT;
+    }
+    return error.message;
+  }
+  return 'Failed to upload image';
 }
 
 export function useImageUpload(boardId: string | undefined): UseImageUploadResult {
@@ -175,7 +193,7 @@ export function useImageUpload(boardId: string | undefined): UseImageUploadResul
 
         await queryClient.invalidateQueries({ queryKey: ['board', boardId] });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to upload image';
+        const message = normalizeErrorMessage(error);
         setEntryStatus(task.id, 'error', message);
       } finally {
         cancelledRef.current.delete(task.id);
@@ -221,7 +239,7 @@ export function useImageUpload(boardId: string | undefined): UseImageUploadResul
           newProgress[id] = 0;
           queueRef.current.push({ id, file });
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Invalid file';
+          const message = normalizeErrorMessage(error);
           newEntries[id] = {
             id,
             file,

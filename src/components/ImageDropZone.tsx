@@ -7,6 +7,8 @@ interface ImageDropZoneProps {
   disabled?: boolean;
 }
 
+const dragEventTarget = typeof window !== 'undefined' ? window : globalThis;
+
 export function ImageDropZone({ children, onDropFiles, disabled = false }: ImageDropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const dragDepthRef = useRef(0);
@@ -81,16 +83,16 @@ export function ImageDropZone({ children, onDropFiles, disabled = false }: Image
       resetDragState();
     };
 
-    global.addEventListener('dragenter', handleDragEnter);
-    global.addEventListener('dragover', handleDragOver);
-    global.addEventListener('dragleave', handleDragLeave);
-    global.addEventListener('drop', handleDrop);
+    dragEventTarget.addEventListener('dragenter', handleDragEnter);
+    dragEventTarget.addEventListener('dragover', handleDragOver);
+    dragEventTarget.addEventListener('dragleave', handleDragLeave);
+    dragEventTarget.addEventListener('drop', handleDrop);
 
     return () => {
-      global.removeEventListener('dragenter', handleDragEnter);
-      global.removeEventListener('dragover', handleDragOver);
-      global.removeEventListener('dragleave', handleDragLeave);
-      global.removeEventListener('drop', handleDrop);
+      dragEventTarget.removeEventListener('dragenter', handleDragEnter);
+      dragEventTarget.removeEventListener('dragover', handleDragOver);
+      dragEventTarget.removeEventListener('dragleave', handleDragLeave);
+      dragEventTarget.removeEventListener('drop', handleDrop);
     };
   }, [allowedForDrop, disabled, extractFiles, onDropFiles, resetDragState]);
 
