@@ -7,6 +7,7 @@ interface UseLightboxReturn {
   close: () => void;
   goToNext: () => void;
   goToPrev: () => void;
+  jumpTo: (index: number) => void;
 }
 
 export function useLightbox(totalImages: number): UseLightboxReturn {
@@ -29,6 +30,10 @@ export function useLightbox(totalImages: number): UseLightboxReturn {
   const goToPrev = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
   }, [totalImages]);
+
+  const jumpTo = useCallback((index: number) => {
+    setCurrentIndex(index);
+  }, []);
 
   // Handle keyboard events
   useEffect(() => {
@@ -66,5 +71,6 @@ export function useLightbox(totalImages: number): UseLightboxReturn {
     close,
     goToNext,
     goToPrev,
+    jumpTo,
   };
 }

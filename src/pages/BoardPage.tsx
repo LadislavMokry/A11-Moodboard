@@ -160,6 +160,7 @@ export default function BoardPage() {
                   onClose={lightbox.close}
                   onNext={lightbox.goToNext}
                   onPrev={lightbox.goToPrev}
+                  onJumpTo={lightbox.jumpTo}
                 />
               )}
             </>

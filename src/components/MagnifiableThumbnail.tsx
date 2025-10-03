@@ -1,0 +1,59 @@
+import { useState } from 'react';
+import { useSpring, animated } from '@react-spring/web';
+import { type Image } from '@/schemas/image';
+import { getSupabaseThumbnail } from '@/lib/imageUtils';
+
+interface MagnifiableThumbnailProps {
+  image: Image;
+  isActive: boolean;
+  onClick: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  magnification: number;
+}
+
+export function MagnifiableThumbnail({
+  image,
+  isActive,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  magnification,
+}: MagnifiableThumbnailProps) {
+  const src = getSupabaseThumbnail(image.storage_path, 360);
+
+  const [spring] = useSpring(
+    () => ({
+      scale: magnification,
+      config: { tension: 300, friction: 20 },
+    }),
+    [magnification],
+  );
+
+  return (
+    <div className="relative flex-shrink-0" style={{ width: '80px', height: '80px' }}>
+      <animated.button
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        className={`absolute inset-0 transition-all duration-200 ${
+          isActive ? 'ring-2 ring-white ring-offset-2 ring-offset-black/95' : ''
+        }`}
+        style={{
+          width: '80px',
+          height: '80px',
+          transformOrigin: 'bottom center',
+          scale: spring.scale,
+          zIndex: magnification > 1 ? 10 : 1,
+        }}
+        aria-label={`View ${image.caption || 'image'}`}
+      >
+        <img
+          src={src}
+          alt={image.caption || ''}
+          className="w-full h-full object-cover rounded-sm pointer-events-none"
+        />
+      </animated.button>
+    </div>
+  );
+}

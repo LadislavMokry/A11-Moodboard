@@ -1191,7 +1191,8 @@ Add caption display and actions (download, copy URL) to lightbox:
    - Desktop only: panel on right side
    - Mobile: overlay at bottom (or omit per spec - captions on hover in grid only)
    - Shows caption in typographic quotes ("...")
-   - If no caption, hide panel or show empty state
+   - If no caption, hide panel
+   - Add a toggle to hide and show the caption panel
    - Caption props: caption (string | null)
    - Styled to not obscure image
 
@@ -2528,6 +2529,7 @@ Thorough QA catches issues automated tests miss. Involve multiple testers if pos
 This blueprint provides **14 phases** with **52 detailed, step-by-step prompts** for building the Moodeight moodboard application using test-driven development and incremental progress.
 
 ### Key Principles:
+
 - **Test-driven**: Every step includes comprehensive tests
 - **Incremental**: Small, safe chunks building on each other
 - **Type-safe**: Strong TypeScript typing throughout
@@ -2535,6 +2537,7 @@ This blueprint provides **14 phases** with **52 detailed, step-by-step prompts**
 - **Integrated**: No orphaned code, everything wired together
 
 ### Recommended Execution:
+
 1. **Phases 1-2**: Foundation (auth, Supabase, data layer) - ~8-10 prompts
 2. **Phases 3-5**: Core UI (theme, layout, boards, images) - ~12-14 prompts
 3. **Phases 6-7**: Interactions (drag-drop, lightbox) - ~6 prompts

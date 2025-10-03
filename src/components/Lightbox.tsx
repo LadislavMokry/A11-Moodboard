@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useDrag } from '@use-gesture/react';
+import { useSpring, animated } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
 import { LightboxImage } from '@/components/LightboxImage';
 import { LightboxControls } from '@/components/LightboxControls';
+import { LightboxThumbnailStrip } from '@/components/LightboxThumbnailStrip';
 
 interface LightboxProps {
   images: Image[];
@@ -10,19 +13,39 @@ interface LightboxProps {
   currentIndex: number;
   onNext: () => void;
   onPrev: () => void;
+  onJumpTo?: (index: number) => void;
 }
 
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
 const ZOOM_STEP = 0.5;
+const SWIPE_THRESHOLD = 50;
+const SWIPE_VELOCITY_THRESHOLD = 0.5;
+const DISMISS_THRESHOLD = 100;
 
-export function Lightbox({ images, currentIndex, onClose, onNext, onPrev }: LightboxProps) {
+export function Lightbox({ images, currentIndex, onClose, onNext, onPrev, onJumpTo }: LightboxProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const [scale, setScale] = useState(1);
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Spring for swipe gestures
+  const [{ x: swipeX, y: swipeY }, swipeApi] = useSpring(() => ({
+    x: 0,
+    y: 0,
+    config: { tension: 300, friction: 30 },
+  }));
 
   // Focus trap: focus close button when lightbox opens
   useEffect(() => {
@@ -69,6 +92,59 @@ export function Lightbox({ images, currentIndex, onClose, onNext, onPrev }: Ligh
     setPanY(y);
   }, []);
 
+  const handleThumbnailClick = useCallback(
+    (index: number) => {
+      if (onJumpTo) {
+        onJumpTo(index);
+      }
+    },
+    [onJumpTo],
+  );
+
+  // Mobile swipe gestures
+  const bindSwipe = useDrag(
+    ({ offset: [ox, oy], velocity: [vx, vy], direction: [dx, dy], last, cancel }) => {
+      // Only enable swipe when not zoomed and on mobile
+      if (scale > MIN_SCALE || !isMobile) {
+        cancel?.();
+        return;
+      }
+
+      if (last) {
+        // Swipe down to dismiss
+        if (oy > DISMISS_THRESHOLD || (oy > 30 && vy > SWIPE_VELOCITY_THRESHOLD)) {
+          onClose();
+          return;
+        }
+
+        // Swipe left/right to navigate
+        const swipeDistance = Math.abs(ox);
+        const shouldSwipe = swipeDistance > SWIPE_THRESHOLD || vx > SWIPE_VELOCITY_THRESHOLD;
+
+        if (shouldSwipe) {
+          if (dx < 0) {
+            // Swipe left -> next
+            onNext();
+          } else if (dx > 0) {
+            // Swipe right -> previous
+            onPrev();
+          }
+        }
+
+        // Reset position
+        swipeApi.start({ x: 0, y: 0 });
+      } else {
+        // Follow finger during swipe
+        swipeApi.start({ x: ox, y: oy, immediate: true });
+      }
+    },
+    {
+      from: () => [0, 0],
+      filterTaps: true,
+      axis: undefined,
+    },
+  );
+
   const currentImage = images[currentIndex];
 
   if (!currentImage) {
@@ -84,12 +160,28 @@ export function Lightbox({ images, currentIndex, onClose, onNext, onPrev }: Ligh
       aria-modal="true"
       aria-label="Image viewer"
     >
-      <LightboxImage
-        image={currentImage}
-        scale={scale}
-        onScaleChange={setScale}
-        onPanChange={handlePanChange}
-      />
+      {/* Swipeable container for mobile */}
+      <animated.div
+        {...(isMobile && scale === MIN_SCALE ? bindSwipe() : {})}
+        className="w-full h-full"
+        style={
+          isMobile && scale === MIN_SCALE
+            ? {
+                x: swipeX,
+                y: swipeY,
+                touchAction: 'none',
+              }
+            : undefined
+        }
+      >
+        <LightboxImage
+          image={currentImage}
+          scale={scale}
+          onScaleChange={setScale}
+          onPanChange={handlePanChange}
+        />
+      </animated.div>
+
       <LightboxControls
         currentIndex={currentIndex}
         totalImages={images.length}
@@ -101,6 +193,15 @@ export function Lightbox({ images, currentIndex, onClose, onNext, onPrev }: Ligh
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
       />
+
+      {/* Desktop thumbnail strip */}
+      {!isMobile && (
+        <LightboxThumbnailStrip
+          images={images}
+          currentIndex={currentIndex}
+          onThumbnailClick={handleThumbnailClick}
+        />
+      )}
 
       {/* Hidden button for focus trap reference */}
       <button
