@@ -43,7 +43,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 - [x] **5.1** Board Page Layout & Image Grid (Static)
 - [x] **5.2** Inline Board Rename & Description Edit
-- [ ] **5.3** Image Upload Flow (File & Drag-Drop)
+- [x] **5.3** Image Upload Flow (File & Drag-Drop)
 - [ ] **5.4** Paste-from-Clipboard Upload
 
 ---
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 16
+**Completed**: 17
 **In Progress**: 0
-**Remaining**: 36
+**Remaining**: 35
 
 ### By Phase:
 
@@ -136,7 +136,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 2** (Data Layer): 4/4 ✅ COMPLETE
 - **Phase 3** (UI Foundation): 3/3 ✅ COMPLETE
 - **Phase 4** (Dashboard): 4/4 ✅ COMPLETE
-- **Phase 5** (Board Page): 2/4
+- **Phase 5** (Board Page): 3/4
 - **Phase 6** (Drag-Drop): 0/2
 - **Phase 7** (Lightbox): 0/4
 - **Phase 8** (Image Management): 0/3
@@ -164,15 +164,15 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Current Sprint
 
 **Active Phase**: Phase 5 - Board Page & Image Grid
-**Current Step**: 5.3 - Image Upload Flow (File & Drag-Drop)
+**Current Step**: 5.4 - Paste-from-Clipboard Upload
 
 **Phases 1-4 Complete! 🎉**
 
 **Next Up**:
 
-1. Image upload flow (file picker & drag-drop)
-2. Paste-from-clipboard upload support
-3. Drag-and-drop sortable grid
+1. Paste-from-clipboard upload support
+2. Drag-and-drop sortable grid
+3. Lightbox with basic navigation
 4. Lightbox with basic navigation
 
 **Deployment Reminder**:
