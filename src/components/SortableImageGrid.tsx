@@ -20,7 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 import { type Image } from '@/schemas/image';
 import { SortableImageItem } from '@/components/SortableImageItem';
-import { ImageGridItem } from '@/components/ImageGridItem';
+import { CustomDragOverlay } from '@/components/CustomDragOverlay';
 import { useImageReorder } from '@/hooks/useImageReorder';
 
 interface SortableImageGridProps {
@@ -76,6 +76,11 @@ export function SortableImageGrid({ boardId, images, onImageClick, onImageMenuCl
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
+
+    // Haptic feedback on drag start (if supported)
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50);
+    }
   }, []);
 
   const handleDragCancel = useCallback((_event: DragCancelEvent) => {
@@ -145,12 +150,8 @@ export function SortableImageGrid({ boardId, images, onImageClick, onImageMenuCl
         </div>
       </SortableContext>
 
-      <DragOverlay>
-        {activeImage ? (
-          <div className="pointer-events-none shadow-xl">
-            <ImageGridItem image={activeImage} />
-          </div>
-        ) : null}
+      <DragOverlay dropAnimation={null}>
+        {activeImage ? <CustomDragOverlay image={activeImage} /> : null}
       </DragOverlay>
     </DndContext>
   );

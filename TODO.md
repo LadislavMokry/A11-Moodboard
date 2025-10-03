@@ -48,10 +48,10 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ---
 
-## Phase 6: Drag-and-Drop Reordering
+## Phase 6: Drag-and-Drop Reordering ✅
 
 - [x] **6.1** Install @dnd-kit & Basic Sortable Grid
-- [ ] **6.2** Custom Drag Overlay & Visual Polish
+- [x] **6.2** Custom Drag Overlay & Visual Polish
 
 ---
 
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 18
+**Completed**: 20
 **In Progress**: 0
-**Remaining**: 34
+**Remaining**: 32
 
 ### By Phase:
 
@@ -137,7 +137,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 3** (UI Foundation): 3/3 ✅ COMPLETE
 - **Phase 4** (Dashboard): 4/4 ✅ COMPLETE
 - **Phase 5** (Board Page): 4/4 ✅ COMPLETE
-- **Phase 6** (Drag-Drop): 0/2
+- **Phase 6** (Drag-Drop): 2/2 ✅ COMPLETE
 - **Phase 7** (Lightbox): 0/4
 - **Phase 8** (Image Management): 0/3
 - **Phase 9** (Sharing): 0/3
@@ -163,17 +163,17 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Current Sprint
 
-**Active Phase**: Phase 6 - Drag-and-Drop Reordering
-**Current Step**: 6.1 - Install @dnd-kit & Basic Sortable Grid
+**Active Phase**: Phase 7 - Lightbox & Image Viewing
+**Current Step**: 7.1 - Basic Lightbox with Navigation
 
-**Phases 1-4 Complete! 🎉**
+**Phases 1-6 Complete! 🎉**
 
 **Next Up**:
 
-1. Drag-and-drop sortable grid
-2. Custom drag overlay & visual polish
-3. Lightbox with basic navigation
-4. Lightbox with zoom & pan
+1. Basic Lightbox with Navigation
+2. Lightbox with Zoom & Pan (@use-gesture/react)
+3. Desktop Thumbnail Strip & Mobile Gestures
+4. Lightbox Caption Panel & Actions
 
 **Deployment Reminder**:
 

@@ -143,4 +143,119 @@ describe('SortableImageGrid', () => {
       }),
     );
   });
+
+  it('displays custom drag overlay during drag', async () => {
+    const images = createImages();
+    renderGrid(images);
+
+    // Before drag, overlay should be empty
+    const overlayBefore = screen.getByTestId('drag-overlay');
+    expect(overlayBefore.textContent).toBe('');
+
+    // Start drag
+    await act(async () => {
+      dndHandlers.onDragStart?.({ active: { id: 'image-1' } } as DragStartEvent);
+    });
+
+    // During drag, overlay should show dragged image
+    const overlayDuring = screen.getByTestId('drag-overlay');
+    expect(overlayDuring.textContent).not.toBe('');
+  });
+
+  it('clears drag overlay on drag end', async () => {
+    const images = createImages();
+    renderGrid(images);
+
+    await act(async () => {
+      dndHandlers.onDragStart?.({ active: { id: 'image-1' } } as DragStartEvent);
+      dndHandlers.onDragEnd?.({ active: { id: 'image-1' }, over: { id: 'image-2' } } as DragEndEvent);
+    });
+
+    const overlay = screen.getByTestId('drag-overlay');
+    expect(overlay.textContent).toBe('');
+  });
+
+  it('clears drag overlay on drag cancel', async () => {
+    const images = createImages();
+    renderGrid(images);
+
+    await act(async () => {
+      dndHandlers.onDragStart?.({ active: { id: 'image-1' } } as DragStartEvent);
+      dndHandlers.onDragCancel?.({ active: { id: 'image-1' } });
+    });
+
+    const overlay = screen.getByTestId('drag-overlay');
+    expect(overlay.textContent).toBe('');
+  });
+
+  it('applies haptic feedback on drag start (if supported)', async () => {
+    const vibrateMock = vi.fn();
+    Object.defineProperty(navigator, 'vibrate', {
+      value: vibrateMock,
+      configurable: true,
+    });
+
+    const images = createImages();
+    renderGrid(images);
+
+    await act(async () => {
+      dndHandlers.onDragStart?.({ active: { id: 'image-1' } } as DragStartEvent);
+    });
+
+    expect(vibrateMock).toHaveBeenCalledWith(50);
+
+    // Cleanup
+    delete (navigator as any).vibrate;
+  });
+
+  it('handles drag when no over target exists', async () => {
+    const images = createImages();
+    renderGrid(images);
+
+    await act(async () => {
+      dndHandlers.onDragStart?.({ active: { id: 'image-1' } } as DragStartEvent);
+      dndHandlers.onDragEnd?.({ active: { id: 'image-1' }, over: null } as DragEndEvent);
+    });
+
+    expect(queueReorderMock).not.toHaveBeenCalled();
+  });
+
+  it('handles drag when dragging to same position', async () => {
+    const images = createImages();
+    renderGrid(images);
+
+    await act(async () => {
+      dndHandlers.onDragStart?.({ active: { id: 'image-1' } } as DragStartEvent);
+      dndHandlers.onDragEnd?.({ active: { id: 'image-1' }, over: { id: 'image-1' } } as DragEndEvent);
+    });
+
+    expect(queueReorderMock).not.toHaveBeenCalled();
+  });
+
+  it('displays empty state when no images', () => {
+    renderGrid([]);
+
+    expect(screen.getByText('No images yet')).toBeInTheDocument();
+    expect(screen.getByText('Upload images to get started')).toBeInTheDocument();
+  });
+
+  it('handles rapid successive drags', async () => {
+    const images = createImages();
+    renderGrid(images);
+
+    // First drag
+    await act(async () => {
+      dndHandlers.onDragStart?.({ active: { id: 'image-2' } } as DragStartEvent);
+      dndHandlers.onDragEnd?.({ active: { id: 'image-2' }, over: { id: 'image-1' } } as DragEndEvent);
+    });
+
+    // Second drag immediately after
+    await act(async () => {
+      dndHandlers.onDragStart?.({ active: { id: 'image-1' } } as DragStartEvent);
+      dndHandlers.onDragEnd?.({ active: { id: 'image-1' }, over: { id: 'image-2' } } as DragEndEvent);
+    });
+
+    // Both drags should have been processed
+    expect(queueReorderMock).toHaveBeenCalledTimes(2);
+  });
 });

@@ -61,8 +61,9 @@ export function ImageGridItem({
       {...(dragListeners ?? {})}
       style={style}
       className={cn(
-        'group relative mb-4 break-inside-avoid cursor-pointer',
-        isDragging && 'ring-2 ring-violet-500/60',
+        'group relative mb-4 break-inside-avoid cursor-pointer transition-opacity duration-200',
+        'touch-manipulation', // Larger touch targets on mobile
+        isDragging && 'opacity-50',
         className,
       )}
       onMouseEnter={() => setIsHovered(true)}

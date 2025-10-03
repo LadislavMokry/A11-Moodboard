@@ -20,6 +20,7 @@ export function SortableImageItem({ image, onClick, onMenuClick }: SortableImage
     return {
       transform: transformValue,
       transition: transition ?? undefined,
+      opacity: isDragging ? 0.5 : 1,
       zIndex: isDragging ? 30 : undefined,
       willChange: transform ? 'transform' : undefined,
       touchAction: 'none' as const,
