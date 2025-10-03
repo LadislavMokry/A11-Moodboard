@@ -57,7 +57,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Phase 7: Lightbox & Image Viewing
 
-- [ ] **7.1** Basic Lightbox with Navigation
+- [x] **7.1** Basic Lightbox with Navigation
 - [ ] **7.2** Lightbox with Zoom & Pan (@use-gesture/react)
 - [ ] **7.3** Desktop Thumbnail Strip & Mobile Gestures
 - [ ] **7.4** Lightbox Caption Panel & Actions
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 20
+**Completed**: 21
 **In Progress**: 0
-**Remaining**: 32
+**Remaining**: 31
 
 ### By Phase:
 
@@ -138,7 +138,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 4** (Dashboard): 4/4 ✅ COMPLETE
 - **Phase 5** (Board Page): 4/4 ✅ COMPLETE
 - **Phase 6** (Drag-Drop): 2/2 ✅ COMPLETE
-- **Phase 7** (Lightbox): 0/4
+- **Phase 7** (Lightbox): 1/4
 - **Phase 8** (Image Management): 0/3
 - **Phase 9** (Sharing): 0/3
 - **Phase 10** (Advanced): 0/4
@@ -164,16 +164,16 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Current Sprint
 
 **Active Phase**: Phase 7 - Lightbox & Image Viewing
-**Current Step**: 7.1 - Basic Lightbox with Navigation
+**Current Step**: 7.2 - Lightbox with Zoom & Pan
 
 **Phases 1-6 Complete! 🎉**
 
 **Next Up**:
 
-1. Basic Lightbox with Navigation
-2. Lightbox with Zoom & Pan (@use-gesture/react)
-3. Desktop Thumbnail Strip & Mobile Gestures
-4. Lightbox Caption Panel & Actions
+1. Lightbox with Zoom & Pan (@use-gesture/react)
+2. Desktop Thumbnail Strip & Mobile Gestures
+3. Lightbox Caption Panel & Actions
+4. Image Management (Edit Caption, Delete)
 
 **Deployment Reminder**:
 

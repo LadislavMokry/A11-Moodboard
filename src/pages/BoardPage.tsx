@@ -4,10 +4,12 @@ import { Share2, MoreVertical } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { BoardPageHeader } from '@/components/BoardPageHeader';
 import { SortableImageGrid } from '@/components/SortableImageGrid';
+import { Lightbox } from '@/components/Lightbox';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { useBoard } from '@/hooks/useBoard';
 import { useAuth } from '@/hooks/useAuth';
+import { useLightbox } from '@/hooks/useLightbox';
 import { Button } from '@/components/ui/button';
 import { ImageUploadButton } from '@/components/ImageUploadButton';
 import { ImageDropZone } from '@/components/ImageDropZone';
@@ -26,6 +28,13 @@ export default function BoardPage() {
   const { data: board, isLoading, error } = useBoard(boardId);
   const { uploadImages, handlePaste, uploading, progress, accept } = useImageUpload(board?.id);
 
+  const sortedImages = useMemo(
+    () => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []),
+    [board?.images],
+  );
+
+  const lightbox = useLightbox(sortedImages.length);
+
   const isOwner = board && user ? board.owner_id === user.id : false;
 
   const activeUploads = useMemo(
@@ -34,8 +43,10 @@ export default function BoardPage() {
   );
 
   const handleImageClick = (image: Image) => {
-    // TODO: Open lightbox (Phase 6)
-    console.log('Image clicked:', image.id);
+    const index = sortedImages.findIndex((img) => img.id === image.id);
+    if (index !== -1) {
+      lightbox.open(index);
+    }
   };
 
   const handleImageMenuClick = (image: Image, _event: React.MouseEvent) => {
@@ -139,6 +150,18 @@ export default function BoardPage() {
                 onImageClick={handleImageClick}
                 onImageMenuClick={handleImageMenuClick}
               />
+
+              {/* Lightbox */}
+              {lightbox.isOpen && sortedImages.length > 0 && (
+                <Lightbox
+                  images={sortedImages}
+                  initialIndex={lightbox.currentIndex}
+                  currentIndex={lightbox.currentIndex}
+                  onClose={lightbox.close}
+                  onNext={lightbox.goToNext}
+                  onPrev={lightbox.goToPrev}
+                />
+              )}
             </>
           )}
         </div>
