@@ -35,6 +35,7 @@ interface UploadTask {
 
 export interface UseImageUploadResult {
   uploadImages: (files: File[] | FileList) => void;
+  handlePaste: (clipboardItems: ClipboardItem[] | File[]) => void;
   uploading: boolean;
   progress: Record<string, number>;
   errors: Record<string, string>;
@@ -271,6 +272,18 @@ export function useImageUpload(boardId: string | undefined): UseImageUploadResul
     [enqueueUploads],
   );
 
+  const handlePaste = useCallback(
+    (clipboardItems: ClipboardItem[] | File[]) => {
+      void extractFilesFromClipboardItems(clipboardItems).then((files) => {
+        if (files.length === 0) {
+          return;
+        }
+        enqueueUploads(files);
+      });
+    },
+    [enqueueUploads],
+  );
+
   const dismissToastWhenComplete = useCallback(
     (currentUploads: UploadMap) => {
       if (!toastIdRef.current) {
@@ -347,6 +360,7 @@ export function useImageUpload(boardId: string | undefined): UseImageUploadResul
   return useMemo(
     () => ({
       uploadImages,
+      handlePaste,
       uploading,
       progress,
       errors,
@@ -355,7 +369,7 @@ export function useImageUpload(boardId: string | undefined): UseImageUploadResul
       maxFileSize: MAX_IMAGE_SIZE_BYTES,
       accept: getAcceptString(),
     }),
-    [uploadImages, uploading, progress, errors, cancelUpload],
+    [uploadImages, handlePaste, uploading, progress, errors, cancelUpload],
   );
 }
 
@@ -390,4 +404,77 @@ async function readImageDimensions(file: File): Promise<{ width: number | null; 
 
     reader.readAsDataURL(file);
   });
+}
+
+type ClipboardEntry = ClipboardItem | File | DataTransferItemLike | ClipboardItemLike;
+
+interface ClipboardItemLike {
+  types?: readonly string[];
+  getType?: (type: string) => Promise<Blob>;
+}
+
+interface DataTransferItemLike {
+  kind?: string;
+  type?: string;
+  getAsFile?: () => File | null;
+}
+
+function isFileEntry(entry: ClipboardEntry): entry is File {
+  return typeof File !== 'undefined' && entry instanceof File;
+}
+
+function isDataTransferItem(entry: ClipboardEntry): entry is DataTransferItemLike {
+  return typeof entry === 'object' && entry !== null && 'getAsFile' in entry;
+}
+
+function isClipboardItem(entry: ClipboardEntry): entry is ClipboardItemLike {
+  return typeof entry === 'object' && entry !== null && 'getType' in entry;
+}
+
+async function extractFilesFromClipboardItems(
+  clipboardItems: ClipboardItem[] | File[],
+): Promise<File[]> {
+  const timestamp = Date.now();
+  const entries: ClipboardEntry[] = Array.isArray(clipboardItems)
+    ? clipboardItems
+    : Array.from(clipboardItems ?? []);
+
+  const files = await Promise.all(
+    entries.map(async (entry, index) => {
+      if (isFileEntry(entry)) {
+        return entry.type.startsWith('image/') ? entry : null;
+      }
+
+      if (isDataTransferItem(entry)) {
+        const file = entry.getAsFile?.();
+        if (file && file.type.startsWith('image/')) {
+          return file;
+        }
+        return null;
+      }
+
+      if (isClipboardItem(entry) && entry.types) {
+        const imageType = entry.types.find((type) => type.startsWith('image/'));
+        if (!imageType || !entry.getType) {
+          return null;
+        }
+
+        try {
+          const blob = await entry.getType(imageType);
+          if (!blob.type.startsWith('image/')) {
+            return null;
+          }
+          const extension = blob.type.split('/')[1] ?? 'png';
+          const fileName = `clipboard-image-${timestamp}-${index}.${extension}`;
+          return new File([blob], fileName, { type: blob.type });
+        } catch {
+          return null;
+        }
+      }
+
+      return null;
+    }),
+  );
+
+  return files.filter((file): file is File => file !== null);
 }

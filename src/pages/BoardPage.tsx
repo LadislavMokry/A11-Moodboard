@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { ImageUploadButton } from '@/components/ImageUploadButton';
 import { ImageDropZone } from '@/components/ImageDropZone';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import { useClipboardPaste } from '@/hooks/useClipboardPaste';
+import { toast } from '@/lib/toast';
 import { type Image } from '@/schemas/image';
 
 type BoardRouteParams = {
@@ -22,12 +24,7 @@ export default function BoardPage() {
   const { boardId } = useParams<BoardRouteParams>();
   const { user } = useAuth();
   const { data: board, isLoading, error } = useBoard(boardId);
-  const {
-    uploadImages,
-    uploading,
-    progress,
-    accept,
-  } = useImageUpload(board?.id);
+  const { uploadImages, handlePaste, uploading, progress, accept } = useImageUpload(board?.id);
 
   const isOwner = board && user ? board.owner_id === user.id : false;
 
@@ -55,6 +52,17 @@ export default function BoardPage() {
     // TODO: Open board menu (rename, delete, etc.)
     console.log('Board menu clicked');
   };
+
+  useClipboardPaste({
+    enabled: Boolean(board && isOwner && !uploading),
+    onPaste: (files) => {
+      if (!board || !isOwner || files.length === 0) {
+        return;
+      }
+      toast.success('Image pasted, uploading...');
+      handlePaste(files);
+    },
+  });
 
   return (
     <Layout>
