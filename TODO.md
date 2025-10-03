@@ -13,12 +13,12 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ---
 
-## Phase 2: Core Data Layer - Boards
+## Phase 2: Core Data Layer - Boards ✅
 
-- [ ] **2.1** Board Schemas & Types
-- [ ] **2.2** Image Schemas & Types
-- [ ] **2.3** Board Service Layer
-- [ ] **2.4** Board Query Hooks with TanStack Query
+- [x] **2.1** Board Schemas & Types
+- [x] **2.2** Image Schemas & Types
+- [x] **2.3** Board Service Layer
+- [x] **2.4** Board Query Hooks with TanStack Query
 
 ---
 
@@ -126,13 +126,13 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 4
+**Completed**: 8
 **In Progress**: 0
-**Remaining**: 48
+**Remaining**: 44
 
 ### By Phase:
 - **Phase 1** (Foundation & Auth): 4/4 ✅ COMPLETE
-- **Phase 2** (Data Layer): 0/4
+- **Phase 2** (Data Layer): 4/4 ✅ COMPLETE
 - **Phase 3** (UI Foundation): 0/3
 - **Phase 4** (Dashboard): 0/4
 - **Phase 5** (Board Page): 0/4
@@ -162,16 +162,16 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Current Sprint
 
-**Active Phase**: Phase 2 - Core Data Layer - Boards
-**Current Step**: 2.1 - Board Schemas & Types
+**Active Phase**: Phase 3 - UI Foundation & Theme System
+**Current Step**: 3.1 - Theme Context & System
 
-**Phase 1 Complete! 🎉**
+**Phase 1 & 2 Complete! 🎉**
 
 **Next Up**:
-1. Create board and image Zod schemas
-2. Build board service layer
-3. Implement board query hooks with TanStack Query
-4. Set up board mutations
+1. Theme context with system/light/dark modes
+2. Layout components and header navigation
+3. Routing structure with protected routes
+4. Board dashboard UI implementation
 
 **Deployment Reminder**:
 - [ ] When deploying to Cloudflare Pages, update Google OAuth authorized JavaScript origins to include production domain

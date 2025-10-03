@@ -1,8 +1,8 @@
 # Moodeight - Development Handover
 
-**Last Updated**: October 2, 2025
-**Phase Completed**: Phase 1 - Foundation & Authentication ✅
-**Next Phase**: Phase 2 - Core Data Layer - Boards
+**Last Updated**: October 3, 2025
+**Phase Completed**: Phase 2 - Core Data Layer - Boards ✅
+**Next Phase**: Phase 3 - UI Foundation & Theme System
 
 ---
 
@@ -294,33 +294,266 @@ npm test              # Run Vitest
 
 ---
 
-## Next Steps (Phase 2: Core Data Layer - Boards)
+## Phase 2 Implementation Summary ✅
 
-### Step 2.1: Board Schemas & Types
-- Create `src/schemas/board.ts` with Board and BoardUpdate schemas
-- Match `boards` table structure from `bootstrap.sql`
+### 2.1 Board Schemas & Types ✅
 
-### Step 2.2: Image Schemas & Types
-- Create `src/schemas/image.ts` with Image and ImageUpdate schemas
-- Match `images` table structure from `bootstrap.sql`
+**Files Created:**
+- `src/schemas/board.ts` - Board schema with create/update variants
+- `src/schemas/boardWithImages.ts` - Composite schema for boards with images
+- `src/__tests__/board.test.ts` - 27 tests covering all validation scenarios
 
-### Step 2.3: Board Service Layer
-- Create `src/services/boards.ts`
-- Implement: `getBoards()`, `getBoard(id)`, `createBoard()`, `updateBoard()`, `deleteBoard()`
+**Key Features:**
+- `boardSchema` matches `boards` table structure from bootstrap.sql
+- `boardCreateSchema` omits auto-generated fields (id, owner_id, share_token, timestamps)
+- `boardUpdateSchema` allows partial updates to name, description, cover_rotation_enabled
+- Validation rules: name (1-60 chars), description (max 160 chars), share_token (UUID)
+- TypeScript types: `Board`, `BoardCreate`, `BoardUpdate`, `BoardWithImages`
 
-### Step 2.4: Board Query Hooks with TanStack Query
-- Create `src/hooks/useBoards.ts`
-- Create `src/hooks/useCreateBoard.ts`, `useUpdateBoard.ts`, `useDeleteBoard.ts`
+**Schema Fields:**
+```typescript
+{
+  id: uuid,
+  owner_id: uuid,
+  name: string (1-60 chars),
+  description?: string | null (max 160 chars),
+  share_token: uuid,
+  cover_rotation_enabled: boolean (default true),
+  is_showcase: boolean (default false),
+  created_at: string,
+  updated_at: string
+}
+```
+
+---
+
+### 2.2 Image Schemas & Types ✅
+
+**Files Created:**
+- `src/schemas/image.ts` - Image schema with create/update variants
+- `src/__tests__/image.test.ts` - 24 tests covering validation scenarios
+
+**Key Features:**
+- `imageSchema` matches `images` table structure from bootstrap.sql
+- `imageCreateSchema` omits auto-generated fields (id, created_at)
+- `imageUpdateSchema` allows updating caption only
+- Validation rules: caption (max 140 chars), dimensions/size positive integers, source_url must be valid URL
+- TypeScript types: `Image`, `ImageCreate`, `ImageUpdate`
+
+**Schema Fields:**
+```typescript
+{
+  id: uuid,
+  board_id: uuid,
+  storage_path: string,
+  position: positive integer,
+  mime_type?: string | null,
+  width?: positive integer | null,
+  height?: positive integer | null,
+  size_bytes?: positive integer | null,
+  original_filename?: string | null,
+  source_url?: URL | null,
+  caption?: string | null (max 140 chars),
+  created_at: string
+}
+```
+
+---
+
+### 2.3 Board Service Layer ✅
+
+**Files Created:**
+- `src/lib/errors.ts` - Custom error classes
+- `src/services/boards.ts` - Board CRUD operations
+- `src/services/publicBoards.ts` - Public board access via RPC
+- `src/__tests__/boards.service.test.ts` - 15 tests covering all service methods
+
+**Custom Error Classes:**
+```typescript
+- BoardNotFoundError
+- BoardOwnershipError
+- ValidationError
+- ImageNotFoundError
+```
+
+**Service Functions:**
+
+1. **`getBoards(): Promise<Board[]>`**
+   - Fetches all boards for authenticated user
+   - Ordered by `updated_at DESC`
+   - Validates with `boardSchema`
+
+2. **`getBoard(boardId: string): Promise<BoardWithImages>`**
+   - Fetches single board with images
+   - Verifies ownership via auth context
+   - Images sorted by position
+   - Validates with `boardWithImagesSchema`
+
+3. **`createBoard(data: BoardCreate): Promise<Board>`**
+   - Creates board with current user as owner
+   - Handles unique constraint violations (duplicate name)
+   - Validates with `boardSchema`
+
+4. **`updateBoard(boardId: string, updates: BoardUpdate): Promise<Board>`**
+   - Updates board fields
+   - Checks ownership
+   - Handles unique constraints
+
+5. **`deleteBoard(boardId: string): Promise<void>`**
+   - Calls Edge Function for transactional delete
+   - Verifies ownership first
+   - Deletes images, storage files, and board row
+
+6. **`regenerateShareToken(boardId: string): Promise<Board>`**
+   - Generates new UUID for share_token
+   - Invalidates old share links
+
+7. **`getPublicBoard(shareToken: string): Promise<BoardWithImages>`** (publicBoards.ts)
+   - Calls `get_public_board` RPC
+   - No authentication required
+   - Returns board with owner profile and images
+
+---
+
+### 2.4 Board Query Hooks ✅
+
+**Files Created:**
+- `src/hooks/useBoards.ts` - Query hook for all boards
+- `src/hooks/useBoard.ts` - Query hook for single board
+- `src/hooks/useBoardMutations.ts` - Mutation hooks (create, update, delete, regenerate token)
+- `src/hooks/usePublicBoard.ts` - Query hook for public boards
+- `src/__tests__/boardHooks.test.tsx` - 13 tests covering all hooks
+
+**Query Hooks:**
+
+1. **`useBoards()`**
+   - Query key: `['boards', userId]`
+   - Fetches all user boards
+   - Enabled only when user is authenticated
+   - Stale time: 2 minutes
+
+2. **`useBoard(boardId?: string)`**
+   - Query key: `['board', boardId]`
+   - Fetches single board with images
+   - Enabled only when boardId provided
+   - Stale time: 2 minutes
+
+3. **`usePublicBoard(shareToken?: string)`**
+   - Query key: `['publicBoard', shareToken]`
+   - Fetches public board (no auth)
+   - Enabled only when shareToken provided
+   - Stale time: 5 minutes
+
+**Mutation Hooks:**
+
+1. **`useCreateBoard()`**
+   - Creates board
+   - Invalidates `['boards']` query on success
+
+2. **`useUpdateBoard()`**
+   - Updates board
+   - Optimistically updates cache
+   - Invalidates `['boards']` and `['board', boardId]` on success
+
+3. **`useDeleteBoard()`**
+   - Deletes board via Edge Function
+   - Removes from cache
+   - Invalidates `['boards']` on success
+
+4. **`useRegenerateShareToken()`**
+   - Rotates share token
+   - Optimistically updates cache
+   - Invalidates queries on success
+
+---
+
+## Test Coverage Summary (Phase 2)
+
+**Total Tests Written**: 79 tests
+- Board schemas: 27 tests
+- Image schemas: 24 tests
+- Board service layer: 15 tests
+- Board query hooks: 13 tests
+
+**All tests passing** ✅
+
+---
+
+## Updated Project Structure
+
+```
+src/
+├── __tests__/
+│   ├── board.test.ts (Phase 2.1)
+│   ├── image.test.ts (Phase 2.2)
+│   ├── boards.service.test.ts (Phase 2.3)
+│   └── boardHooks.test.tsx (Phase 2.4)
+├── components/
+│   ├── ErrorBoundary.tsx
+│   └── SignInButton.tsx
+├── contexts/
+│   └── AuthContext.tsx
+├── hooks/
+│   ├── useAuth.ts
+│   ├── useProfile.ts
+│   ├── useUpdateProfile.ts
+│   ├── useBoards.ts (Phase 2.4)
+│   ├── useBoard.ts (Phase 2.4)
+│   ├── useBoardMutations.ts (Phase 2.4)
+│   └── usePublicBoard.ts (Phase 2.4)
+├── lib/
+│   ├── errors.ts (Phase 2.3)
+│   ├── supabase.ts
+│   ├── http.ts (pre-existing, not used yet)
+│   └── queryClient.ts
+├── pages/
+│   ├── AuthCallback.tsx
+│   ├── Home.tsx
+│   └── UsersPage.tsx
+├── schemas/
+│   ├── profile.ts
+│   ├── board.ts (Phase 2.1)
+│   ├── image.ts (Phase 2.2)
+│   └── boardWithImages.ts (Phase 2.1)
+├── services/
+│   ├── profiles.ts
+│   ├── boards.ts (Phase 2.3)
+│   └── publicBoards.ts (Phase 2.3)
+├── types/
+│   └── database.ts
+├── App.tsx
+└── main.tsx
+```
+
+---
+
+## Next Steps (Phase 3: UI Foundation & Theme System)
+
+### Step 3.1: Theme Context & System
+- Create `src/contexts/ThemeContext.tsx` with system/light/dark modes
+- Integrate with profile theme preference
+- Add theme toggle component
+
+### Step 3.2: Layout Components & Header
+- Create main layout wrapper
+- Build header with navigation and user menu
+- Add responsive design
+
+### Step 3.3: Routing Structure & Protected Routes
+- Set up route guards for authenticated pages
+- Add redirect logic for unauthenticated users
+- Create route structure for boards, staging, public boards
 
 ---
 
 ## Important Notes for Next Session
 
-1. **Authentication is Complete**: All auth flows working, no changes needed
-2. **Profile System Working**: Auto-creates on page load with existing session
-3. **Database Schema Ready**: All tables, RLS policies, storage buckets configured
-4. **Google OAuth Configured**: Works for localhost, will need production domain added later
-5. **No Tests Written Yet**: Phase 1 focused on implementation, tests can be added later
+1. **Phase 1 & 2 Complete**: Auth + data layer fully implemented with 79 tests
+2. **Board CRUD Ready**: All board operations available via hooks
+3. **Public Board Access Working**: Via `usePublicBoard(shareToken)` hook
+4. **Custom Errors Implemented**: Typed error handling throughout service layer
+5. **Test Suite Robust**: Comprehensive test coverage with Vitest + React Testing Library
+6. **No UI Yet**: All work is data layer foundation, UI starts in Phase 3
 
 ---
 
@@ -359,12 +592,6 @@ npm test              # Run Vitest
 
 ---
 
-## Questions for Next Session
-
-1. Should we write tests before proceeding to Phase 2, or continue with implementation?
-2. Do we need a `/staging` page now, or wait until boards are implemented?
-3. Any specific board features to prioritize in Phase 2?
-
 ---
 
-**Phase 1 Complete! 🎉 Ready to build the board data layer.**
+**Phase 1 & 2 Complete! 🎉 Ready to build the UI foundation.**

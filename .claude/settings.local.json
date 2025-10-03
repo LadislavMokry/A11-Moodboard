@@ -7,7 +7,10 @@
       "Bash(claude mcp get:*)",
       "Bash(claude mcp:*)",
       "Bash(mkdir:*)",
-      "Bash(supabase:*)"
+      "Bash(supabase:*)",
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []
