@@ -1,8 +1,8 @@
 # Moodeight - Development Handover
 
-**Last Updated**: October 9, 2025
-**Phase Completed**: Phase 3 - UI Foundation & Theme System ✅
-**Next Phase**: Phase 4 - Board Dashboard & Management
+**Last Updated**: October 3, 2025
+**Phase Completed**: Phase 5 - Board Page & Image Grid ✅
+**Next Phase**: Phase 6 - Drag-and-Drop Reordering
 
 ---
 
@@ -15,7 +15,36 @@
 
 ---
 
-## What Has Been Implemented (Phase 1)
+## Recent Highlights (Phases 4 & 5)
+
+### Phase 4 - Board Dashboard & Management ✅
+
+**Key Outcomes:**
+- Dashboard shell with empty states and board summaries (`src/pages/Home.tsx`, `src/components/BoardList` and related UI)
+- Create/Rename/Delete flows wired to Supabase board services (`src/hooks/useBoardMutations.ts`, `src/components/CreateBoardModal.tsx`, `src/components/RenameBoardDialog.tsx`, `src/components/DeleteBoardDialog.tsx`)
+- Dashboard cards surface image previews and metadata (`src/components/BoardCard.tsx`)
+
+### Phase 5 - Board Page & Image Grid ✅
+
+**Board Experience:**
+- Feature-complete board page with header controls, image grid, and inline editing (`src/pages/BoardPage.tsx`, `src/components/BoardPageHeader.tsx`, `src/components/ImageGrid.tsx`)
+- Owner-only controls protected via `useAuth` + board ownership checks.
+
+**Image Upload Pipeline:**
+- Drag/drop and picker uploads orchestrated by `useImageUpload` (`src/hooks/useImageUpload.tsx`)
+- Upload toast overlay communicates multi-file progress (`src/components/UploadProgressToast.tsx`)
+- Supabase storage + metadata persistence via `src/services/images.ts`
+
+**Clipboard Enhancements (Step 5.4):**
+- Global paste listener hook: `src/hooks/useClipboardPaste.ts`
+- Board page integration posts a success toast and defers to upload pipeline while uploads idle.
+- Staging area now previews pasted images locally (`src/pages/Staging.tsx`).
+
+**Tests Added:**
+- `src/__tests__/useClipboardPaste.test.tsx` – unit coverage for event listener lifecycle and filtering.
+- `src/__tests__/BoardPagePaste.test.tsx` – integration coverage ensuring paste events trigger uploads and respect upload state gating.
+
+## Earlier Implementation Details (Phases 1-3)
 
 ### 1.1 Supabase Client Setup & Environment Configuration ✅
 
@@ -139,10 +168,10 @@ CREATE TABLE profiles (
 ## Supabase Backend Configuration
 
 ### Database Tables Created:
-1. **profiles** (see schema above)
-2. **boards** (from bootstrap.sql, not yet used)
-3. **images** (from bootstrap.sql, not yet used)
-4. **board_cover_images** (from bootstrap.sql, not yet used)
+1. **profiles** – user metadata + theme preference (Phase 1)
+2. **boards** – board records consumed by dashboard/board services (Phases 4-5)
+3. **images** – upload metadata persisted during Phase 5 pipeline work
+4. **board_cover_images** – reserved for animated covers (Phase 10 roadmap)
 
 ### Storage Buckets Created:
 1. **board-images** (10 MB limit, MIME: jpeg, png, webp, gif)
@@ -156,51 +185,54 @@ CREATE TABLE profiles (
 ### RPCs Available (not yet used):
 - `get_public_board(p_share_token uuid)`
 - `get_showcase_board()`
-- `reorder_images(p_board_id uuid, p_image_id uuid, p_new_index int)`
+- `reorder_images(p_board_id uuid, p_image_id uuid, p_new_index int)` – candidate for Phase 6 persistence
 - `add_image_at_top(...)`
 
 ---
 
-## Project Structure
+## Project Structure (Key Files)
 
 ```
 src/
 ├── components/
-│   ├── Avatar.tsx (Phase 3.2)
-│   ├── ErrorBoundary.tsx (pre-existing)
-│   ├── Header.tsx (Phase 3.2)
-│   ├── Layout.tsx (Phase 3.2)
-│   ├── ProtectedRoute.tsx (Phase 3.3)
-│   ├── SignInButton.tsx (Step 1.3)
-│   └── ThemeToggle.tsx (Phase 3.1)
-├── contexts/
-│   ├── AuthContext.tsx (Step 1.2)
-│   └── ThemeContext.tsx (Phase 3.1)
+│   ├── BoardCard.tsx (Phase 4 dashboard cards)
+│   ├── BoardPageHeader.tsx (Phase 5 board controls)
+│   ├── ImageDropZone.tsx (drag-and-drop uploads)
+│   ├── ImageGrid.tsx / ImageGridItem.tsx (board gallery)
+│   ├── ImageUploadButton.tsx (file picker wrapper)
+│   ├── Layout.tsx, Header.tsx (global chrome)
+│   └── UploadProgressToast.tsx (multi-upload feedback)
 ├── hooks/
-│   ├── useAuth.ts (Step 1.2)
-│   ├── useProfile.ts (Step 1.4)
-│   ├── useTheme.ts (Phase 3.1)
-│   └── useUpdateProfile.ts (Step 1.4)
-├── lib/
-│   ├── supabase.ts (Step 1.1)
-│   ├── http.ts (pre-existing, not used yet)
-│   └── queryClient.ts (pre-existing)
+│   ├── useBoards.ts, useBoard.ts (data fetching)
+│   ├── useBoardMutations.ts (create/rename/delete boards)
+│   ├── useImageUpload.tsx (orchestrates uploads + clipboard)
+│   ├── useClipboardPaste.ts (global paste listener)
+│   ├── useAuth.ts, useProfile.ts, useTheme.ts (context hooks)
+│   └── useUsers.ts (directory of collaborators)
 ├── pages/
-│   ├── AuthCallback.tsx (Step 1.2)
-│   ├── BoardPage.tsx (Phase 3.3 placeholder)
-│   ├── Home.tsx (Phase 3.1/3.2 revisions)
-│   ├── NotFound.tsx (Phase 3.3)
-│   ├── ProfilePage.tsx (Phase 3.3 placeholder)
-│   ├── PublicBoard.tsx (Phase 3.3 placeholder)
-│   └── Staging.tsx (Phase 3.3 placeholder)
+│   ├── Home.tsx (dashboard with board grid + empty states)
+│   ├── BoardPage.tsx (full board experience w/ uploads)
+│   ├── Staging.tsx (clipboard preview sandbox)
+│   ├── PublicBoard.tsx, ProfilePage.tsx (placeholders)
+│   ├── AuthCallback.tsx (Supabase OAuth)
+│   └── NotFound.tsx
 ├── schemas/
-│   └── profile.ts (Step 1.4)
+│   ├── board.ts, boardWithImages.ts
+│   ├── image.ts
+│   └── profile.ts
 ├── services/
-│   └── profiles.ts (Step 1.4)
-├── types/
-│   └── database.ts (pre-existing, auto-generated)
-├── App.tsx (Phase 3.3 routing overhaul)
-└── main.tsx (wrapped with AuthProvider + Router, Step 1.2)
+│   ├── boards.ts (CRUD + share token)
+│   ├── images.ts (storage + metadata persistence)
+│   └── profiles.ts
+├── lib/
+│   ├── supabase.ts
+│   ├── imageValidation.ts (size/type checks)
+│   ├── toast.ts (shared toast helpers)
+│   └── queryClient.ts
+└── __tests__/
+    ├── BoardPage.test.tsx, BoardCard.test.tsx, ImageGrid.test.tsx
+    ├── useImageUpload.test.tsx, useClipboardPaste.test.tsx, BoardPagePaste.test.tsx
+    └── service & schema suites
 ```
 
 ---
@@ -208,44 +240,31 @@ src/
 ## Current User Flow
 
 1. **Landing Page** (`/`):
-   - Shows "Moodeight" branding
-   - Signed-out users see Google sign-in CTA
-   - Signed-in users see profile summary + links to staging / sign out
-2. **Staging Area** (`/staging`): Placeholder layout ready for Phase 4 work
-3. **Private Board** (`/boards/:boardId`): Guarded by `ProtectedRoute`, renders placeholder content
-4. **Public Board** (`/b/:shareToken`): Accessible without auth, placeholder messaging
-5. **Profile** (`/profile`): Guarded placeholder for upcoming account management
-6. **Auth Callback** (`/auth/callback`): Handles Supabase OAuth redirects
-7. **Fallback** (`*`): 404 page with navigation back to `/`
+   - Auth-aware header; signed-out users are prompted to authenticate.
+   - Signed-in owners see their recent boards with create/rename/delete affordances.
+2. **Board Dashboard** (Home contents):
+   - Displays board cards with cover thumbnails and metadata.
+   - Create Board modal, inline rename, and delete dialog handled via mutations.
+3. **Board Page** (`/boards/:boardId`):
+   - Owner-gated uploads via drag/drop, picker, or clipboard paste.
+   - Upload progress toast with cancel support; grid refreshes via TanStack Query.
+4. **Staging Area** (`/staging`):
+   - Clipboard paste sandbox; previews pasted images locally without upload.
+5. **Auth Callback / Logout / Misc**: Existing flows from Phases 1-3 remain unchanged.
 
-## Test Coverage Summary (Phase 3)
+## Test Coverage Summary
 
-- `ThemeContext.test.tsx`: 16 tests covering theme sync, system detection, DOM updates
-- `Header.test.tsx`: 4 tests verifying desktop/mobile states, theme toggle, auth actions
-- `routing.test.tsx`: 8 tests covering `ProtectedRoute` behaviour and high-level route rendering
+- `BoardPage.test.tsx`, `BoardCard.test.tsx`, `Home.test.tsx`: UI and data-loading behaviours for dashboard and board views.
+- `useImageUpload.test.tsx`: Queueing, concurrency, progress, and error handling for uploads.
+- `useClipboardPaste.test.tsx`, `BoardPagePaste.test.tsx`: Clipboard listener + integration of paste-to-upload.
+- Existing Phase 1-3 suites (theme, routing, schemas, services) remain green.
 
-## Phase 3 Highlights
+## Next Steps (Phase 6 - Drag-and-Drop Reordering)
 
-- Theme Context & toggle coordinating profile + local storage with system preference listeners
-- Layout shell + header with responsive, auth-aware navigation (New Board CTA, avatar menu)
-- Comprehensive routing skeleton (protected routes, staging, public board, profile, 404)
-
-## Next Steps (Phase 4 - Board Dashboard & Management)
-
-1. Implement dashboard shell & empty states on `Home`
-2. Build staging interactions for board creation flow
-3. Flesh out board page UI using existing hooks
-4. Extend tests for board loading & interactions
-   - **Signed Out**: "Sign in with Google" button
-   - **Signed In**: User avatar, name, email, theme preference, "Go to Boards" and "Sign Out" buttons
-
-2. **Sign-In Flow**:
-   - Click "Sign in with Google" → Google OAuth → Redirect to `/auth/callback` → Redirect to `/`
-   - Profile auto-created with Google name and avatar
-   - Session persists in localStorage
-
-3. **Sign-Out Flow**:
-   - Click "Sign Out" → Clears session → Returns to landing page
+1. Integrate `@dnd-kit` and enable basic drag-and-drop sorting within `ImageGrid`.
+2. Implement custom drag overlay + hover styling aligned with design system.
+3. Persist ordering updates via image reorder mutation / Supabase RPC.
+4. Expand tests to cover drag interactions and optimistic updates.
 
 ---
 
@@ -272,30 +291,31 @@ src/
 
 ### Manual Test Steps:
 
-1. **Test Sign-In**:
+1. **Auth Regression**:
    ```bash
    npm run dev
    ```
-   - Go to `http://localhost:5173`
-   - Click "Sign in with Google"
-   - Verify redirect to Google OAuth
-   - Verify redirect back to home
-   - **Expected**: See avatar, name, email, theme
+   - Navigate to `http://localhost:5173`.
+   - Sign in with Google and confirm profile details render in the header.
+   - Sign out and confirm the CTA reappears.
+   - Refresh after signing in again to verify session persistence.
 
-2. **Test Profile Display**:
-   - Refresh page
-   - **Expected**: Profile loads instantly (no spinner)
-   - **Expected**: Avatar, name from Google metadata displayed
+2. **Dashboard CRUD**:
+   - From Home, create a new board and confirm it appears in the list.
+   - Rename and delete boards via the action menu; ensure toast feedback and query refresh work.
 
-3. **Test Sign-Out**:
-   - Click "Sign Out"
-   - **Expected**: Return to "Sign in with Google" button
+3. **File Upload Flow**:
+   - Enter a board you own.
+   - Drag an image into the drop zone or use the Upload button.
+   - **Expected**: Toast displays progress, grid refreshes with the new image, cancel button works mid-upload.
 
-4. **Test Session Persistence**:
-   - Sign in
-   - Close browser tab
-   - Reopen `http://localhost:5173`
-   - **Expected**: Still signed in, profile displayed
+4. **Paste-to-Upload (Board Page)**:
+   - With the board tab focused, copy an image to the clipboard and press `Ctrl/Cmd + V`.
+   - **Expected**: Success toast "Image pasted, uploading..." shows, upload pipeline mirrors file flow, listener pauses while upload is active.
+
+5. **Staging Clipboard Preview**:
+   - Open `/staging`, paste image data, and confirm previews render locally.
+   - Refresh to ensure object URLs are revoked (no memory leak warnings in console).
 
 ---
 
