@@ -1,8 +1,8 @@
 # Moodeight - Development Handover
 
-**Last Updated**: October 3, 2025
-**Phase Completed**: Phase 2 - Core Data Layer - Boards ✅
-**Next Phase**: Phase 3 - UI Foundation & Theme System
+**Last Updated**: October 9, 2025
+**Phase Completed**: Phase 3 - UI Foundation & Theme System ✅
+**Next Phase**: Phase 4 - Board Dashboard & Management
 
 ---
 
@@ -166,13 +166,20 @@ CREATE TABLE profiles (
 ```
 src/
 ├── components/
+│   ├── Avatar.tsx (Phase 3.2)
 │   ├── ErrorBoundary.tsx (pre-existing)
-│   └── SignInButton.tsx (Step 1.3)
+│   ├── Header.tsx (Phase 3.2)
+│   ├── Layout.tsx (Phase 3.2)
+│   ├── ProtectedRoute.tsx (Phase 3.3)
+│   ├── SignInButton.tsx (Step 1.3)
+│   └── ThemeToggle.tsx (Phase 3.1)
 ├── contexts/
-│   └── AuthContext.tsx (Step 1.2)
+│   ├── AuthContext.tsx (Step 1.2)
+│   └── ThemeContext.tsx (Phase 3.1)
 ├── hooks/
 │   ├── useAuth.ts (Step 1.2)
 │   ├── useProfile.ts (Step 1.4)
+│   ├── useTheme.ts (Phase 3.1)
 │   └── useUpdateProfile.ts (Step 1.4)
 ├── lib/
 │   ├── supabase.ts (Step 1.1)
@@ -180,16 +187,20 @@ src/
 │   └── queryClient.ts (pre-existing)
 ├── pages/
 │   ├── AuthCallback.tsx (Step 1.2)
-│   ├── Home.tsx (modified in Step 1.3 & 1.4)
-│   └── UsersPage.tsx (pre-existing demo)
+│   ├── BoardPage.tsx (Phase 3.3 placeholder)
+│   ├── Home.tsx (Phase 3.1/3.2 revisions)
+│   ├── NotFound.tsx (Phase 3.3)
+│   ├── ProfilePage.tsx (Phase 3.3 placeholder)
+│   ├── PublicBoard.tsx (Phase 3.3 placeholder)
+│   └── Staging.tsx (Phase 3.3 placeholder)
 ├── schemas/
 │   └── profile.ts (Step 1.4)
 ├── services/
 │   └── profiles.ts (Step 1.4)
 ├── types/
 │   └── database.ts (pre-existing, auto-generated)
-├── App.tsx (modified to add /auth/callback route)
-└── main.tsx (modified to wrap with AuthProvider)
+├── App.tsx (Phase 3.3 routing overhaul)
+└── main.tsx (wrapped with AuthProvider + Router, Step 1.2)
 ```
 
 ---
@@ -198,6 +209,33 @@ src/
 
 1. **Landing Page** (`/`):
    - Shows "Moodeight" branding
+   - Signed-out users see Google sign-in CTA
+   - Signed-in users see profile summary + links to staging / sign out
+2. **Staging Area** (`/staging`): Placeholder layout ready for Phase 4 work
+3. **Private Board** (`/boards/:boardId`): Guarded by `ProtectedRoute`, renders placeholder content
+4. **Public Board** (`/b/:shareToken`): Accessible without auth, placeholder messaging
+5. **Profile** (`/profile`): Guarded placeholder for upcoming account management
+6. **Auth Callback** (`/auth/callback`): Handles Supabase OAuth redirects
+7. **Fallback** (`*`): 404 page with navigation back to `/`
+
+## Test Coverage Summary (Phase 3)
+
+- `ThemeContext.test.tsx`: 16 tests covering theme sync, system detection, DOM updates
+- `Header.test.tsx`: 4 tests verifying desktop/mobile states, theme toggle, auth actions
+- `routing.test.tsx`: 8 tests covering `ProtectedRoute` behaviour and high-level route rendering
+
+## Phase 3 Highlights
+
+- Theme Context & toggle coordinating profile + local storage with system preference listeners
+- Layout shell + header with responsive, auth-aware navigation (New Board CTA, avatar menu)
+- Comprehensive routing skeleton (protected routes, staging, public board, profile, 404)
+
+## Next Steps (Phase 4 - Board Dashboard & Management)
+
+1. Implement dashboard shell & empty states on `Home`
+2. Build staging interactions for board creation flow
+3. Flesh out board page UI using existing hooks
+4. Extend tests for board loading & interactions
    - **Signed Out**: "Sign in with Google" button
    - **Signed In**: User avatar, name, email, theme preference, "Go to Boards" and "Sign Out" buttons
 

@@ -4,7 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>Moodeight</title>
+    <script>
+      // Prevent flash of wrong theme on page load
+      (function() {
+        try {
+          const stored = localStorage.getItem('theme');
+          const theme = stored === 'system' || stored === 'light' || stored === 'dark' ? stored : 'system';
+
+          let effectiveTheme;
+          if (theme === 'system') {
+            effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          } else {
+            effectiveTheme = theme;
+          }
+
+          document.documentElement.classList.add(effectiveTheme);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,30 +1,55 @@
 import Home from "@/pages/Home";
-import UsersPage from "@/pages/UsersPage";
+import Staging from "@/pages/Staging";
+import BoardPage from "@/pages/BoardPage";
+import PublicBoard from "@/pages/PublicBoard";
+import ProfilePage from "@/pages/ProfilePage";
+import NotFound from "@/pages/NotFound";
 import { AuthCallback } from "@/pages/AuthCallback";
-import { Link, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function App() {
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <header className="mb-6 flex gap-4 text-primary underline">
-        <Link to="/">Home</Link>
-        <Link to="/users">Users</Link>
-      </header>
-
+    <ThemeProvider>
       <Routes>
         <Route
           path="/"
           element={<Home />}
         />
         <Route
-          path="/users"
-          element={<UsersPage />}
+          path="/staging"
+          element={<Staging />}
+        />
+        <Route
+          path="/boards/:boardId"
+          element={(
+            <ProtectedRoute>
+              <BoardPage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/b/:shareToken"
+          element={<PublicBoard />}
+        />
+        <Route
+          path="/profile"
+          element={(
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          )}
         />
         <Route
           path="/auth/callback"
           element={<AuthCallback />}
         />
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
       </Routes>
-    </div>
+    </ThemeProvider>
   );
 }

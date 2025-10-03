@@ -10,7 +10,10 @@
       "Bash(supabase:*)",
       "Bash(npm run build:*)",
       "Bash(node:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(cd:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []
