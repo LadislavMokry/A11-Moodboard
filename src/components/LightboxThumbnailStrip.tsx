@@ -11,7 +11,7 @@ interface LightboxThumbnailStripProps {
 
 const MAX_THUMBNAILS = 7;
 const THUMBNAIL_SIZE = 80; // pixels
-const MAX_SCALE = 1.5;
+const MAX_SCALE = 1.2;
 
 export function LightboxThumbnailStrip({
   images,
@@ -44,9 +44,9 @@ export function LightboxThumbnailStrip({
   }, [images, currentIndex]);
 
   // Calculate gap needed to prevent overlap when scaled
-  // When a thumbnail scales to 1.5x, it grows by 40px (80 * 0.5)
-  // Adjacent ones scale to 1.2x, growing by 16px (80 * 0.2)
-  // We need at least 40px gap to prevent overlap
+  // When a thumbnail scales to 1.2x, it grows by 16px (80 * 0.2)
+  // Adjacent ones scale to 1.05x, growing by 4px (80 * 0.05)
+  // We need at least 16px gap to prevent overlap
   const gap = Math.ceil(THUMBNAIL_SIZE * (MAX_SCALE - 1) / 2) + 4; // +4px for safety
 
   // Find the visible index that corresponds to the current image
@@ -105,22 +105,22 @@ export function LightboxThumbnailStrip({
 
     const distance = Math.abs(index - hoveredIndex);
 
-    if (distance === 0) return 1.5; // Hovered thumbnail
-    if (distance === 1) return 1.2; // Adjacent thumbnails
-    if (distance === 2) return 1.1; // Second-level adjacent
+    if (distance === 0) return 1.2; // Hovered thumbnail
+    if (distance === 1) return 1.05; // Adjacent thumbnails
     return 1; // All others
   };
 
   if (images.length === 0) return null;
 
   return (
-    <div className="hidden md:flex absolute bottom-4 left-0 right-0 justify-center pointer-events-none">
+    <div className="hidden md:flex absolute bottom-32 left-0 right-0 justify-center pointer-events-none">
       <div
         ref={stripRef}
         {...bind()}
-        className="flex px-4 overflow-x-auto scrollbar-hide pointer-events-auto cursor-grab active:cursor-grabbing"
+        className="flex px-4 overflow-visible pointer-events-auto cursor-grab active:cursor-grabbing"
         style={{
           gap: `${gap}px`,
+          paddingTop: '2rem',
           paddingBottom: '1rem',
           scrollBehavior: 'smooth',
           maxWidth: 'fit-content',

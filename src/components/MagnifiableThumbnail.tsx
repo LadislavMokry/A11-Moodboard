@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
-import { getSupabaseThumbnail } from '@/lib/imageUtils';
+import { getSupabasePublicUrl } from '@/lib/imageUtils';
 
 interface MagnifiableThumbnailProps {
   image: Image;
@@ -20,7 +20,7 @@ export function MagnifiableThumbnail({
   onMouseLeave,
   magnification,
 }: MagnifiableThumbnailProps) {
-  const src = getSupabaseThumbnail(image.storage_path, 360);
+  const src = getSupabasePublicUrl(image.storage_path);
 
   const [spring] = useSpring(
     () => ({

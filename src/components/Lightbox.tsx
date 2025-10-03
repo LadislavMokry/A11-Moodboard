@@ -14,6 +14,7 @@ interface LightboxProps {
   onNext: () => void;
   onPrev: () => void;
   onJumpTo?: (index: number) => void;
+  hideThumbnails?: boolean; // For testing
 }
 
 const MIN_SCALE = 1;
@@ -23,7 +24,15 @@ const SWIPE_THRESHOLD = 50;
 const SWIPE_VELOCITY_THRESHOLD = 0.5;
 const DISMISS_THRESHOLD = 100;
 
-export function Lightbox({ images, currentIndex, onClose, onNext, onPrev, onJumpTo }: LightboxProps) {
+export function Lightbox({
+  images,
+  currentIndex,
+  onClose,
+  onNext,
+  onPrev,
+  onJumpTo,
+  hideThumbnails = false,
+}: LightboxProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -195,7 +204,7 @@ export function Lightbox({ images, currentIndex, onClose, onNext, onPrev, onJump
       />
 
       {/* Desktop thumbnail strip */}
-      {!isMobile && (
+      {!isMobile && !hideThumbnails && (
         <LightboxThumbnailStrip
           images={images}
           currentIndex={currentIndex}

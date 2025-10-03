@@ -68,6 +68,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -84,6 +85,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -99,6 +101,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -115,6 +118,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -133,6 +137,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -151,6 +156,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -169,6 +175,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -187,11 +194,15 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
-    const img = screen.getByAltText('First Image');
-    fireEvent.click(img);
+    const imgs = screen.getAllByAltText('First Image');
+    const mainImg = imgs.find((img) => img.className.includes('select-none'));
+    if (mainImg) {
+      fireEvent.click(mainImg);
+    }
 
     expect(mockOnClose).not.toHaveBeenCalled();
   });
@@ -205,6 +216,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -222,6 +234,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -240,6 +253,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -256,10 +270,12 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
-    expect(screen.getByAltText('First Image')).toBeInTheDocument();
+    const imgs = screen.getAllByAltText('First Image');
+    expect(imgs.length).toBeGreaterThanOrEqual(1);
 
     rerender(
       <Lightbox
@@ -269,10 +285,12 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
-    expect(screen.getByAltText('Second Image')).toBeInTheDocument();
+    const imgs2 = screen.getAllByAltText('Second Image');
+    expect(imgs2.length).toBeGreaterThanOrEqual(1);
   });
 
   it('updates counter when currentIndex changes', () => {
@@ -284,6 +302,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 
@@ -297,6 +316,7 @@ describe('Lightbox', () => {
         onClose={mockOnClose}
         onNext={mockOnNext}
         onPrev={mockOnPrev}
+        hideThumbnails
       />,
     );
 

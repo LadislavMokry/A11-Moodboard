@@ -110,6 +110,7 @@ export function LightboxControls({
         className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/60 rounded-full backdrop-blur-sm p-1 transition-opacity duration-300 ${
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
+        style={{ zIndex: 20 }}
       >
         <button
           onClick={onZoomOut}
