@@ -14,7 +14,7 @@ const sizeClassMap: Record<'sm' | 'md' | 'lg', string> = {
  */
 export function LoadingSpinner({ size = 'md', message }: LoadingSpinnerProps) {
   return (
-    <div className="flex items-center justify-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
+    <div role="status" className="flex items-center justify-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
       <span
         className={`${sizeClassMap[size]} animate-spin rounded-full border-neutral-300 border-t-transparent dark:border-neutral-700 dark:border-t-transparent`}
         aria-hidden="true"

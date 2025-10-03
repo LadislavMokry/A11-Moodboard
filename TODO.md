@@ -30,12 +30,12 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ---
 
-## Phase 4: Board Dashboard & Management
+## Phase 4: Board Dashboard & Management ✅
 
-- [ ] **4.1** Empty States & Dashboard Shell
-- [ ] **4.2** Create Board Flow
-- [ ] **4.3** Board Card Component with Static Thumbnails
-- [ ] **4.4** Board Management Actions (Rename, Delete)
+- [x] **4.1** Empty States & Dashboard Shell
+- [x] **4.2** Create Board Flow
+- [x] **4.3** Board Card Component with Static Thumbnails
+- [x] **4.4** Board Management Actions (Rename, Delete)
 
 ---
 
@@ -126,16 +126,16 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 11
+**Completed**: 15
 **In Progress**: 0
-**Remaining**: 41
+**Remaining**: 37
 
 ### By Phase:
 
 - **Phase 1** (Foundation & Auth): 4/4 ✅ COMPLETE
 - **Phase 2** (Data Layer): 4/4 ✅ COMPLETE
 - **Phase 3** (UI Foundation): 3/3 ✅ COMPLETE
-- **Phase 4** (Dashboard): 0/4
+- **Phase 4** (Dashboard): 4/4 ✅ COMPLETE
 - **Phase 5** (Board Page): 0/4
 - **Phase 6** (Drag-Drop): 0/2
 - **Phase 7** (Lightbox): 0/4
@@ -163,17 +163,17 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Current Sprint
 
-**Active Phase**: Phase 3 - UI Foundation & Theme System
-**Current Step**: 3.1 - Theme Context & System
+**Active Phase**: Phase 5 - Board Page & Image Grid
+**Current Step**: 5.1 - Board Page Layout & Image Grid (Static)
 
-**Phase 1 & 2 Complete! 🎉**
+**Phases 1-4 Complete! 🎉**
 
 **Next Up**:
 
-1. Theme context with system/light/dark modes
-2. Layout components and header navigation
-3. Routing structure with protected routes
-4. Board dashboard UI implementation
+1. Board page layout with masonry image grid
+2. Inline board rename & description editing
+3. Image upload flow (file picker & drag-drop)
+4. Paste-from-clipboard upload support
 
 **Deployment Reminder**:
 
