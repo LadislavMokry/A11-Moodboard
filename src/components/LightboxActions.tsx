@@ -1,4 +1,4 @@
-import { Download, Link2, Share2 } from 'lucide-react';
+import { Download, Link2, Share2, Trash2 } from 'lucide-react';
 import { downloadImage } from '@/lib/download';
 import { copyToClipboard } from '@/lib/clipboard';
 import { toast } from 'sonner';
@@ -7,12 +7,16 @@ interface LightboxActionsProps {
   imageUrl: string;
   filename: string;
   onCopyUrl?: () => void;
+  onDelete?: () => void;
+  isOwner?: boolean;
 }
 
 export function LightboxActions({
   imageUrl,
   filename,
   onCopyUrl,
+  onDelete,
+  isOwner = false,
 }: LightboxActionsProps) {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const canShare = typeof navigator !== 'undefined' && 'share' in navigator;
@@ -87,6 +91,18 @@ export function LightboxActions({
           title="Copy image URL"
         >
           <Link2 className="w-5 h-5 text-white" />
+        </button>
+      )}
+
+      {/* Delete button (owner only) */}
+      {isOwner && onDelete && (
+        <button
+          onClick={onDelete}
+          className="p-2 bg-red-600/80 hover:bg-red-700/90 backdrop-blur-sm rounded-lg transition-colors"
+          aria-label="Delete image"
+          title="Delete image"
+        >
+          <Trash2 className="w-5 h-5 text-white" />
         </button>
       )}
     </div>

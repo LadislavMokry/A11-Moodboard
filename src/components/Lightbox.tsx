@@ -18,6 +18,7 @@ interface LightboxProps {
   onPrev: () => void;
   onJumpTo?: (index: number) => void;
   onEditCaption?: (image: Image) => void;
+  onDelete?: (image: Image) => void;
   isOwner?: boolean;
   hideThumbnails?: boolean; // For testing
 }
@@ -37,6 +38,7 @@ export function Lightbox({
   onPrev,
   onJumpTo,
   onEditCaption,
+  onDelete,
   isOwner = false,
   hideThumbnails = false,
 }: LightboxProps) {
@@ -210,10 +212,12 @@ export function Lightbox({
         onZoomReset={handleZoomReset}
       />
 
-      {/* Action buttons (download, copy URL, share) */}
+      {/* Action buttons (download, copy URL, share, delete) */}
       <LightboxActions
         imageUrl={getSupabasePublicUrl(currentImage.storage_path)}
         filename={currentImage.original_filename}
+        isOwner={isOwner}
+        onDelete={onDelete ? () => onDelete(currentImage) : undefined}
       />
 
       {/* Caption panel (desktop only, right side) */}

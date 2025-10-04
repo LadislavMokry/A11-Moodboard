@@ -49,15 +49,41 @@ export function useUpdateImage(boardId: string) {
 
 /**
  * Hook to delete an image
- * Invalidates board query on success
+ * Optimistically removes from cache and reverts on error
  */
 export function useDeleteImage(boardId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (imageId: string) => deleteImage(imageId),
+    onMutate: async (imageId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['board', boardId] });
+
+      // Snapshot the previous value
+      const previousBoard = queryClient.getQueryData(['board', boardId]);
+
+      // Optimistically remove the image from the board data
+      queryClient.setQueryData(['board', boardId], (old: any) => {
+        if (!old || !old.images) return old;
+
+        return {
+          ...old,
+          images: old.images.filter((img: any) => img.id !== imageId),
+        };
+      });
+
+      // Return context with snapshot for rollback
+      return { previousBoard };
+    },
+    onError: (_error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousBoard) {
+        queryClient.setQueryData(['board', boardId], context.previousBoard);
+      }
+    },
     onSuccess: () => {
-      // Invalidate board query to refetch
+      // Invalidate to refetch fresh data
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
     },
   });

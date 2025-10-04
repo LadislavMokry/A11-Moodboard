@@ -1,8 +1,8 @@
 # Moodeight - Development Handover
 
-**Last Updated**: October 3, 2025
-**Phase Completed**: Phase 5 - Board Page & Image Grid ✅
-**Next Phase**: Phase 6 - Drag-and-Drop Reordering
+**Last Updated**: October 4, 2025
+**Phase Completed**: Phase 7 - Lightbox & Image Viewing ✅
+**Next Phase**: Phase 8.3 - Bulk Selection & Bulk Delete
 
 ---
 
@@ -15,42 +15,134 @@
 
 ---
 
-## Recent Highlights (Phases 4 & 5)
+## Recent Highlights (Phases 7 & 8)
 
-### Phase 4 - Board Dashboard & Management ✅
+### Phase 7 - Lightbox & Image Viewing ✅
 
-**Key Outcomes:**
-- Dashboard shell with empty states and board summaries (`src/pages/Home.tsx`, `src/components/BoardList` and related UI)
-- Create/Rename/Delete flows wired to Supabase board services (`src/hooks/useBoardMutations.ts`, `src/components/CreateBoardModal.tsx`, `src/components/RenameBoardDialog.tsx`, `src/components/DeleteBoardDialog.tsx`)
-- Dashboard cards surface image previews and metadata (`src/components/BoardCard.tsx`)
+**Steps 7.1-7.3 (completed previously):**
+- Basic lightbox with keyboard navigation, escape to close, and arrow keys
+- Zoom & pan with `@use-gesture/react` for pinch-to-zoom and drag gestures
+- Desktop thumbnail strip with momentum scroll and macOS dock-style hover magnify
+- Mobile swipe-to-dismiss gestures
 
-### Phase 5 - Board Page & Image Grid ✅
+**Step 7.4 - Lightbox Caption Panel & Actions ✅**
 
-**Board Experience:**
-- Feature-complete board page with header controls, image grid, and inline editing (`src/pages/BoardPage.tsx`, `src/components/BoardPageHeader.tsx`, `src/components/ImageGrid.tsx`)
-- Owner-only controls protected via `useAuth` + board ownership checks.
+**Files Created:**
+- `src/components/LightboxCaptionPanel.tsx` – Desktop-only sliding panel (320px width, right side) with toggle button (ChevronRight icon), caption display with typographic quotes, and owner-only edit button (Pencil icon)
+- `src/lib/download.ts` – Blob-based download utility with object URL cleanup
+- `src/lib/clipboard.ts` – Clipboard API wrapper with execCommand fallback for older browsers
+- `src/components/LightboxActions.tsx` – Action buttons (Download, Copy URL/Share, Delete) with z-index 30, positioned top-right
 
-**Image Upload Pipeline:**
-- Drag/drop and picker uploads orchestrated by `useImageUpload` (`src/hooks/useImageUpload.tsx`)
-- Upload toast overlay communicates multi-file progress (`src/components/UploadProgressToast.tsx`)
-- Supabase storage + metadata persistence via `src/services/images.ts`
+**Files Modified:**
+- `src/App.tsx` – Added `<Toaster position="top-center" />` from sonner package
+- `src/components/Lightbox.tsx` – Integrated LightboxCaptionPanel and LightboxActions components
+- `src/pages/BoardPage.tsx` – Passed isOwner prop to Lightbox
 
-**Clipboard Enhancements (Step 5.4):**
-- Global paste listener hook: `src/hooks/useClipboardPaste.ts`
-- Board page integration posts a success toast and defers to upload pipeline while uploads idle.
-- Staging area now previews pasted images locally (`src/pages/Staging.tsx`).
+**Key Features:**
+- Caption panel auto-hides when no caption and user is not owner
+- Toggle button slides panel in/out with smooth transitions
+- Download button fetches image as blob and triggers download
+- Copy URL button uses modern Clipboard API with fallback
+- Mobile devices show native Share sheet (Web Share API)
+- Owner-only delete button with red styling (bg-red-600/80)
+- Toast notifications for all actions (success/error feedback)
 
 **Tests Added:**
-- `src/__tests__/useClipboardPaste.test.tsx` – unit coverage for event listener lifecycle and filtering.
-- `src/__tests__/BoardPagePaste.test.tsx` – integration coverage ensuring paste events trigger uploads and respect upload state gating.
+- `src/__tests__/LightboxCaptionPanel.test.tsx` – 10 tests covering caption display, toggle, desktop-only visibility, edit button
+- `src/__tests__/LightboxActions.test.tsx` – 13 tests covering download, copy, share, delete, mobile detection, toast feedback
 
-### Phase 6 - Drag-and-Drop Reordering (in progress)
+**Dependencies Installed:**
+- `sonner` – Modern toast notification library
 
-**Step 6.1 status:**
-- Introduced dnd-kit sortable grid (`src/components/SortableImageGrid.tsx`) and sortable item wrapper (`src/components/SortableImageItem.tsx`) replacing the static grid on the board page.
-- Added optimistic reorder pipeline and debounce-backed mutation hook (`src/hooks/useImageReorder.ts`) leveraging new service RPC wrapper (`src/services/imageReorder.ts`).
-- Board page now renders `SortableImageGrid` with animated drag overlay support.
-- Tests: `src/__tests__/imageReorder.test.ts`, `src/__tests__/SortableImageGrid.test.tsx`, and `src/__tests__/useImageReorder.test.tsx` cover service call, drag integration, optimistic updates, debounce, and error recovery.
+---
+
+### Phase 8 - Image Management & Captions
+
+**Step 8.1 - Edit Caption Flow ✅**
+
+**Files Created:**
+- `src/components/EditCaptionDialog.tsx` – Dialog with single-line textarea, 140 character limit, live character counter (color-coded: amber < 20 remaining, red when over), pre-filled with existing caption
+- `src/hooks/useImageMutations.ts` – Mutation hooks with optimistic updates (useUpdateImage, useDeleteImage)
+
+**Files Modified:**
+- `src/services/images.ts` – Added `updateImage(imageId, updates)` function
+- `src/components/LightboxCaptionPanel.tsx` – Added "Edit caption" button for owners
+- `src/components/Lightbox.tsx` – Added `onEditCaption` and `isOwner` props
+- `src/pages/BoardPage.tsx` – Manages `editCaptionImage` state and EditCaptionDialog
+
+**Key Features:**
+- 140 character limit with real-time counter
+- Color-coded feedback: normal → amber (< 20 remaining) → red (over limit)
+- Pre-fills existing caption, saves null for empty input (trimmed whitespace)
+- Optimistic UI updates with rollback on error
+- TanStack Query cache invalidation on success
+- Accessible with autofocus and keyboard support
+
+**Tests Added:**
+- `src/__tests__/EditCaptionDialog.test.tsx` – 15 tests covering pre-fill, character counter, validation, trimming, save null for empty, optimistic updates, error handling
+
+---
+
+**Step 8.2 - Delete Image Flow ✅**
+
+**Files Created:**
+- `src/components/DeleteImageDialog.tsx` – Confirmation dialog with 128×128 thumbnail preview, warning message, red-styled delete button
+- `src/components/ImageGridItemWithMenu.tsx` – Wrapper component that renders own DropdownMenu.Trigger button (MoreVertical icon) positioned absolutely at top-2 right-2, passes `onMenuClick={undefined}` to ImageGridItem
+- `src/components/SortableImageItemWithMenu.tsx` – Combines useSortable hook with ImageGridItemWithMenu for drag-and-drop + menu functionality
+
+**Files Modified:**
+- `src/hooks/useImageMutations.ts` – Enhanced `useDeleteImage` with optimistic cache removal and rollback on error
+- `src/components/LightboxActions.tsx` – Added delete button (red, owner-only)
+- `src/components/Lightbox.tsx` – Added `onDelete` prop
+- `src/components/SortableImageGrid.tsx` – Changed from `onImageMenuClick` to `onEditCaption` and `onDelete` props, updated to use SortableImageItemWithMenu
+- `src/pages/BoardPage.tsx` – Manages `deleteImageData` state, DeleteImageDialog, and `handleDeleteSuccess` logic
+
+**Key Features:**
+- Confirmation dialog with thumbnail preview (uses `getSupabaseThumbnail` helper)
+- Delete button in both grid menu (three-dot) and lightbox actions
+- Optimistic cache updates: image removed immediately, restored on error
+- Edge case handling:
+  - Deleting last image closes lightbox
+  - Deleting current image in lightbox navigates to next (or previous if at end)
+- Owner-only delete buttons with red styling
+
+**Menu Integration Fix:**
+- Initially, three-dot menu button disappeared without opening menu
+- **Root Cause**: ImageGridItem's built-in button wasn't wrapped in DropdownMenu.Trigger
+- **Solution**: Created ImageGridItemWithMenu wrapper that:
+  1. Disables ImageGridItem's built-in button (`onMenuClick={undefined}`)
+  2. Renders own DropdownMenu.Trigger button positioned absolutely
+  3. Includes full Radix UI structure (Root → Trigger → Portal → Content)
+  4. Uses MoreVertical, Edit2, and Trash2 icons from lucide-react
+
+**Tests Added:**
+- `src/__tests__/DeleteImageDialog.test.tsx` – 14 tests covering confirmation flow, thumbnail preview, delete/cancel, success/error handling, disabled state
+
+**Known Issues:**
+- Edge Function `delete_images` exists at `supabase/functions/delete_images/index.ts` but returns 501 "Not implemented"
+- Placeholder includes auth validation but no actual deletion logic
+- **Planned for Phase 11** – Full Edge Function implementation with ownership verification, storage cleanup, and transactional database deletion
+- UI functionality is complete and working correctly
+
+---
+
+### Earlier Phases (4-6)
+
+### Phase 4 - Board Dashboard & Management ✅
+- Dashboard shell with empty states and board summaries
+- Create/Rename/Delete flows wired to Supabase board services
+- Dashboard cards surface image previews and metadata
+
+### Phase 5 - Board Page & Image Grid ✅
+- Feature-complete board page with header controls, image grid, and inline editing
+- Drag/drop and picker uploads orchestrated by `useImageUpload`
+- Upload toast overlay communicates multi-file progress
+- Global paste listener hook for clipboard uploads
+
+### Phase 6 - Drag-and-Drop Reordering ✅
+- Introduced dnd-kit sortable grid with animated drag overlay
+- Optimistic reorder pipeline with debounce-backed mutation hook
+- Tests cover drag integration, optimistic updates, debounce, and error recovery
 
 ## Earlier Implementation Details (Phases 1-3)
 
@@ -205,21 +297,31 @@ src/
 ├── components/
 │   ├── BoardCard.tsx (Phase 4 dashboard cards)
 │   ├── BoardPageHeader.tsx (Phase 5 board controls)
+│   ├── CreateBoardModal.tsx, RenameBoardDialog.tsx, DeleteBoardDialog.tsx
 │   ├── ImageDropZone.tsx (drag-and-drop uploads)
 │   ├── ImageGrid.tsx / ImageGridItem.tsx (board gallery)
+│   ├── ImageGridItemWithMenu.tsx (Phase 8.2 - wrapper with Radix dropdown)
+│   ├── SortableImageGrid.tsx, SortableImageItem.tsx, SortableImageItemWithMenu.tsx (Phase 6)
 │   ├── ImageUploadButton.tsx (file picker wrapper)
+│   ├── Lightbox.tsx (Phase 7 - full-screen viewer)
+│   ├── LightboxCaptionPanel.tsx (Phase 7.4 - desktop-only caption panel)
+│   ├── LightboxActions.tsx (Phase 7.4 - download/copy/share/delete buttons)
+│   ├── EditCaptionDialog.tsx (Phase 8.1 - caption editing with character counter)
+│   ├── DeleteImageDialog.tsx (Phase 8.2 - confirmation with thumbnail)
 │   ├── Layout.tsx, Header.tsx (global chrome)
 │   └── UploadProgressToast.tsx (multi-upload feedback)
 ├── hooks/
 │   ├── useBoards.ts, useBoard.ts (data fetching)
 │   ├── useBoardMutations.ts (create/rename/delete boards)
 │   ├── useImageUpload.tsx (orchestrates uploads + clipboard)
+│   ├── useImageMutations.ts (Phase 8.1 - edit/delete with optimistic updates)
+│   ├── useImageReorder.ts (Phase 6 - drag-and-drop reordering)
 │   ├── useClipboardPaste.ts (global paste listener)
 │   ├── useAuth.ts, useProfile.ts, useTheme.ts (context hooks)
 │   └── useUsers.ts (directory of collaborators)
 ├── pages/
 │   ├── Home.tsx (dashboard with board grid + empty states)
-│   ├── BoardPage.tsx (full board experience w/ uploads)
+│   ├── BoardPage.tsx (full board experience w/ uploads, lightbox, dialogs)
 │   ├── Staging.tsx (clipboard preview sandbox)
 │   ├── PublicBoard.tsx, ProfilePage.tsx (placeholders)
 │   ├── AuthCallback.tsx (Supabase OAuth)
@@ -230,16 +332,23 @@ src/
 │   └── profile.ts
 ├── services/
 │   ├── boards.ts (CRUD + share token)
-│   ├── images.ts (storage + metadata persistence)
+│   ├── images.ts (storage + metadata persistence + updateImage)
+│   ├── imageReorder.ts (Phase 6 - RPC wrapper)
 │   └── profiles.ts
 ├── lib/
 │   ├── supabase.ts
 │   ├── imageValidation.ts (size/type checks)
+│   ├── download.ts (Phase 7.4 - blob download utility)
+│   ├── clipboard.ts (Phase 7.4 - copy to clipboard)
 │   ├── toast.ts (shared toast helpers)
 │   └── queryClient.ts
 └── __tests__/
     ├── BoardPage.test.tsx, BoardCard.test.tsx, ImageGrid.test.tsx
     ├── useImageUpload.test.tsx, useClipboardPaste.test.tsx, BoardPagePaste.test.tsx
+    ├── SortableImageGrid.test.tsx, useImageReorder.test.tsx, imageReorder.test.ts
+    ├── LightboxCaptionPanel.test.tsx, LightboxActions.test.tsx (Phase 7.4)
+    ├── EditCaptionDialog.test.tsx (Phase 8.1)
+    ├── DeleteImageDialog.test.tsx (Phase 8.2)
     └── service & schema suites
 ```
 
@@ -262,36 +371,70 @@ src/
 
 ## Test Coverage Summary
 
-- `BoardPage.test.tsx`, `BoardCard.test.tsx`, `Home.test.tsx`: UI and data-loading behaviours for dashboard and board views.
-- `useImageUpload.test.tsx`: Queueing, concurrency, progress, and error handling for uploads.
-- `useClipboardPaste.test.tsx`, `BoardPagePaste.test.tsx`: Clipboard listener + integration of paste-to-upload.
-- Existing Phase 1-3 suites (theme, routing, schemas, services) remain green.
+**Phase 7 & 8 Tests (52 new tests):**
+- `LightboxCaptionPanel.test.tsx` – 10 tests: caption display, toggle, desktop-only visibility, edit button
+- `LightboxActions.test.tsx` – 13 tests: download, copy, share, delete, mobile detection, toast feedback
+- `EditCaptionDialog.test.tsx` – 15 tests: pre-fill, character counter, validation, trimming, optimistic updates
+- `DeleteImageDialog.test.tsx` – 14 tests: confirmation flow, thumbnail preview, success/error handling
 
-## Next Steps (Phase 6 - Drag-and-Drop Reordering)
+**Earlier Test Suites:**
+- `BoardPage.test.tsx`, `BoardCard.test.tsx`, `Home.test.tsx`: UI and data-loading behaviours
+- `useImageUpload.test.tsx`: Queueing, concurrency, progress, and error handling
+- `useClipboardPaste.test.tsx`, `BoardPagePaste.test.tsx`: Clipboard listener + integration
+- `imageReorder.test.ts`, `SortableImageGrid.test.tsx`, `useImageReorder.test.tsx`: Drag-and-drop reordering
+- Phases 1-3 suites (theme, routing, schemas, services) remain green
 
-1. Integrate `@dnd-kit` and enable basic drag-and-drop sorting within `ImageGrid`.
-2. Implement custom drag overlay + hover styling aligned with design system.
-3. Persist ordering updates via image reorder mutation / Supabase RPC.
-4. Expand tests to cover drag interactions and optimistic updates.
+**Total Test Count**: 131+ tests across all phases
+
+## Next Steps (Phase 8.3 - Bulk Selection & Bulk Delete)
+
+**Step 8.3 Requirements:**
+1. Multi-select mode with checkbox selection on hover
+2. Select all / deselect all controls
+3. Bulk delete with confirmation showing count
+4. Batch deletion via Edge Function with optimistic updates
+5. Keyboard shortcuts (Cmd/Ctrl+A for select all, Delete for bulk delete)
+6. Visual feedback for selected state
+7. Tests for selection state management and bulk operations
 
 ---
 
 ## Known Issues & Workarounds
 
-### Issue 1: Profile Upsert Hanging on SIGNED_IN Event
+### Issue 1: Edge Function delete_images Not Implemented
+**Problem**: `supabase/functions/delete_images/index.ts` returns 501 "Not implemented"
+**Status**: Placeholder exists with auth validation but no deletion logic
+**Solution**: Full implementation planned for Phase 11 with:
+- Ownership verification for all images in batch
+- Transactional deletion of storage objects and database rows
+- Proper error handling and rollback
+**Current Workaround**: UI functionality complete and working; backend will be implemented in Phase 11
+
+### Issue 2: Three-Dot Menu Not Opening in Grid (RESOLVED)
+**Problem**: Menu button disappeared without opening dropdown
+**Root Cause**: ImageGridItem's built-in button wasn't wrapped in DropdownMenu.Trigger
+**Solution**: Created ImageGridItemWithMenu wrapper that:
+- Disables ImageGridItem's built-in button (`onMenuClick={undefined}`)
+- Renders own DropdownMenu.Trigger button positioned absolutely
+- Includes full Radix UI structure (Root → Trigger → Portal → Content)
+**Status**: Resolved in Step 8.2
+
+### Issue 3: Profile Upsert Hanging on SIGNED_IN Event (RESOLVED)
 **Problem**: During OAuth callback, the `SIGNED_IN` event fires but profile upsert times out.
 **Solution**: Only upsert profile on `INITIAL_SESSION` event (when page loads with existing session), not `SIGNED_IN`.
 **Code**: `AuthContext.tsx` line 39-50
+**Status**: Resolved in Phase 1
 
-### Issue 2: Incorrect Anon Key
+### Issue 4: Incorrect Anon Key (RESOLVED)
 **Problem**: `.env` had old anon key from when project was reset.
 **Solution**: Updated to correct anon key from Supabase dashboard.
 **File**: `.env` line 3
+**Status**: Resolved in Phase 1
 
-### Issue 3: Missing RLS INSERT Policy
+### Issue 5: Missing RLS INSERT Policy (RESOLVED)
 **Problem**: Users couldn't create their own profiles.
 **Solution**: Added `profiles_self_insert` RLS policy via Supabase MCP agent.
-**Status**: Resolved
+**Status**: Resolved in Phase 1
 
 ---
 
@@ -321,9 +464,53 @@ src/
    - With the board tab focused, copy an image to the clipboard and press `Ctrl/Cmd + V`.
    - **Expected**: Success toast "Image pasted, uploading..." shows, upload pipeline mirrors file flow, listener pauses while upload is active.
 
-5. **Staging Clipboard Preview**:
-   - Open `/staging`, paste image data, and confirm previews render locally.
-   - Refresh to ensure object URLs are revoked (no memory leak warnings in console).
+5. **Drag-and-Drop Reordering (Phase 6)**:
+   - In a board with multiple images, drag an image to a new position.
+   - **Expected**: Smooth drag overlay, optimistic reorder, position persists after refresh.
+
+6. **Lightbox Navigation & Zoom (Phase 7.1-7.3)**:
+   - Click an image to open lightbox.
+   - Use arrow keys or on-screen controls to navigate between images.
+   - Use mouse wheel or pinch gestures to zoom and pan.
+   - **Desktop**: Hover over thumbnail strip to see dock-style magnification.
+   - **Mobile**: Swipe down to dismiss lightbox.
+
+7. **Lightbox Caption Panel (Phase 7.4)**:
+   - Open lightbox on an image with a caption.
+   - **Expected**: Caption panel visible on right (desktop only), toggle button works.
+   - Click toggle button to hide/show panel.
+   - **Owner**: Edit button visible, click to open edit dialog.
+
+8. **Lightbox Actions (Phase 7.4)**:
+   - In lightbox, click Download button.
+   - **Expected**: Image downloads to browser's download folder, toast confirms success.
+   - Click Copy URL button (desktop) or Share button (mobile).
+   - **Expected**: URL copied to clipboard with toast confirmation (or native share sheet on mobile).
+   - **Owner**: Delete button visible (red), click to open delete confirmation.
+
+9. **Edit Caption Flow (Phase 8.1)**:
+   - **From Grid**: Hover over image, click three-dot menu, select "Edit caption".
+   - **From Lightbox**: Click "Edit caption" button in caption panel.
+   - **Expected**: Dialog opens with pre-filled caption, character counter updates in real-time.
+   - Type to exceed 140 characters.
+   - **Expected**: Counter turns red, save button disabled.
+   - Remove characters to get below limit and save.
+   - **Expected**: Caption updates immediately (optimistic), toast confirms success.
+
+10. **Delete Image Flow (Phase 8.2)**:
+    - **From Grid**: Hover over image, click three-dot menu, select "Delete".
+    - **From Lightbox**: Click red Delete button in top-right actions.
+    - **Expected**: Confirmation dialog shows 128×128 thumbnail preview.
+    - Click "Delete image" button.
+    - **Expected**: Image removed immediately from grid (optimistic), toast shows success.
+    - **Edge Case - Last Image**: Delete the only image in a board.
+    - **Expected**: Lightbox closes automatically after deletion.
+    - **Edge Case - Current Image**: In lightbox, delete the currently viewed image.
+    - **Expected**: Lightbox navigates to next image (or previous if at end).
+
+11. **Staging Clipboard Preview**:
+    - Open `/staging`, paste image data, and confirm previews render locally.
+    - Refresh to ensure object URLs are revoked (no memory leak warnings in console).
 
 ---
 
@@ -336,6 +523,12 @@ src/
 - `@supabase/supabase-js`
 - `zod`
 - `axios`
+- `sonner` (toast notifications)
+- `@dnd-kit/*` (drag-and-drop)
+- `@use-gesture/react` (zoom & pan gestures)
+- `framer-motion` (animations)
+- `@radix-ui/*` (UI primitives)
+- `lucide-react` (icons)
 
 **Dev:**
 - `vite`
@@ -344,6 +537,7 @@ src/
 - `tailwindcss` (v4)
 - `eslint`, `typescript-eslint`
 - `vitest`, `@testing-library/react`
+- `msw` (API mocking for tests)
 
 ---
 

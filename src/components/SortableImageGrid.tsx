@@ -19,22 +19,23 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { type Image } from '@/schemas/image';
-import { SortableImageItem } from '@/components/SortableImageItem';
 import { CustomDragOverlay } from '@/components/CustomDragOverlay';
 import { useImageReorder } from '@/hooks/useImageReorder';
+import { SortableImageItemWithMenu } from '@/components/SortableImageItemWithMenu';
 
 interface SortableImageGridProps {
   boardId: string | undefined;
   images: Image[];
   onImageClick?: (image: Image) => void;
-  onImageMenuClick?: (image: Image, event: React.MouseEvent) => void;
+  onEditCaption?: (image: Image) => void;
+  onDelete?: (image: Image) => void;
 }
 
 function sortImages(images: Image[]): Image[] {
   return [...images].sort((a, b) => a.position - b.position);
 }
 
-export function SortableImageGrid({ boardId, images, onImageClick, onImageMenuClick }: SortableImageGridProps) {
+export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption, onDelete }: SortableImageGridProps) {
   const [orderedImages, setOrderedImages] = useState<Image[]>(() => sortImages(images));
   const [activeId, setActiveId] = useState<string | null>(null);
   const { queueReorder } = useImageReorder(boardId);
@@ -140,11 +141,12 @@ export function SortableImageGrid({ boardId, images, onImageClick, onImageMenuCl
       <SortableContext items={orderedImages.map((image) => image.id)} strategy={rectSortingStrategy}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {orderedImages.map((image) => (
-            <SortableImageItem
+            <SortableImageItemWithMenu
               key={image.id}
               image={image}
               onClick={onImageClick}
-              onMenuClick={onImageMenuClick}
+              onEditCaption={onEditCaption}
+              onDelete={onDelete}
             />
           ))}
         </div>

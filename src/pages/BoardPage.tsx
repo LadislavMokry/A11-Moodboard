@@ -6,6 +6,7 @@ import { BoardPageHeader } from '@/components/BoardPageHeader';
 import { SortableImageGrid } from '@/components/SortableImageGrid';
 import { Lightbox } from '@/components/Lightbox';
 import { EditCaptionDialog } from '@/components/EditCaptionDialog';
+import { DeleteImageDialog } from '@/components/DeleteImageDialog';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { useBoard } from '@/hooks/useBoard';
@@ -30,6 +31,7 @@ export default function BoardPage() {
   const { uploadImages, handlePaste, uploading, progress, accept } = useImageUpload(board?.id);
 
   const [editCaptionImage, setEditCaptionImage] = useState<Image | null>(null);
+  const [deleteImageData, setDeleteImageData] = useState<Image | null>(null);
 
   const sortedImages = useMemo(
     () => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []),
@@ -52,9 +54,24 @@ export default function BoardPage() {
     }
   };
 
-  const handleImageMenuClick = (image: Image, _event: React.MouseEvent) => {
-    // Open edit caption dialog
-    setEditCaptionImage(image);
+  const handleDeleteSuccess = () => {
+    // If lightbox is open and we deleted the current image, close or navigate
+    if (lightbox.isOpen && deleteImageData) {
+      const currentImage = sortedImages[lightbox.currentIndex];
+      if (currentImage?.id === deleteImageData.id) {
+        // If it's the last image, close lightbox
+        if (sortedImages.length === 1) {
+          lightbox.close();
+        } else {
+          // Navigate to next image (or previous if we're at the end)
+          if (lightbox.currentIndex >= sortedImages.length - 1) {
+            lightbox.goToPrev();
+          } else {
+            lightbox.goToNext();
+          }
+        }
+      }
+    }
   };
 
   const handleShareClick = () => {
@@ -151,7 +168,8 @@ export default function BoardPage() {
                 boardId={board.id}
                 images={board.images}
                 onImageClick={handleImageClick}
-                onImageMenuClick={handleImageMenuClick}
+                onEditCaption={(image) => setEditCaptionImage(image)}
+                onDelete={(image) => setDeleteImageData(image)}
               />
 
               {/* Lightbox */}
@@ -166,6 +184,7 @@ export default function BoardPage() {
                   onJumpTo={lightbox.jumpTo}
                   isOwner={isOwner}
                   onEditCaption={(image) => setEditCaptionImage(image)}
+                  onDelete={(image) => setDeleteImageData(image)}
                 />
               )}
 
@@ -181,6 +200,21 @@ export default function BoardPage() {
                   boardId={board.id}
                   imageId={editCaptionImage.id}
                   currentCaption={editCaptionImage.caption}
+                />
+              )}
+
+              {/* Delete Image Dialog */}
+              {deleteImageData && (
+                <DeleteImageDialog
+                  open={Boolean(deleteImageData)}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      setDeleteImageData(null);
+                    }
+                  }}
+                  boardId={board.id}
+                  image={deleteImageData}
+                  onDeleteSuccess={handleDeleteSuccess}
                 />
               )}
             </>

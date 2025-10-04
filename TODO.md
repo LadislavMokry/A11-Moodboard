@@ -55,19 +55,19 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ---
 
-## Phase 7: Lightbox & Image Viewing
+## Phase 7: Lightbox & Image Viewing ✅
 
 - [x] **7.1** Basic Lightbox with Navigation
 - [x] **7.2** Lightbox with Zoom & Pan (@use-gesture/react)
 - [x] **7.3** Desktop Thumbnail Strip & Mobile Gestures
-- [ ] **7.4** Lightbox Caption Panel & Actions
+- [x] **7.4** Lightbox Caption Panel & Actions
 
 ---
 
 ## Phase 8: Image Management & Captions
 
-- [ ] **8.1** Edit Caption Flow
-- [ ] **8.2** Delete Image Flow
+- [x] **8.1** Edit Caption Flow
+- [x] **8.2** Delete Image Flow
 - [ ] **8.3** Bulk Selection & Bulk Delete
 
 ---
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 23
+**Completed**: 26
 **In Progress**: 0
-**Remaining**: 29
+**Remaining**: 26
 
 ### By Phase:
 
@@ -138,8 +138,8 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 4** (Dashboard): 4/4 ✅ COMPLETE
 - **Phase 5** (Board Page): 4/4 ✅ COMPLETE
 - **Phase 6** (Drag-Drop): 2/2 ✅ COMPLETE
-- **Phase 7** (Lightbox): 3/4
-- **Phase 8** (Image Management): 0/3
+- **Phase 7** (Lightbox): 4/4 ✅ COMPLETE
+- **Phase 8** (Image Management): 2/3
 - **Phase 9** (Sharing): 0/3
 - **Phase 10** (Advanced): 0/4
 - **Phase 11** (Edge Functions): 0/4
@@ -163,17 +163,17 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Current Sprint
 
-**Active Phase**: Phase 7 - Lightbox & Image Viewing
-**Current Step**: 7.4 - Lightbox Caption Panel & Actions
+**Active Phase**: Phase 8 - Image Management & Captions
+**Current Step**: 8.3 - Bulk Selection & Bulk Delete
 
-**Phases 1-6 Complete! 🎉**
+**Phases 1-7 Complete! 🎉**
 
 **Next Up**:
 
-1. Lightbox Caption Panel & Actions
-2. Image Management (Edit Caption, Delete)
-3. Bulk Selection & Bulk Delete
-4. Public Board Sharing
+1. Bulk Selection & Bulk Delete
+2. Public Board Sharing
+3. Animated Board Covers
+4. Edge Functions Implementation
 
 **Deployment Reminder**:
 
