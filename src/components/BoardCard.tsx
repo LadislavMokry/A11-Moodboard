@@ -6,20 +6,20 @@ import { getSupabaseThumbnail } from '@/lib/imageUtils';
 import { BoardCardMenu } from './BoardCardMenu';
 import { RenameBoardDialog } from './RenameBoardDialog';
 import { DeleteBoardDialog } from './DeleteBoardDialog';
+import { RegenerateShareTokenDialog } from './RegenerateShareTokenDialog';
 import { useState } from 'react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
-type DialogState = 'rename' | 'delete' | null;
+type DialogState = 'rename' | 'delete' | 'regenerate' | null;
 
 interface BoardCardProps {
   board: BoardWithImages;
   onShare?: (boardId: string) => void;
-  onRegenerateLink?: (boardId: string) => void;
 }
 
 export function BoardCard({
   board,
   onShare,
-  onRegenerateLink,
 }: BoardCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState<DialogState>(null);
@@ -88,28 +88,29 @@ export function BoardCard({
 
       {/* Three-dot Menu Button */}
       <div className="absolute right-3 top-3">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            setMenuOpen(true);
-          }}
-          className="rounded-full bg-white/90 p-1.5 text-neutral-700 opacity-0 shadow-sm backdrop-blur-sm transition-opacity hover:bg-white group-hover:opacity-100 dark:bg-neutral-900/90 dark:text-neutral-300 dark:hover:bg-neutral-900"
-          aria-label="Board menu"
-        >
-          <MoreVertical className="h-4 w-4" />
-        </button>
+        <DropdownMenu.Root open={menuOpen} onOpenChange={setMenuOpen}>
+          <DropdownMenu.Trigger asChild>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+              className="rounded-full bg-white/90 p-1.5 text-neutral-700 opacity-0 shadow-sm backdrop-blur-sm transition-opacity hover:bg-white group-hover:opacity-100 dark:bg-neutral-900/90 dark:text-neutral-300 dark:hover:bg-neutral-900"
+              aria-label="Board menu"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </button>
+          </DropdownMenu.Trigger>
+          <BoardCardMenu
+            open={menuOpen}
+            onOpenChange={setMenuOpen}
+            onRename={() => setDialogOpen('rename')}
+            onShare={() => onShare?.(board.id)}
+            onRegenerateLink={() => setDialogOpen('regenerate')}
+            onDelete={() => setDialogOpen('delete')}
+          />
+        </DropdownMenu.Root>
       </div>
-
-      {/* Menu Dropdown */}
-      <BoardCardMenu
-        open={menuOpen}
-        onOpenChange={setMenuOpen}
-        onRename={() => setDialogOpen('rename')}
-        onShare={() => onShare?.(board.id)}
-        onRegenerateLink={() => onRegenerateLink?.(board.id)}
-        onDelete={() => setDialogOpen('delete')}
-      />
 
       {/* Rename Dialog */}
       <RenameBoardDialog
@@ -125,6 +126,14 @@ export function BoardCard({
         onOpenChange={(open) => setDialogOpen(open ? 'delete' : null)}
         boardId={board.id}
         boardName={board.name}
+      />
+
+      {/* Regenerate Share Token Dialog */}
+      <RegenerateShareTokenDialog
+        open={dialogOpen === 'regenerate'}
+        onOpenChange={(open) => setDialogOpen(open ? 'regenerate' : null)}
+        boardId={board.id}
+        currentShareToken={board.share_token}
       />
     </div>
   );

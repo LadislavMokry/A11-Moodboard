@@ -1,23 +1,21 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Share2, Edit2, RefreshCw, Trash2 } from 'lucide-react';
+import { Edit2, RefreshCw, Trash2 } from 'lucide-react';
 
-interface BoardCardMenuProps {
+interface BoardPageMenuProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onRename: () => void;
-  onShare: () => void;
   onRegenerateLink: () => void;
   onDelete: () => void;
 }
 
-export function BoardCardMenu({
+export function BoardPageMenu({
   open,
   onOpenChange,
   onRename,
-  onShare,
   onRegenerateLink,
   onDelete,
-}: BoardCardMenuProps) {
+}: BoardPageMenuProps) {
   return (
     <DropdownMenu.Portal>
       <DropdownMenu.Content
@@ -35,18 +33,6 @@ export function BoardCardMenu({
           >
             <Edit2 className="h-4 w-4" />
             <span>Rename</span>
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-            onClick={(e) => {
-              e.preventDefault();
-              onShare();
-              onOpenChange(false);
-            }}
-          >
-            <Share2 className="h-4 w-4" />
-            <span>Share</span>
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
@@ -72,7 +58,7 @@ export function BoardCardMenu({
             }}
           >
             <Trash2 className="h-4 w-4" />
-            <span>Delete</span>
+            <span>Delete board</span>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

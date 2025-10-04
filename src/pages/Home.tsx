@@ -120,10 +120,6 @@ export default function Home() {
                   });
                 }
               }}
-              onRegenerateLink={(boardId) => {
-                // TODO: Implement regenerate link
-                console.log('Regenerate link:', boardId);
-              }}
             />
           ))}
         </div>

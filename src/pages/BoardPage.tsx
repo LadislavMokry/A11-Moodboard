@@ -9,6 +9,11 @@ import { EditCaptionDialog } from '@/components/EditCaptionDialog';
 import { DeleteImageDialog } from '@/components/DeleteImageDialog';
 import { BulkDeleteDialog } from '@/components/BulkDeleteDialog';
 import { SelectionToolbar } from '@/components/SelectionToolbar';
+import { BoardPageMenu } from '@/components/BoardPageMenu';
+import { RenameBoardDialog } from '@/components/RenameBoardDialog';
+import { DeleteBoardDialog } from '@/components/DeleteBoardDialog';
+import { RegenerateShareTokenDialog } from '@/components/RegenerateShareTokenDialog';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { SelectionProvider, useSelection } from '@/contexts/SelectionContext';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -45,6 +50,10 @@ function BoardPageContent() {
   const [editCaptionImage, setEditCaptionImage] = useState<Image | null>(null);
   const [deleteImageData, setDeleteImageData] = useState<Image | null>(null);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [boardMenuOpen, setBoardMenuOpen] = useState(false);
+  const [showRenameBoardDialog, setShowRenameBoardDialog] = useState(false);
+  const [showDeleteBoardDialog, setShowDeleteBoardDialog] = useState(false);
+  const [showRegenerateTokenDialog, setShowRegenerateTokenDialog] = useState(false);
 
   const sortedImages = useMemo(
     () => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []),
@@ -129,11 +138,6 @@ function BoardPageContent() {
     console.log('Share clicked');
   };
 
-  const handleMenuClick = () => {
-    // TODO: Open board menu (rename, delete, etc.)
-    console.log('Board menu clicked');
-  };
-
   useClipboardPaste({
     enabled: Boolean(board && isOwner && !uploading),
     onPaste: (files) => {
@@ -204,14 +208,22 @@ function BoardPageContent() {
                       <Share2 className="w-4 h-4" />
                       Share
                     </Button>
-                    <Button
-                      onClick={handleMenuClick}
-                      variant="ghost"
-                      size="sm"
-                      className="px-2"
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
+                    {isOwner && (
+                      <DropdownMenu.Root open={boardMenuOpen} onOpenChange={setBoardMenuOpen}>
+                        <DropdownMenu.Trigger asChild>
+                          <Button variant="ghost" size="sm" className="px-2">
+                            <MoreVertical className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenu.Trigger>
+                        <BoardPageMenu
+                          open={boardMenuOpen}
+                          onOpenChange={setBoardMenuOpen}
+                          onRename={() => setShowRenameBoardDialog(true)}
+                          onRegenerateLink={() => setShowRegenerateTokenDialog(true)}
+                          onDelete={() => setShowDeleteBoardDialog(true)}
+                        />
+                      </DropdownMenu.Root>
+                    )}
                   </>
                 }
               />
@@ -286,6 +298,36 @@ function BoardPageContent() {
                   boardId={board.id}
                   imageIds={Array.from(selectedIds)}
                   onDeleteSuccess={handleBulkDeleteSuccess}
+                />
+              )}
+
+              {/* Rename Board Dialog */}
+              {showRenameBoardDialog && (
+                <RenameBoardDialog
+                  open={showRenameBoardDialog}
+                  onOpenChange={setShowRenameBoardDialog}
+                  boardId={board.id}
+                  currentName={board.name}
+                />
+              )}
+
+              {/* Delete Board Dialog */}
+              {showDeleteBoardDialog && (
+                <DeleteBoardDialog
+                  open={showDeleteBoardDialog}
+                  onOpenChange={setShowDeleteBoardDialog}
+                  boardId={board.id}
+                  boardName={board.name}
+                />
+              )}
+
+              {/* Regenerate Share Token Dialog */}
+              {showRegenerateTokenDialog && (
+                <RegenerateShareTokenDialog
+                  open={showRegenerateTokenDialog}
+                  onOpenChange={setShowRegenerateTokenDialog}
+                  boardId={board.id}
+                  currentShareToken={board.share_token}
                 />
               )}
             </>
