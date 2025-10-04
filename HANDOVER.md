@@ -1,8 +1,8 @@
 # Moodeight - Development Handover
 
 **Last Updated**: October 4, 2025
-**Phase Completed**: Phase 7 - Lightbox & Image Viewing ✅
-**Next Phase**: Phase 8.3 - Bulk Selection & Bulk Delete
+**Phase Completed**: Phase 10 - Advanced Features ✅
+**Next Phase**: Phase 11.1 - import_from_url Edge Function
 
 ---
 
@@ -15,7 +15,62 @@
 
 ---
 
-## Recent Highlights (Phases 7 & 8)
+## Recent Highlights (Phases 8-10)
+
+### Phase 10 - Advanced Features ✅
+
+**Step 10.4 - Bulk Move/Copy Between Boards ✅**
+
+**Files Created:**
+- `src/services/transferImages.ts` – Service function calling transfer_images Edge Function with batch size validation (max 20)
+- `src/hooks/useTransferImages.ts` – TanStack Query mutation hook with progress toast for large batches, invalidates source/dest board queries
+- `src/components/TransferImagesDialog.tsx` – Full-featured transfer dialog with searchable board list, Copy/Move radio buttons, inline "Create new board" form, navigation to destination after move
+- `src/components/TransferTarget.tsx` – Drag-to-transfer drop zone that slides in at bottom-right during selection mode with hover/drop visual feedback
+- `src/__tests__/transferImages.test.ts` – 7 tests: service layer validation, batch limits, error handling
+- `src/__tests__/TransferImagesDialog.test.tsx` – 13 tests: board selection, copy/move toggle, search, create new board flow
+
+**Files Modified:**
+- `src/components/SelectionToolbar.tsx` – Added "Move/Copy to..." button with ArrowRight icon
+- `src/pages/BoardPage.tsx` – Integrated TransferImagesDialog and TransferTarget, wired up transfer handlers
+
+**Key Features:**
+- Transfer dialog with Copy (default) and Move operations
+- Searchable board list excluding source board
+- Board thumbnails (80px) with name and description
+- Inline "Create new board" form that creates board and transfers images in one flow
+- Navigates to destination board after move operation
+- Drag-to-transfer UI with animated drop zone (AnimatePresence)
+- Batch size validation (max 20 images per spec)
+- Atomic operations (all succeed or all fail)
+- Success toast: "{count} {image/images} {copied to/moved to} {Board Name}"
+- Progress toast for large batches (>5 images)
+
+**Edge Function Integration:**
+- Calls `transfer_images` Edge Function (to be implemented in Phase 11.4)
+- Validates ownership and batch size client-side
+- Returns success/error with transferred count
+
+**Tests Added:**
+- Service tests cover batch limits (20 max), empty array validation, Edge Function errors
+- Component tests cover board selection, operation toggle, search filtering, create new board flow, loading states
+
+**Step 10.3 - Homepage Showcase Board Animation ✅** (completed previously)
+
+**Step 10.2 - Staging Area for Anonymous Users ✅** (completed previously)
+
+**Step 10.1 - Animated Board Covers (2×2 Rotating) ✅** (completed previously)
+
+---
+
+### Phase 8 - Image Management & Captions ✅
+
+**Step 8.3 - Bulk Selection & Bulk Delete ✅** (completed previously)
+
+**Step 8.2 - Delete Image Flow ✅** (completed previously)
+
+**Step 8.1 - Edit Caption Flow ✅** (completed previously)
+
+---
 
 ### Phase 7 - Lightbox & Image Viewing ✅
 
@@ -308,6 +363,10 @@ src/
 │   ├── LightboxActions.tsx (Phase 7.4 - download/copy/share/delete buttons)
 │   ├── EditCaptionDialog.tsx (Phase 8.1 - caption editing with character counter)
 │   ├── DeleteImageDialog.tsx (Phase 8.2 - confirmation with thumbnail)
+│   ├── BulkDeleteDialog.tsx (Phase 8.3 - bulk delete confirmation)
+│   ├── SelectionToolbar.tsx (Phase 8.3/10.4 - bulk actions toolbar)
+│   ├── TransferImagesDialog.tsx (Phase 10.4 - move/copy between boards)
+│   ├── TransferTarget.tsx (Phase 10.4 - drag-to-transfer drop zone)
 │   ├── Layout.tsx, Header.tsx (global chrome)
 │   └── UploadProgressToast.tsx (multi-upload feedback)
 ├── hooks/
@@ -316,6 +375,7 @@ src/
 │   ├── useImageUpload.tsx (orchestrates uploads + clipboard)
 │   ├── useImageMutations.ts (Phase 8.1 - edit/delete with optimistic updates)
 │   ├── useImageReorder.ts (Phase 6 - drag-and-drop reordering)
+│   ├── useTransferImages.ts (Phase 10.4 - move/copy mutation)
 │   ├── useClipboardPaste.ts (global paste listener)
 │   ├── useAuth.ts, useProfile.ts, useTheme.ts (context hooks)
 │   └── useUsers.ts (directory of collaborators)
@@ -334,7 +394,12 @@ src/
 │   ├── boards.ts (CRUD + share token)
 │   ├── images.ts (storage + metadata persistence + updateImage)
 │   ├── imageReorder.ts (Phase 6 - RPC wrapper)
+│   ├── transferImages.ts (Phase 10.4 - move/copy service)
 │   └── profiles.ts
+├── contexts/
+│   ├── AuthContext.tsx
+│   ├── ThemeContext.tsx
+│   └── SelectionContext.tsx (Phase 8.3 - bulk selection state)
 ├── lib/
 │   ├── supabase.ts
 │   ├── imageValidation.ts (size/type checks)
@@ -349,6 +414,7 @@ src/
     ├── LightboxCaptionPanel.test.tsx, LightboxActions.test.tsx (Phase 7.4)
     ├── EditCaptionDialog.test.tsx (Phase 8.1)
     ├── DeleteImageDialog.test.tsx (Phase 8.2)
+    ├── transferImages.test.ts, TransferImagesDialog.test.tsx (Phase 10.4)
     └── service & schema suites
 ```
 
@@ -371,7 +437,11 @@ src/
 
 ## Test Coverage Summary
 
-**Phase 7 & 8 Tests (52 new tests):**
+**Phase 10 Tests (20 new tests):**
+- `transferImages.test.ts` – 7 tests: service layer validation, batch limits (20 max), Edge Function errors, empty array handling
+- `TransferImagesDialog.test.tsx` – 13 tests: board selection, copy/move toggle, search filtering, create new board flow, loading states
+
+**Phase 7 & 8 Tests (52 tests):**
 - `LightboxCaptionPanel.test.tsx` – 10 tests: caption display, toggle, desktop-only visibility, edit button
 - `LightboxActions.test.tsx` – 13 tests: download, copy, share, delete, mobile detection, toast feedback
 - `EditCaptionDialog.test.tsx` – 15 tests: pre-fill, character counter, validation, trimming, optimistic updates
@@ -384,31 +454,48 @@ src/
 - `imageReorder.test.ts`, `SortableImageGrid.test.tsx`, `useImageReorder.test.tsx`: Drag-and-drop reordering
 - Phases 1-3 suites (theme, routing, schemas, services) remain green
 
-**Total Test Count**: 131+ tests across all phases
+**Total Test Count**: 151+ tests across all phases
 
-## Next Steps (Phase 8.3 - Bulk Selection & Bulk Delete)
+## Next Steps (Phase 11 - Supabase Edge Functions)
 
-**Step 8.3 Requirements:**
-1. Multi-select mode with checkbox selection on hover
-2. Select all / deselect all controls
-3. Bulk delete with confirmation showing count
-4. Batch deletion via Edge Function with optimistic updates
-5. Keyboard shortcuts (Cmd/Ctrl+A for select all, Delete for bulk delete)
-6. Visual feedback for selected state
-7. Tests for selection state management and bulk operations
+**Phase 11.1 - import_from_url Edge Function Requirements:**
+1. JWT verification and user ID extraction
+2. Request body validation: boardId (uuid), url (valid URL)
+3. Ownership check: verify user owns the board
+4. URL validation: HEAD request for Content-Type and Content-Length
+5. Size/type validation: ≤10MB, mime type image/* (jpg, png, webp, gif)
+6. Download image as ArrayBuffer
+7. Upload to Storage: boards/{boardId}/{uuid}.{ext}
+8. Insert image row via add_image_at_top RPC
+9. Error handling: 400 (invalid), 403 (ownership), 413 (size), 415 (type), 500 (server)
+10. Deno tests with mocked fetch calls
+
+**Remaining Phase 11 Steps:**
+- 11.2: delete_images Edge Function (batch delete with storage cleanup)
+- 11.3: delete_board Edge Function (transactional deletion)
+- 11.4: transfer_images Edge Function (move/copy between boards)
 
 ---
 
 ## Known Issues & Workarounds
 
-### Issue 1: Edge Function delete_images Not Implemented
-**Problem**: `supabase/functions/delete_images/index.ts` returns 501 "Not implemented"
-**Status**: Placeholder exists with auth validation but no deletion logic
+### Issue 1: Edge Functions Not Yet Implemented
+**Problem**: Several Edge Functions referenced by the UI return 501 "Not implemented"
+**Status**: Placeholders exist with auth validation but no business logic
+
+**Functions Pending Implementation (Phase 11):**
+1. **import_from_url** (Phase 11.1) – Server-side image importing from URLs
+2. **delete_images** (Phase 11.2) – Batch delete with storage cleanup
+3. **delete_board** (Phase 11.3) – Transactional board deletion
+4. **transfer_images** (Phase 11.4) – Move/copy images between boards
+
 **Solution**: Full implementation planned for Phase 11 with:
-- Ownership verification for all images in batch
+- Ownership verification for all operations
 - Transactional deletion of storage objects and database rows
 - Proper error handling and rollback
-**Current Workaround**: UI functionality complete and working; backend will be implemented in Phase 11
+- Deno tests for each function
+
+**Current Status**: UI functionality complete and working; backend will be implemented in Phase 11
 
 ### Issue 2: Three-Dot Menu Not Opening in Grid (RESOLVED)
 **Problem**: Menu button disappeared without opening dropdown

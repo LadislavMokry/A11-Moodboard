@@ -80,12 +80,12 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ---
 
-## Phase 10: Advanced Features
+## Phase 10: Advanced Features ✅
 
 - [x] **10.1** Animated Board Covers (2×2 Rotating)
 - [x] **10.2** Staging Area for Anonymous Users
 - [x] **10.3** Homepage Showcase Board Animation
-- [ ] **10.4** Bulk Move/Copy Between Boards
+- [x] **10.4** Bulk Move/Copy Between Boards
 
 ---
 
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 31
+**Completed**: 32
 **In Progress**: 0
-**Remaining**: 21
+**Remaining**: 20
 
 ### By Phase:
 
@@ -141,7 +141,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 7** (Lightbox): 4/4 ✅ COMPLETE
 - **Phase 8** (Image Management): 3/3 ✅ COMPLETE
 - **Phase 9** (Sharing): 3/3 ✅ COMPLETE
-- **Phase 10** (Advanced): 3/4
+- **Phase 10** (Advanced): 4/4 ✅ COMPLETE
 - **Phase 11** (Edge Functions): 0/4
 - **Phase 12** (Deployment): 0/3
 - **Phase 13** (Polish): 0/4
@@ -163,16 +163,17 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Current Sprint
 
-**Active Phase**: Phase 10 - Advanced Features
-**Current Step**: 10.1 - Animated Board Covers
+**Active Phase**: Phase 11 - Supabase Edge Functions
+**Current Step**: 11.1 - import_from_url Edge Function
 
-**Phases 1-9 Complete! 🎉**
+**Phases 1-10 Complete! 🎉**
 
 **Next Up**:
 
-1. Animated Board Covers (2×2 Rotating)
-2. Staging Area for Anonymous Users
-3. Edge Functions Implementation
+1. import_from_url Edge Function (Server-side image importing)
+2. delete_images Edge Function (Batch delete with storage cleanup)
+3. delete_board Edge Function (Transactional board deletion)
+4. transfer_images Edge Function (Move/copy images between boards)
 
 **Deployment Reminder**:
 
