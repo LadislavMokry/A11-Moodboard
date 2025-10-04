@@ -1,12 +1,13 @@
-import { Trash2, X } from 'lucide-react';
+import { Trash2, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSelection } from '@/contexts/SelectionContext';
 
 interface SelectionToolbarProps {
   onDelete: () => void;
+  onTransfer: () => void;
 }
 
-export function SelectionToolbar({ onDelete }: SelectionToolbarProps) {
+export function SelectionToolbar({ onDelete, onTransfer }: SelectionToolbarProps) {
   const { selectedIds, deselectAll, exitSelectionMode } = useSelection();
 
   const selectedCount = selectedIds.size;
@@ -29,6 +30,16 @@ export function SelectionToolbar({ onDelete }: SelectionToolbarProps) {
           className="text-white hover:bg-neutral-800 dark:hover:bg-neutral-700"
         >
           Deselect all
+        </Button>
+
+        <Button
+          onClick={onTransfer}
+          variant="ghost"
+          size="sm"
+          className="text-white hover:bg-neutral-800 dark:hover:bg-neutral-700"
+        >
+          <ArrowRight className="w-4 h-4 mr-2" />
+          Move/Copy to...
         </Button>
 
         <Button

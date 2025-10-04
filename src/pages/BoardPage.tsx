@@ -9,6 +9,8 @@ import { EditCaptionDialog } from '@/components/EditCaptionDialog';
 import { DeleteImageDialog } from '@/components/DeleteImageDialog';
 import { BulkDeleteDialog } from '@/components/BulkDeleteDialog';
 import { SelectionToolbar } from '@/components/SelectionToolbar';
+import { TransferImagesDialog } from '@/components/TransferImagesDialog';
+import { TransferTarget } from '@/components/TransferTarget';
 import { BoardPageMenu } from '@/components/BoardPageMenu';
 import { RenameBoardDialog } from '@/components/RenameBoardDialog';
 import { DeleteBoardDialog } from '@/components/DeleteBoardDialog';
@@ -50,6 +52,7 @@ function BoardPageContent() {
   const [editCaptionImage, setEditCaptionImage] = useState<Image | null>(null);
   const [deleteImageData, setDeleteImageData] = useState<Image | null>(null);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
   const [boardMenuOpen, setBoardMenuOpen] = useState(false);
   const [showRenameBoardDialog, setShowRenameBoardDialog] = useState(false);
   const [showDeleteBoardDialog, setShowDeleteBoardDialog] = useState(false);
@@ -103,6 +106,12 @@ function BoardPageContent() {
 
   const handleBulkDeleteSuccess = () => {
     exitSelectionMode();
+  };
+
+  const handleTransfer = () => {
+    if (selectedIds.size > 0) {
+      setShowTransferDialog(true);
+    }
   };
 
   const handleToggleSelection = (imageId: string) => {
@@ -241,8 +250,14 @@ function BoardPageContent() {
 
               {/* Selection Toolbar */}
               {selectionMode && selectedIds.size > 0 && (
-                <SelectionToolbar onDelete={handleBulkDelete} />
+                <SelectionToolbar onDelete={handleBulkDelete} onTransfer={handleTransfer} />
               )}
+
+              {/* Transfer Target (drag-to-transfer) */}
+              <TransferTarget
+                show={selectionMode && selectedIds.size > 0}
+                onDrop={handleTransfer}
+              />
 
               {/* Lightbox */}
               {lightbox.isOpen && sortedImages.length > 0 && (
@@ -298,6 +313,16 @@ function BoardPageContent() {
                   boardId={board.id}
                   imageIds={Array.from(selectedIds)}
                   onDeleteSuccess={handleBulkDeleteSuccess}
+                />
+              )}
+
+              {/* Transfer Images Dialog */}
+              {showTransferDialog && (
+                <TransferImagesDialog
+                  open={showTransferDialog}
+                  onOpenChange={setShowTransferDialog}
+                  imageIds={Array.from(selectedIds)}
+                  sourceBoardId={board.id}
                 />
               )}
 
