@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
-export function SignInButton() {
+interface SignInButtonProps {
+  className?: string;
+}
+
+export function SignInButton({ className }: SignInButtonProps) {
   const { signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +26,7 @@ export function SignInButton() {
       <button
         onClick={handleSignIn}
         disabled={loading}
-        className="rounded-lg bg-violet-600 px-6 py-3 font-medium text-white transition-colors hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`rounded-lg bg-violet-600 px-6 py-3 font-medium text-white transition-colors hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed ${className ?? ''}`}
       >
         {loading ? 'Signing in...' : 'Sign in with Google'}
       </button>

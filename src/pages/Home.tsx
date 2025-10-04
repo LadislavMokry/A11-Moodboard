@@ -43,19 +43,24 @@ export default function Home() {
   if (!user) {
     return (
       <Layout>
-        <section className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-10">
-          <div className="text-center space-y-4">
-            <h1 className="text-5xl font-bold tracking-tight">Moodeight</h1>
-            <p className="text-lg text-neutral-600 dark:text-neutral-300">
-              Collect, arrange, and share your visual inspiration
+        <section className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-12 px-4">
+          <div className="max-w-3xl text-center space-y-6">
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
+              Capture your vibe.
+            </h1>
+            <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+              Drop images and arrange them into living moodboards. Share instantly with a single link.
             </p>
           </div>
-          <EmptyState
-            icon={<Sparkles className="h-12 w-12" />}
-            title="Sign in to start moodboarding"
-            description="Bring your ideas to life by creating boards in seconds."
-            action={<SignInButton />}
-          />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={() => navigate('/staging')}
+              className="rounded-lg bg-violet-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-violet-700"
+            >
+              Create a board
+            </button>
+            <SignInButton />
+          </div>
         </section>
       </Layout>
     );
