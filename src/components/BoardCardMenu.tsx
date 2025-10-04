@@ -1,5 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Share2, Edit2, RefreshCw, Trash2 } from 'lucide-react';
+import { Share2, Edit2, RefreshCw, Trash2, Image, RotateCw } from 'lucide-react';
 
 interface BoardCardMenuProps {
   open: boolean;
@@ -8,6 +8,9 @@ interface BoardCardMenuProps {
   onShare: () => void;
   onRegenerateLink: () => void;
   onDelete: () => void;
+  onEditCover: () => void;
+  onToggleRotation: () => void;
+  rotationEnabled: boolean;
 }
 
 export function BoardCardMenu({
@@ -17,6 +20,9 @@ export function BoardCardMenu({
   onShare,
   onRegenerateLink,
   onDelete,
+  onEditCover,
+  onToggleRotation,
+  rotationEnabled,
 }: BoardCardMenuProps) {
   return (
     <DropdownMenu.Portal>
@@ -36,6 +42,32 @@ export function BoardCardMenu({
             <Edit2 className="h-4 w-4" />
             <span>Rename</span>
           </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+            onClick={(e) => {
+              e.preventDefault();
+              onEditCover();
+              onOpenChange(false);
+            }}
+          >
+            <Image className="h-4 w-4" />
+            <span>Edit cover</span>
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+            onClick={(e) => {
+              e.preventDefault();
+              onToggleRotation();
+              onOpenChange(false);
+            }}
+          >
+            <RotateCw className="h-4 w-4" />
+            <span>{rotationEnabled ? 'Disable' : 'Enable'} rotation</span>
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Separator className="my-1 h-px bg-neutral-200 dark:bg-neutral-800" />
 
           <DropdownMenu.Item
             className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"

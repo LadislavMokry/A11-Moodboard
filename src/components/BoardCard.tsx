@@ -1,16 +1,19 @@
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { MoreVertical, Image as ImageIcon } from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 import { type BoardWithImages } from '@/schemas/boardWithImages';
-import { getSupabaseThumbnail } from '@/lib/imageUtils';
 import { BoardCardMenu } from './BoardCardMenu';
 import { RenameBoardDialog } from './RenameBoardDialog';
 import { DeleteBoardDialog } from './DeleteBoardDialog';
 import { RegenerateShareTokenDialog } from './RegenerateShareTokenDialog';
+import { EditCoverDialog } from './EditCoverDialog';
+import { RotatingBoardCover } from './RotatingBoardCover';
 import { useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { useUpdateBoard } from '@/hooks/useBoardMutations';
+import { toast } from 'sonner';
 
-type DialogState = 'rename' | 'delete' | 'regenerate' | null;
+type DialogState = 'rename' | 'delete' | 'regenerate' | 'editCover' | null;
 
 interface BoardCardProps {
   board: BoardWithImages;
@@ -23,20 +26,27 @@ export function BoardCard({
 }: BoardCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState<DialogState>(null);
+  const updateBoard = useUpdateBoard();
 
-  const images = board.images.slice(0, 4);
   const imageCount = board.images.length;
   const lastUpdated = formatDistanceToNow(new Date(board.updated_at), { addSuffix: true });
 
-  const thumbnails = images.map((img) => ({
-    src: getSupabaseThumbnail(img.storage_path, 360),
-    alt: img.caption || board.name,
-  }));
-
-  // Fill empty slots if less than 4 images
-  while (thumbnails.length < 4) {
-    thumbnails.push({ src: '', alt: '' });
-  }
+  const handleToggleRotation = async () => {
+    try {
+      await updateBoard.mutateAsync({
+        boardId: board.id,
+        updates: {
+          cover_rotation_enabled: !board.cover_rotation_enabled,
+        },
+      });
+      toast.success(
+        board.cover_rotation_enabled ? 'Rotation disabled' : 'Rotation enabled'
+      );
+    } catch (error) {
+      console.error('Failed to toggle rotation:', error);
+      toast.error('Failed to update rotation setting');
+    }
+  };
 
   return (
     <div className="group relative">
@@ -44,32 +54,12 @@ export function BoardCard({
         to={`/boards/${board.id}`}
         className="block overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-all hover:scale-[1.02] hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900"
       >
-        {/* Thumbnail Grid */}
-        <div className="grid aspect-square grid-cols-2 gap-1 bg-neutral-100 p-1 dark:bg-neutral-800">
-          {imageCount === 0 ? (
-            <div className="col-span-2 row-span-2 flex items-center justify-center">
-              <ImageIcon className="h-16 w-16 text-neutral-300 dark:text-neutral-600" />
-            </div>
-          ) : (
-            thumbnails.map((thumb, index) => (
-              <div
-                key={index}
-                className="relative aspect-square overflow-hidden rounded-lg bg-neutral-200 dark:bg-neutral-700"
-              >
-                {thumb.src ? (
-                  <img
-                    src={thumb.src}
-                    alt={thumb.alt}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="h-full w-full bg-neutral-200 dark:bg-neutral-700" />
-                )}
-              </div>
-            ))
-          )}
-        </div>
+        {/* Rotating Board Cover */}
+        <RotatingBoardCover
+          images={board.images}
+          boardName={board.name}
+          rotationEnabled={board.cover_rotation_enabled}
+        />
 
         {/* Card Info */}
         <div className="p-4">
@@ -108,6 +98,9 @@ export function BoardCard({
             onShare={() => onShare?.(board.id)}
             onRegenerateLink={() => setDialogOpen('regenerate')}
             onDelete={() => setDialogOpen('delete')}
+            onEditCover={() => setDialogOpen('editCover')}
+            onToggleRotation={handleToggleRotation}
+            rotationEnabled={board.cover_rotation_enabled}
           />
         </DropdownMenu.Root>
       </div>
@@ -134,6 +127,13 @@ export function BoardCard({
         onOpenChange={(open) => setDialogOpen(open ? 'regenerate' : null)}
         boardId={board.id}
         currentShareToken={board.share_token}
+      />
+
+      {/* Edit Cover Dialog */}
+      <EditCoverDialog
+        open={dialogOpen === 'editCover'}
+        onOpenChange={(open) => setDialogOpen(open ? 'editCover' : null)}
+        board={board}
       />
     </div>
   );
