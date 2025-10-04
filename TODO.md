@@ -91,10 +91,10 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Phase 11: Supabase Edge Functions (Backend)
 
-- [ ] **11.1** import_from_url Edge Function
-- [ ] **11.2** delete_images Edge Function
-- [ ] **11.3** delete_board Edge Function
-- [ ] **11.4** transfer_images Edge Function
+- [x] **11.1** import_from_url Edge Function
+- [x] **11.2** delete_images Edge Function
+- [x] **11.3** delete_board Edge Function
+- [x] **11.4** transfer_images Edge Function
 
 ---
 
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 32
+**Completed**: 36
 **In Progress**: 0
-**Remaining**: 20
+**Remaining**: 16
 
 ### By Phase:
 
@@ -142,7 +142,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 8** (Image Management): 3/3 ✅ COMPLETE
 - **Phase 9** (Sharing): 3/3 ✅ COMPLETE
 - **Phase 10** (Advanced): 4/4 ✅ COMPLETE
-- **Phase 11** (Edge Functions): 0/4
+- **Phase 11** (Edge Functions): 4/4 ✅ COMPLETE
 - **Phase 12** (Deployment): 0/3
 - **Phase 13** (Polish): 0/4
 - **Phase 14** (Testing): 0/3
@@ -163,17 +163,16 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Current Sprint
 
-**Active Phase**: Phase 11 - Supabase Edge Functions
-**Current Step**: 11.1 - import_from_url Edge Function
+**Active Phase**: Phase 12 - Deployment & SSR
+**Current Step**: 12.1 - OG Meta Tags SSR
 
-**Phases 1-10 Complete! 🎉**
+**Phases 1-11 Complete! 🎉**
 
 **Next Up**:
 
-1. import_from_url Edge Function (Server-side image importing)
-2. delete_images Edge Function (Batch delete with storage cleanup)
-3. delete_board Edge Function (Transactional board deletion)
-4. transfer_images Edge Function (Move/copy images between boards)
+1. OG Meta Tags SSR (Server-side rendering for public board sharing)
+2. Dynamic OG Image Generation (1200×630 preview images)
+3. Cloudflare Pages deployment configuration
 
 **Deployment Reminder**:
 
