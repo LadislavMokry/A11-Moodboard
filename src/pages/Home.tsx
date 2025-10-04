@@ -11,6 +11,7 @@ import { SignInButton } from '@/components/SignInButton';
 import { BoardCard } from '@/components/BoardCard';
 import { ShareDialog } from '@/components/ShareDialog';
 import { getPublicBoardUrl } from '@/lib/shareUtils';
+import { ShowcaseBoard } from '@/components/ShowcaseBoard';
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -43,23 +44,36 @@ export default function Home() {
   if (!user) {
     return (
       <Layout>
-        <section className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-12 px-4">
-          <div className="max-w-3xl text-center space-y-6">
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
-              Capture your vibe.
-            </h1>
-            <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-              Drop images and arrange them into living moodboards. Share instantly with a single link.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button
-              onClick={() => navigate('/staging')}
-              className="rounded-lg bg-violet-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-violet-700"
-            >
-              Create a board
-            </button>
-            <SignInButton />
+        <section className="min-h-[calc(100vh-4rem)] px-4 py-8 md:py-12">
+          {/* Desktop: Two-column layout | Mobile: Single column with hero on top */}
+          <div className="mx-auto flex h-full max-w-7xl flex-col gap-8 md:flex-row md:gap-12">
+            {/* Hero Content - Right on desktop, top on mobile */}
+            <div className="flex flex-col items-center justify-center gap-8 text-center md:order-2 md:w-1/3">
+              <div className="space-y-6">
+                <h1 className="text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-5xl">
+                  Capture your vibe.
+                </h1>
+                <p className="text-base text-neutral-600 dark:text-neutral-300 md:text-lg">
+                  Drop images and arrange them into living moodboards. Share instantly with a single link.
+                </p>
+              </div>
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <button
+                  onClick={() => navigate('/staging')}
+                  className="rounded-lg bg-violet-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-violet-700"
+                >
+                  Create a board
+                </button>
+                <SignInButton />
+              </div>
+            </div>
+
+            {/* Showcase Board - Left on desktop, bottom on mobile */}
+            <div className="flex-1 md:order-1 md:w-2/3">
+              <div className="h-[600px] md:h-full">
+                <ShowcaseBoard />
+              </div>
+            </div>
           </div>
         </section>
       </Layout>

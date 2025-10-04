@@ -1,0 +1,62 @@
+/* Showcase Board Animation Styles */
+
+/* Keyframes for vertical drift animation */
+@keyframes showcase-drift-up {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-24px);
+  }
+}
+
+@keyframes showcase-drift-down {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(24px);
+  }
+}
+
+/* Column animations with stagger */
+.showcase-column-1 {
+  animation: showcase-drift-up 8s ease-in-out infinite;
+}
+
+.showcase-column-2 {
+  animation: showcase-drift-down 8s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.showcase-column-3 {
+  animation: showcase-drift-up 8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+/* Pause animation on hover */
+.showcase-board:hover .showcase-column-1,
+.showcase-board:hover .showcase-column-2,
+.showcase-board:hover .showcase-column-3 {
+  animation-play-state: paused;
+}
+
+/* Disable animations for reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .showcase-column-1,
+  .showcase-column-2,
+  .showcase-column-3 {
+    animation: none;
+  }
+}
+
+/* Disable animations on mobile */
+@media (max-width: 768px) {
+  .showcase-column-1,
+  .showcase-column-2,
+  .showcase-column-3 {
+    animation: none;
+  }
+}
