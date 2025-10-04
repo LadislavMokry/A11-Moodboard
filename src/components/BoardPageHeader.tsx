@@ -3,8 +3,10 @@ import { ArrowLeft, CheckSquare, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { EditableText, type EditableTextHandle } from '@/components/EditableText';
+import { ShareButton } from '@/components/ShareButton';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
 import { type BoardWithImages } from '@/schemas/boardWithImages';
+import { getPublicBoardUrl } from '@/lib/shareUtils';
 
 interface BoardPageHeaderProps {
   board: BoardWithImages;
@@ -28,6 +30,7 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
   );
 
   const imageCount = board.images.length;
+  const shareUrl = getPublicBoardUrl(board.share_token);
 
   const handleNameSave = useCallback(
     async (newName: string) => {
@@ -107,6 +110,13 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
         </div>
 
         <div className="flex flex-shrink-0 items-center gap-2">
+          <ShareButton
+            url={shareUrl}
+            title={board.name}
+            text={board.description || undefined}
+            variant="ghost"
+            size="sm"
+          />
           {onSelectClick && (
             <Button
               onClick={onSelectClick}

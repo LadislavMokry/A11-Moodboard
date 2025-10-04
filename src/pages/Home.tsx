@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { Layout } from '@/components/Layout';
@@ -9,10 +9,13 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { EmptyState } from '@/components/EmptyState';
 import { SignInButton } from '@/components/SignInButton';
 import { BoardCard } from '@/components/BoardCard';
+import { ShareDialog } from '@/components/ShareDialog';
+import { getPublicBoardUrl } from '@/lib/shareUtils';
 
 export default function Home() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [shareDialogBoard, setShareDialogBoard] = useState<{ id: string; name: string; shareToken: string } | null>(null);
   const {
     data: boards,
     isLoading: boardsLoading,
@@ -108,8 +111,14 @@ export default function Home() {
               key={board.id}
               board={board}
               onShare={(boardId) => {
-                // TODO: Implement share functionality
-                console.log('Share board:', boardId);
+                const targetBoard = boards.find(b => b.id === boardId);
+                if (targetBoard) {
+                  setShareDialogBoard({
+                    id: targetBoard.id,
+                    name: targetBoard.name,
+                    shareToken: targetBoard.share_token,
+                  });
+                }
               }}
               onRegenerateLink={(boardId) => {
                 // TODO: Implement regenerate link
@@ -118,6 +127,16 @@ export default function Home() {
             />
           ))}
         </div>
+
+        {/* Share Dialog */}
+        {shareDialogBoard && (
+          <ShareDialog
+            open={!!shareDialogBoard}
+            onOpenChange={(open) => !open && setShareDialogBoard(null)}
+            url={getPublicBoardUrl(shareDialogBoard.shareToken)}
+            title={shareDialogBoard.name}
+          />
+        )}
       </section>
     </Layout>
   );

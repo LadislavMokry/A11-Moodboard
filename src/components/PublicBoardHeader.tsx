@@ -1,9 +1,8 @@
-import { useMemo, useState } from 'react';
-import { Link2, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { useMemo } from 'react';
 import { type BoardWithImages } from '@/schemas/boardWithImages';
 import { type PublicBoardOwner } from '@/schemas/publicBoard';
+import { ShareButton } from '@/components/ShareButton';
+import { getPublicBoardUrl } from '@/lib/shareUtils';
 
 interface PublicBoardHeaderProps {
   board: BoardWithImages;
@@ -11,8 +10,6 @@ interface PublicBoardHeaderProps {
 }
 
 export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
-  const [copied, setCopied] = useState(false);
-
   const lastUpdated = useMemo(
     () =>
       new Date(board.updated_at).toLocaleDateString('en-US', {
@@ -25,17 +22,7 @@ export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
 
   const imageCount = board.images.length;
   const ownerDisplayName = owner.display_name || 'Anonymous';
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      toast.success('Link copied to clipboard');
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast.error('Failed to copy link');
-    }
-  };
+  const shareUrl = getPublicBoardUrl(board.share_token);
 
   return (
     <header className="mb-8">
@@ -74,24 +61,14 @@ export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
 
         {/* Share button */}
         <div className="flex flex-shrink-0 items-center gap-2">
-          <Button
-            onClick={handleCopyLink}
+          <ShareButton
+            url={shareUrl}
+            title={board.name}
+            text={board.description || undefined}
             variant="outline"
             size="sm"
             className="gap-2"
-          >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Link2 className="w-4 h-4" />
-                Copy Link
-              </>
-            )}
-          </Button>
+          />
         </div>
       </div>
 
