@@ -64,11 +64,11 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ---
 
-## Phase 8: Image Management & Captions
+## Phase 8: Image Management & Captions ✅
 
 - [x] **8.1** Edit Caption Flow
 - [x] **8.2** Delete Image Flow
-- [ ] **8.3** Bulk Selection & Bulk Delete
+- [x] **8.3** Bulk Selection & Bulk Delete
 
 ---
 
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 26
+**Completed**: 27
 **In Progress**: 0
-**Remaining**: 26
+**Remaining**: 25
 
 ### By Phase:
 
@@ -139,7 +139,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 5** (Board Page): 4/4 ✅ COMPLETE
 - **Phase 6** (Drag-Drop): 2/2 ✅ COMPLETE
 - **Phase 7** (Lightbox): 4/4 ✅ COMPLETE
-- **Phase 8** (Image Management): 2/3
+- **Phase 8** (Image Management): 3/3 ✅ COMPLETE
 - **Phase 9** (Sharing): 0/3
 - **Phase 10** (Advanced): 0/4
 - **Phase 11** (Edge Functions): 0/4
@@ -163,17 +163,17 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Current Sprint
 
-**Active Phase**: Phase 8 - Image Management & Captions
-**Current Step**: 8.3 - Bulk Selection & Bulk Delete
+**Active Phase**: Phase 9 - Public Board Sharing
+**Current Step**: 9.1 - Public Board View (Read-Only)
 
-**Phases 1-7 Complete! 🎉**
+**Phases 1-8 Complete! 🎉**
 
 **Next Up**:
 
-1. Bulk Selection & Bulk Delete
-2. Public Board Sharing
-3. Animated Board Covers
-4. Edge Functions Implementation
+1. Public Board View (Read-Only)
+2. Share Button & Copy Link
+3. Regenerate Share Link
+4. Animated Board Covers
 
 **Deployment Reminder**:
 

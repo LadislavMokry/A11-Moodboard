@@ -17,6 +17,9 @@ interface ImageGridItemWithMenuProps {
   className?: string;
   isDragging?: boolean;
   dataTestId?: string;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelection?: () => void;
 }
 
 export function ImageGridItemWithMenu({
@@ -31,6 +34,9 @@ export function ImageGridItemWithMenu({
   className,
   isDragging = false,
   dataTestId,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelection,
 }: ImageGridItemWithMenuProps) {
   return (
     <DropdownMenu.Root>
@@ -46,21 +52,26 @@ export function ImageGridItemWithMenu({
           className={className}
           isDragging={isDragging}
           dataTestId={dataTestId}
+          selectionMode={selectionMode}
+          isSelected={isSelected}
+          onToggleSelection={onToggleSelection}
         />
 
-        {/* Render our own menu trigger button */}
-        <DropdownMenu.Trigger asChild>
-          <button
-            className="absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 opacity-0 group-hover:opacity-100"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            aria-label="Image options"
-            style={{ zIndex: 10 }}
-          >
-            <MoreVertical className="w-4 h-4 text-white" />
-          </button>
-        </DropdownMenu.Trigger>
+        {/* Render our own menu trigger button (hidden in selection mode) */}
+        {!selectionMode && (
+          <DropdownMenu.Trigger asChild>
+            <button
+              className="absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 opacity-0 group-hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              aria-label="Image options"
+              style={{ zIndex: 10 }}
+            >
+              <MoreVertical className="w-4 h-4 text-white" />
+            </button>
+          </DropdownMenu.Trigger>
+        )}
       </div>
 
       <DropdownMenu.Portal>

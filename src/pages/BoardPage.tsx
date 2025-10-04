@@ -7,6 +7,9 @@ import { SortableImageGrid } from '@/components/SortableImageGrid';
 import { Lightbox } from '@/components/Lightbox';
 import { EditCaptionDialog } from '@/components/EditCaptionDialog';
 import { DeleteImageDialog } from '@/components/DeleteImageDialog';
+import { BulkDeleteDialog } from '@/components/BulkDeleteDialog';
+import { SelectionToolbar } from '@/components/SelectionToolbar';
+import { SelectionProvider, useSelection } from '@/contexts/SelectionContext';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { useBoard } from '@/hooks/useBoard';
@@ -24,14 +27,23 @@ type BoardRouteParams = {
   boardId: string;
 };
 
-export default function BoardPage() {
+function BoardPageContent() {
   const { boardId } = useParams<BoardRouteParams>();
   const { user } = useAuth();
   const { data: board, isLoading, error } = useBoard(boardId);
   const { uploadImages, handlePaste, uploading, progress, accept } = useImageUpload(board?.id);
+  const {
+    selectionMode,
+    selectedIds,
+    toggleSelection,
+    selectAll,
+    enterSelectionMode,
+    exitSelectionMode,
+  } = useSelection();
 
   const [editCaptionImage, setEditCaptionImage] = useState<Image | null>(null);
   const [deleteImageData, setDeleteImageData] = useState<Image | null>(null);
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
 
   const sortedImages = useMemo(
     () => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []),
@@ -48,10 +60,40 @@ export default function BoardPage() {
   );
 
   const handleImageClick = (image: Image) => {
-    const index = sortedImages.findIndex((img) => img.id === image.id);
-    if (index !== -1) {
-      lightbox.open(index);
+    if (selectionMode) {
+      toggleSelection(image.id);
+    } else {
+      const index = sortedImages.findIndex((img) => img.id === image.id);
+      if (index !== -1) {
+        lightbox.open(index);
+      }
     }
+  };
+
+  const handleSelectClick = () => {
+    if (selectionMode) {
+      exitSelectionMode();
+    } else {
+      enterSelectionMode();
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedIds.size > 0) {
+      setShowBulkDeleteDialog(true);
+    }
+  };
+
+  const handleBulkDeleteSuccess = () => {
+    exitSelectionMode();
+  };
+
+  const handleToggleSelection = (imageId: string) => {
+    // Auto-enter selection mode if not already in it
+    if (!selectionMode) {
+      enterSelectionMode();
+    }
+    toggleSelection(imageId);
   };
 
   const handleDeleteSuccess = () => {
@@ -128,6 +170,8 @@ export default function BoardPage() {
             <>
               <BoardPageHeader
                 board={board}
+                onSelectClick={isOwner ? handleSelectClick : undefined}
+                selectionMode={selectionMode}
                 actions={
                   <>
                     {isOwner ? (
@@ -170,7 +214,15 @@ export default function BoardPage() {
                 onImageClick={handleImageClick}
                 onEditCaption={(image) => setEditCaptionImage(image)}
                 onDelete={(image) => setDeleteImageData(image)}
+                selectionMode={selectionMode}
+                selectedIds={selectedIds}
+                onToggleSelection={handleToggleSelection}
               />
+
+              {/* Selection Toolbar */}
+              {selectionMode && selectedIds.size > 0 && (
+                <SelectionToolbar onDelete={handleBulkDelete} />
+              )}
 
               {/* Lightbox */}
               {lightbox.isOpen && sortedImages.length > 0 && (
@@ -217,10 +269,29 @@ export default function BoardPage() {
                   onDeleteSuccess={handleDeleteSuccess}
                 />
               )}
+
+              {/* Bulk Delete Dialog */}
+              {showBulkDeleteDialog && (
+                <BulkDeleteDialog
+                  open={showBulkDeleteDialog}
+                  onOpenChange={setShowBulkDeleteDialog}
+                  boardId={board.id}
+                  imageIds={Array.from(selectedIds)}
+                  onDeleteSuccess={handleBulkDeleteSuccess}
+                />
+              )}
             </>
           )}
         </div>
       </ImageDropZone>
     </Layout>
+  );
+}
+
+export default function BoardPage() {
+  return (
+    <SelectionProvider>
+      <BoardPageContent />
+    </SelectionProvider>
   );
 }

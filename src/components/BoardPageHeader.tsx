@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, type ReactNode } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CheckSquare, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { EditableText, type EditableTextHandle } from '@/components/EditableText';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
 import { type BoardWithImages } from '@/schemas/boardWithImages';
@@ -8,9 +9,11 @@ import { type BoardWithImages } from '@/schemas/boardWithImages';
 interface BoardPageHeaderProps {
   board: BoardWithImages;
   actions?: ReactNode;
+  onSelectClick?: () => void;
+  selectionMode?: boolean;
 }
 
-export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
+export function BoardPageHeader({ board, actions, onSelectClick, selectionMode = false }: BoardPageHeaderProps) {
   const nameEditorRef = useRef<EditableTextHandle>(null);
   const { mutateAsync: updateBoard } = useUpdateBoard();
 
@@ -103,7 +106,29 @@ export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
           />
         </div>
 
-        {actions ? <div className="flex flex-shrink-0 items-center gap-2">{actions}</div> : null}
+        <div className="flex flex-shrink-0 items-center gap-2">
+          {onSelectClick && (
+            <Button
+              onClick={onSelectClick}
+              variant={selectionMode ? 'outline' : 'ghost'}
+              size="sm"
+              className="gap-2"
+            >
+              {selectionMode ? (
+                <>
+                  <X className="w-4 h-4" />
+                  Cancel
+                </>
+              ) : (
+                <>
+                  <CheckSquare className="w-4 h-4" />
+                  Select
+                </>
+              )}
+            </Button>
+          )}
+          {actions}
+        </div>
       </div>
 
       <div className="space-y-1">
@@ -123,7 +148,7 @@ export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
           <span>
             {imageCount} {imageCount === 1 ? 'image' : 'images'}
           </span>
-          <span>•</span>
+          <span>ï¿½</span>
           <span>Updated {lastUpdated}</span>
         </div>
       </div>

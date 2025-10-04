@@ -29,13 +29,25 @@ interface SortableImageGridProps {
   onImageClick?: (image: Image) => void;
   onEditCaption?: (image: Image) => void;
   onDelete?: (image: Image) => void;
+  selectionMode?: boolean;
+  selectedIds?: Set<string>;
+  onToggleSelection?: (imageId: string) => void;
 }
 
 function sortImages(images: Image[]): Image[] {
   return [...images].sort((a, b) => a.position - b.position);
 }
 
-export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption, onDelete }: SortableImageGridProps) {
+export function SortableImageGrid({
+  boardId,
+  images,
+  onImageClick,
+  onEditCaption,
+  onDelete,
+  selectionMode = false,
+  selectedIds = new Set(),
+  onToggleSelection,
+}: SortableImageGridProps) {
   const [orderedImages, setOrderedImages] = useState<Image[]>(() => sortImages(images));
   const [activeId, setActiveId] = useState<string | null>(null);
   const { queueReorder } = useImageReorder(boardId);
@@ -147,6 +159,9 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
               onClick={onImageClick}
               onEditCaption={onEditCaption}
               onDelete={onDelete}
+              selectionMode={selectionMode}
+              isSelected={selectedIds.has(image.id)}
+              onToggleSelection={() => onToggleSelection?.(image.id)}
             />
           ))}
         </div>

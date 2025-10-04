@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type CSSProperties } from 'react';
 import type { DraggableAttributes, SyntheticListenerMap } from '@dnd-kit/core';
-import { MoreVertical } from 'lucide-react';
+import { MoreVertical, Check } from 'lucide-react';
 import { type Image } from '@/schemas/image';
 import { getSupabaseThumbnail, getSupabasePublicUrl } from '@/lib/imageUtils';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,9 @@ interface ImageGridItemProps {
   className?: string;
   isDragging?: boolean;
   dataTestId?: string;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelection?: () => void;
 }
 
 export function ImageGridItem({
@@ -29,6 +32,9 @@ export function ImageGridItem({
   className,
   isDragging = false,
   dataTestId,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelection,
 }: ImageGridItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [shouldMarquee, setShouldMarquee] = useState(false);
@@ -53,6 +59,14 @@ export function ImageGridItem({
 
   const isGif = image.mime_type?.toLowerCase() === 'image/gif';
 
+  const handleClick = () => {
+    if (selectionMode) {
+      onToggleSelection?.();
+    } else {
+      onClick?.();
+    }
+  };
+
   return (
     <div
       ref={(node) => setRef?.(node)}
@@ -68,7 +82,7 @@ export function ImageGridItem({
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {/* Image */}
       <div className="relative overflow-hidden rounded-sm bg-neutral-100 dark:bg-neutral-800">
@@ -84,15 +98,46 @@ export function ImageGridItem({
           }}
         />
 
-        {/* 2px white outline on hover */}
-        <div
-          className={`absolute inset-0 pointer-events-none transition-opacity duration-150 ${
-            isHovered ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{
-            boxShadow: 'inset 0 0 0 2px white',
-          }}
-        />
+        {/* Selection overlay when selected */}
+        {isSelected && (
+          <div
+            className="absolute inset-0 pointer-events-none bg-violet-500/20 border-2 border-violet-500"
+            aria-hidden="true"
+          />
+        )}
+
+        {/* 2px white outline on hover (only when not in selection mode) */}
+        {!selectionMode && (
+          <div
+            className={`absolute inset-0 pointer-events-none transition-opacity duration-150 ${
+              isHovered ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              boxShadow: 'inset 0 0 0 2px white',
+            }}
+          />
+        )}
+
+        {/* Checkbox (top-left) - shown in selection mode or on hover */}
+        {(selectionMode || isHovered) && (
+          <button
+            className={cn(
+              'absolute top-2 left-2 w-6 h-6 rounded-sm border-2 flex items-center justify-center transition-all duration-150',
+              'bg-black/60 backdrop-blur-sm hover:bg-black/80',
+              isSelected
+                ? 'border-violet-500 bg-violet-500'
+                : 'border-white',
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSelection?.();
+            }}
+            aria-label={isSelected ? 'Deselect image' : 'Select image'}
+            type="button"
+          >
+            {isSelected && <Check className="w-4 h-4 text-white" />}
+          </button>
+        )}
 
         {/* Bottom-third caption overlay (visible on hover if caption exists) */}
         {image.caption && (
@@ -112,19 +157,21 @@ export function ImageGridItem({
           </div>
         )}
 
-        {/* Three-dot menu button (top-right, visible on hover) */}
-        <button
-          className={`absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 ${
-            isHovered ? 'opacity-100' : 'opacity-0'
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onMenuClick?.(e);
-          }}
-          aria-label="Image options"
-        >
-          <MoreVertical className="w-4 h-4 text-white" />
-        </button>
+        {/* Three-dot menu button (top-right, visible on hover, hidden in selection mode) */}
+        {!selectionMode && (
+          <button
+            className={`absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 ${
+              isHovered ? 'opacity-100' : 'opacity-0'
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onMenuClick?.(e);
+            }}
+            aria-label="Image options"
+          >
+            <MoreVertical className="w-4 h-4 text-white" />
+          </button>
+        )}
       </div>
     </div>
   );

@@ -9,6 +9,9 @@ interface SortableImageItemWithMenuProps {
   onClick?: (image: Image) => void;
   onEditCaption?: (image: Image) => void;
   onDelete?: (image: Image) => void;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelection?: () => void;
 }
 
 export function SortableImageItemWithMenu({
@@ -16,6 +19,9 @@ export function SortableImageItemWithMenu({
   onClick,
   onEditCaption,
   onDelete,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelection,
 }: SortableImageItemWithMenuProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: image.id,
@@ -46,6 +52,9 @@ export function SortableImageItemWithMenu({
       style={style}
       isDragging={isDragging}
       dataTestId={`sortable-image-card-${image.id}`}
+      selectionMode={selectionMode}
+      isSelected={isSelected}
+      onToggleSelection={onToggleSelection}
     />
   );
 }
