@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Share2, MoreVertical } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { BoardPageHeader } from '@/components/BoardPageHeader';
 import { SortableImageGrid } from '@/components/SortableImageGrid';
 import { Lightbox } from '@/components/Lightbox';
+import { EditCaptionDialog } from '@/components/EditCaptionDialog';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { useBoard } from '@/hooks/useBoard';
@@ -28,6 +29,8 @@ export default function BoardPage() {
   const { data: board, isLoading, error } = useBoard(boardId);
   const { uploadImages, handlePaste, uploading, progress, accept } = useImageUpload(board?.id);
 
+  const [editCaptionImage, setEditCaptionImage] = useState<Image | null>(null);
+
   const sortedImages = useMemo(
     () => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []),
     [board?.images],
@@ -50,8 +53,8 @@ export default function BoardPage() {
   };
 
   const handleImageMenuClick = (image: Image, _event: React.MouseEvent) => {
-    // TODO: Open image menu (caption edit, delete, etc.)
-    console.log('Image menu clicked:', image.id);
+    // Open edit caption dialog
+    setEditCaptionImage(image);
   };
 
   const handleShareClick = () => {
@@ -161,6 +164,23 @@ export default function BoardPage() {
                   onNext={lightbox.goToNext}
                   onPrev={lightbox.goToPrev}
                   onJumpTo={lightbox.jumpTo}
+                  isOwner={isOwner}
+                  onEditCaption={(image) => setEditCaptionImage(image)}
+                />
+              )}
+
+              {/* Edit Caption Dialog */}
+              {editCaptionImage && (
+                <EditCaptionDialog
+                  open={Boolean(editCaptionImage)}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      setEditCaptionImage(null);
+                    }
+                  }}
+                  boardId={board.id}
+                  imageId={editCaptionImage.id}
+                  currentCaption={editCaptionImage.caption}
                 />
               )}
             </>

@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { ValidationError } from '@/lib/errors';
-import { imageSchema, type Image, type ImageCreate } from '@/schemas/image';
+import { imageSchema, type Image, type ImageCreate, type ImageUpdate } from '@/schemas/image';
 import { getFileExtension, validateImageFile } from '@/lib/imageValidation';
 
 const BUCKET = 'board-images';
@@ -52,6 +52,26 @@ export async function addImageToBoard(boardId: string, imageData: ImageCreate): 
 
   if (error) {
     throw new Error(`Failed to add image to board: ${error.message}`);
+  }
+
+  const parsed = imageSchema.safeParse(data);
+  if (!parsed.success) {
+    throw new ValidationError(`Invalid image data: ${parsed.error.message}`);
+  }
+
+  return parsed.data;
+}
+
+export async function updateImage(imageId: string, updates: ImageUpdate): Promise<Image> {
+  const { data, error } = await supabase
+    .from('images')
+    .update(updates)
+    .eq('id', imageId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update image: ${error.message}`);
   }
 
   const parsed = imageSchema.safeParse(data);

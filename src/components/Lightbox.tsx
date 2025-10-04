@@ -5,6 +5,9 @@ import { type Image } from '@/schemas/image';
 import { LightboxImage } from '@/components/LightboxImage';
 import { LightboxControls } from '@/components/LightboxControls';
 import { LightboxThumbnailStrip } from '@/components/LightboxThumbnailStrip';
+import { LightboxCaptionPanel } from '@/components/LightboxCaptionPanel';
+import { LightboxActions } from '@/components/LightboxActions';
+import { getSupabasePublicUrl } from '@/lib/imageUtils';
 
 interface LightboxProps {
   images: Image[];
@@ -14,6 +17,8 @@ interface LightboxProps {
   onNext: () => void;
   onPrev: () => void;
   onJumpTo?: (index: number) => void;
+  onEditCaption?: (image: Image) => void;
+  isOwner?: boolean;
   hideThumbnails?: boolean; // For testing
 }
 
@@ -31,6 +36,8 @@ export function Lightbox({
   onNext,
   onPrev,
   onJumpTo,
+  onEditCaption,
+  isOwner = false,
   hideThumbnails = false,
 }: LightboxProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -201,6 +208,19 @@ export function Lightbox({
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
+      />
+
+      {/* Action buttons (download, copy URL, share) */}
+      <LightboxActions
+        imageUrl={getSupabasePublicUrl(currentImage.storage_path)}
+        filename={currentImage.original_filename}
+      />
+
+      {/* Caption panel (desktop only, right side) */}
+      <LightboxCaptionPanel
+        caption={currentImage.caption}
+        isOwner={isOwner}
+        onEditClick={onEditCaption ? () => onEditCaption(currentImage) : undefined}
       />
 
       {/* Desktop thumbnail strip */}

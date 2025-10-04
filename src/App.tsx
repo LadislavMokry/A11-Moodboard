@@ -8,10 +8,12 @@ import { AuthCallback } from "@/pages/AuthCallback";
 import { Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { Toaster } from "sonner";
 
 export default function App() {
   return (
     <ThemeProvider>
+      <Toaster position="top-center" />
       <Routes>
         <Route
           path="/"
