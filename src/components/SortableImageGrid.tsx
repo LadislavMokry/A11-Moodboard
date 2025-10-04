@@ -32,6 +32,7 @@ interface SortableImageGridProps {
   selectionMode?: boolean;
   selectedIds?: Set<string>;
   onToggleSelection?: (imageId: string) => void;
+  readOnly?: boolean;
 }
 
 function sortImages(images: Image[]): Image[] {
@@ -47,6 +48,7 @@ export function SortableImageGrid({
   selectionMode = false,
   selectedIds = new Set(),
   onToggleSelection,
+  readOnly = false,
 }: SortableImageGridProps) {
   const [orderedImages, setOrderedImages] = useState<Image[]>(() => sortImages(images));
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -137,11 +139,34 @@ export function SortableImageGrid({
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <p className="text-lg text-neutral-600 dark:text-neutral-400">No images yet</p>
-        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-500">Upload images to get started</p>
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-500">
+          {readOnly ? 'This board is empty' : 'Upload images to get started'}
+        </p>
       </div>
     );
   }
 
+  // Read-only mode: render simple grid without drag-and-drop
+  if (readOnly) {
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {orderedImages.map((image) => (
+          <SortableImageItemWithMenu
+            key={image.id}
+            image={image}
+            onClick={onImageClick}
+            onEditCaption={onEditCaption}
+            onDelete={onDelete}
+            selectionMode={selectionMode}
+            isSelected={selectedIds.has(image.id)}
+            onToggleSelection={() => onToggleSelection?.(image.id)}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  // Editable mode: full drag-and-drop functionality
   return (
     <DndContext
       sensors={sensors}

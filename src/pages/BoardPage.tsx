@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useMemo, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Share2, MoreVertical } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { BoardPageHeader } from '@/components/BoardPageHeader';
@@ -29,6 +29,7 @@ type BoardRouteParams = {
 
 function BoardPageContent() {
   const { boardId } = useParams<BoardRouteParams>();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { data: board, isLoading, error } = useBoard(boardId);
   const { uploadImages, handlePaste, uploading, progress, accept } = useImageUpload(board?.id);
@@ -53,6 +54,13 @@ function BoardPageContent() {
   const lightbox = useLightbox(sortedImages.length);
 
   const isOwner = board && user ? board.owner_id === user.id : false;
+
+  // Redirect non-owners to public board URL
+  useEffect(() => {
+    if (board && user && !isOwner) {
+      navigate(`/b/${board.share_token}`, { replace: true });
+    }
+  }, [board, user, isOwner, navigate]);
 
   const activeUploads = useMemo(
     () => Object.values(progress).filter((value) => value < 100).length,

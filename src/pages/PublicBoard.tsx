@@ -1,5 +1,15 @@
-import { Layout } from '@/components/Layout';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Layout } from '@/components/Layout';
+import { PublicBoardHeader } from '@/components/PublicBoardHeader';
+import { SortableImageGrid } from '@/components/SortableImageGrid';
+import { Lightbox } from '@/components/Lightbox';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorMessage } from '@/components/ErrorMessage';
+import { usePublicBoard } from '@/hooks/usePublicBoard';
+import { useLightbox } from '@/hooks/useLightbox';
+import { type Image } from '@/schemas/image';
 
 type PublicBoardParams = {
   shareToken: string;
@@ -7,26 +17,123 @@ type PublicBoardParams = {
 
 export default function PublicBoard() {
   const { shareToken } = useParams<PublicBoardParams>();
+  const { data: publicBoardData, isLoading, error } = usePublicBoard(shareToken);
+
+  const board = publicBoardData?.board;
+  const owner = publicBoardData?.owner;
+
+  const sortedImages = useMemo(
+    () => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []),
+    [board?.images],
+  );
+
+  const lightbox = useLightbox(sortedImages.length);
+  const [_editCaptionImage, _setEditCaptionImage] = useState<Image | null>(null);
+  const [_deleteImageData, _setDeleteImageData] = useState<Image | null>(null);
+
+  const handleImageClick = (image: Image) => {
+    const index = sortedImages.findIndex((img) => img.id === image.id);
+    if (index !== -1) {
+      lightbox.open(index);
+    }
+  };
+
+  // 404 - Board not found
+  if (error) {
+    return (
+      <Layout>
+        <Helmet>
+          <title>Board Not Found - Moodeight</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
+              404
+            </h1>
+            <p className="text-lg text-neutral-600 dark:text-neutral-400">
+              Board not found
+            </p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-500 mt-2">
+              This board may have been deleted or the link is invalid.
+            </p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
-      <section className="flex min-h-[calc(100vh-4rem)] flex-col justify-center space-y-3">
-        <div>
-          <p className="text-sm uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Public board</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-            Shared board preview
-          </h1>
-        </div>
-        <p className="text-neutral-600 dark:text-neutral-300">
-          Token:
-          {' '}
-          <span className="font-mono text-sm text-neutral-800 dark:text-neutral-200">{shareToken ?? 'unknown'}</span>
-        </p>
-        <p className="text-neutral-600 dark:text-neutral-300">
-          Visitors will see a read-only gallery here once public sharing is implemented.
-        </p>
-      </section>
+      {board && (
+        <Helmet>
+          <title>{board.name} - Moodeight</title>
+          <meta name="robots" content="noindex, nofollow" />
+
+          {/* Open Graph */}
+          <meta property="og:title" content={board.name} />
+          {board.description && <meta property="og:description" content={board.description} />}
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={window.location.href} />
+          {/* TODO: Dynamic OG image in Phase 12 */}
+
+          {/* Twitter Card */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={board.name} />
+          {board.description && <meta name="twitter:description" content={board.description} />}
+        </Helmet>
+      )}
+
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <LoadingSpinner />
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <ErrorMessage
+            error={error instanceof Error ? error : new Error('Failed to load board')}
+          />
+        )}
+
+        {/* Board content */}
+        {board && owner && (
+          <>
+            <PublicBoardHeader board={board} owner={owner} />
+
+            <SortableImageGrid
+              boardId={board.id}
+              images={board.images}
+              onImageClick={handleImageClick}
+              onEditCaption={undefined}
+              onDelete={undefined}
+              selectionMode={false}
+              selectedIds={new Set()}
+              onToggleSelection={undefined}
+              readOnly={true}
+            />
+
+            {/* Lightbox */}
+            {lightbox.isOpen && sortedImages.length > 0 && (
+              <Lightbox
+                images={sortedImages}
+                initialIndex={lightbox.currentIndex}
+                currentIndex={lightbox.currentIndex}
+                onClose={lightbox.close}
+                onNext={lightbox.goToNext}
+                onPrev={lightbox.goToPrev}
+                onJumpTo={lightbox.jumpTo}
+                isOwner={false}
+                onEditCaption={undefined}
+                onDelete={undefined}
+              />
+            )}
+          </>
+        )}
+      </div>
     </Layout>
   );
 }
-
