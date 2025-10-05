@@ -98,6 +98,7 @@ function generateHtml(
     <meta name="robots" content="noindex, nofollow" />
 
     <!-- Open Graph / Facebook -->
+    <meta property="fb:app_id" content="0" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${boardUrl}" />
     <meta property="og:title" content="${title}" />
