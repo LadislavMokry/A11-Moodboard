@@ -57,9 +57,10 @@ function generateETag(updatedAt: string): string {
  * Uses Supabase's built-in image transformation to resize and optimize
  */
 function getImagePublicUrl(supabaseUrl: string, storagePath: string): string {
-  // Use Supabase image transformation: resize to 1200x630, quality 60 for smaller file size
-  // WhatsApp/Facebook prefer images under 300KB for previews
-  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=60&format=webp`;
+  // Use Supabase image transformation: resize to 1200x630, quality 50 for smaller file size
+  // WhatsApp requires: under 300KB, JPG or PNG only (no WebP!)
+  // Facebook requires: JPG, PNG, or GIF only
+  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=50&format=jpeg`;
 }
 
 /**
@@ -155,7 +156,7 @@ export async function onRequest(context: {
     return new Response(imageBuffer, {
       status: 200,
       headers: {
-        'Content-Type': 'image/webp', // We're converting to WebP for better compression
+        'Content-Type': 'image/jpeg', // Must be JPEG, PNG, or GIF for WhatsApp/Facebook
         'Content-Length': imageBuffer.byteLength.toString(),
         'Cache-Control': 'public, max-age=86400, immutable', // 24 hours
         'Access-Control-Allow-Origin': '*',
