@@ -74,8 +74,8 @@ function generateHtml(
   const title = escapeHtml(data.board.name);
   const defaultDescription = `${data.owner.display_name || 'A user'}'s moodboard on Moodeight`;
   const description = escapeHtml(data.board.description || defaultDescription);
-  // TEMP TEST: Use a small optimized test image (under 100KB, exactly 1200x630)
-  const ogImageUrl = 'https://via.placeholder.com/1200x630/4f46e5/ffffff?text=Moodeight';
+  // TEMP TEST: Use a small optimized test image from Unsplash (resized to 1200x630)
+  const ogImageUrl = 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&h=630&fit=crop';
   // const ogImageUrl = `${baseUrl}/api/og/${shareToken}.png`;
   const boardUrl = `${baseUrl}/b/${shareToken}`;
 
