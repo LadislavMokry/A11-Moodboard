@@ -100,7 +100,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 
 ## Phase 12: Deployment & SSR (Cloudflare Pages Functions)
 
-- [ ] **12.1** OG Meta Tags SSR
+- [x] **12.1** OG Meta Tags SSR
 - [ ] **12.2** Dynamic OG Image Generation
 - [ ] **12.3** Environment & Deployment Config
 
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 40
+**Completed**: 41
 **In Progress**: 0
-**Remaining**: 12
+**Remaining**: 11
 
 ### By Phase:
 
@@ -143,7 +143,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 9** (Sharing): 3/3 ✅ COMPLETE
 - **Phase 10** (Advanced): 4/4 ✅ COMPLETE
 - **Phase 11** (Edge Functions): 4/4 ✅ COMPLETE - **DEPLOYED & TESTED**
-- **Phase 12** (Deployment): 0/3
+- **Phase 12** (Deployment): 1/3 - **SSR COMPLETE**
 - **Phase 13** (Polish): 0/4
 - **Phase 14** (Testing): 0/3
 
@@ -164,22 +164,23 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Current Sprint
 
 **Active Phase**: Phase 12 - Deployment & SSR
-**Current Step**: 12.1 - OG Meta Tags SSR
+**Current Step**: 12.2 - Dynamic OG Image Generation
 
 **Phases 1-11 Complete! 🎉**
+**Step 12.1 Complete! 🎉**
 
-**Phase 11 Completion Notes:**
-- ✅ All 4 Edge Functions deployed and tested
-- ✅ URL import UI with Ctrl+V paste detection
-- ✅ Bulk delete properly implemented
-- ✅ Build/lint errors resolved (0 errors, 22 warnings)
-- ✅ Cloudflare Wrangler CLI installed and ready
+**Phase 12.1 Completion Notes:**
+- ✅ Cloudflare Pages Function for SSR at `/b/:shareToken`
+- ✅ OG/Twitter meta tags with board name, description, and image URL
+- ✅ ETag caching (24h) based on `boards.updated_at`
+- ✅ Auto-detects built asset paths (CSS/JS)
+- ✅ Fixed RPC response structure and schema validation
+- ✅ Tested with both Wrangler dev and normal dev server
 
 **Next Up**:
 
-1. OG Meta Tags SSR (Server-side rendering for public board sharing)
-2. Dynamic OG Image Generation (1200×630 preview images)
-3. Cloudflare Pages deployment configuration
+1. Dynamic OG Image Generation (1200×630 preview images at `/api/og/:shareToken.png`)
+2. Cloudflare Pages deployment configuration and production deployment
 
 **Deployment Reminder**:
 

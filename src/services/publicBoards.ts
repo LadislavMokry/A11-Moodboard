@@ -22,10 +22,15 @@ export async function getPublicBoard(shareToken: string): Promise<PublicBoardRes
   // The RPC returns a JSONB object with structure: { board: {...}, owner: {...}, images: [...] }
   // We need to restructure to match our schema
   const dataObj = data as { board: any; owner: any; images: any[] };
+
+  // Ensure images array exists and is properly assigned
+  const images = Array.isArray(dataObj.images) ? dataObj.images : [];
+
   const responseData = {
     board: {
       ...dataObj.board,
-      images: dataObj.images || [],
+      share_token: shareToken, // Add share_token from URL parameter (RPC doesn't return it)
+      images: images,
     },
     owner: dataObj.owner,
   };

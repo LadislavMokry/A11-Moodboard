@@ -1,0 +1,17 @@
+# Cloudflare Pages local development environment variables
+# Copy this file to .dev.vars and fill in your actual values
+# .dev.vars is gitignored and will not be committed
+
+# Supabase Configuration
+VITE_SUPABASE_URL=https://jqjkdfbgrtdlkkfwavyq.supabase.co
+
+# New Supabase API Keys (as of 2025):
+# Publishable key (starts with sb_publishable_) - safe for browser use with RLS
+VITE_SUPABASE_ANON_KEY=sb_publishable_your-key-here
+
+# Secret key (starts with sb_secret_) - for server-side only (Pages Functions)
+# IMPORTANT: Never expose this key in client-side code
+SUPABASE_SERVICE_ROLE_KEY=sb_secret_your-key-here
+
+# Optional: Showcase board for homepage
+VITE_SHOWCASE_BOARD_ID=your-showcase-board-uuid-here

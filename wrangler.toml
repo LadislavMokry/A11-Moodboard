@@ -1,0 +1,17 @@
+# Cloudflare Pages configuration for Moodeight
+name = "moodeight"
+compatibility_date = "2025-01-10"
+
+# Pages configuration
+pages_build_output_dir = "dist"
+
+# Environment variables for local development
+# Production variables should be set in Cloudflare Pages dashboard
+[vars]
+# These will be overridden by Cloudflare Pages environment variables in production
+
+# For local development, create a .dev.vars file with:
+# VITE_SUPABASE_URL=https://jqjkdfbgrtdlkkfwavyq.supabase.co
+# SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+# VITE_SUPABASE_ANON_KEY=your-anon-key-here
+# VITE_SHOWCASE_BOARD_ID=your-showcase-board-id-here

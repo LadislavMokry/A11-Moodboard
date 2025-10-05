@@ -105,11 +105,37 @@ All client-exposed env vars must be prefixed `VITE_`.
 
 ## Deployment & SSR
 
-- **Cloudflare Pages** hosts SPA
-- **Pages Functions** (`/functions/b/[shareToken].ts`) SSR OG/Twitter meta tags and dynamic 1200×630 preview images for public boards
-  - OG image: 2×2 grid from cover pool (fallback top 4 images), board name bottom-left, "moodeight" wordmark bottom-right
-  - 24h edge cache with ETag keyed by `boards.updated_at`
-- Default `noindex` meta for unlisted boards
+- **Cloudflare Pages** hosts SPA with server-side rendering for public board sharing
+- **Pages Functions** provide SSR for better social media sharing:
+  - `/functions/b/[shareToken].ts` – SSR handler for public board URLs (`/b/:shareToken`)
+    - Fetches board data server-side via `get_public_board` RPC using service role key
+    - Generates HTML with OG/Twitter meta tags for rich link previews
+    - Meta tags include: board name (og:title), description, dynamic OG image URL
+    - Default `noindex, nofollow` for unlisted boards
+    - 24h edge cache with ETag based on `boards.updated_at` timestamp
+    - Returns 304 Not Modified when ETag matches
+  - `/functions/api/og/[shareToken].png.ts` – Dynamic OG image generation (Phase 12.2)
+    - 1200×630 preview images with 2×2 grid from cover pool (fallback: top 4 images)
+    - Board name bottom-left, "moodeight" wordmark bottom-right
+    - 24h edge cache
+
+### Local Development with Wrangler
+```bash
+# Copy .dev.vars.example to .dev.vars and fill in values
+cp .dev.vars.example .dev.vars
+
+# Test Pages Functions locally
+npx wrangler pages dev dist --compatibility-date=2025-01-10
+
+# Build frontend first
+npm run build
+```
+
+### Environment Variables for Pages Functions
+- `VITE_SUPABASE_URL` – Supabase project URL (client + server)
+- `VITE_SUPABASE_ANON_KEY` – Publishable anon key (client-side)
+- `SUPABASE_SERVICE_ROLE_KEY` – Service role key (server-side only, Pages Functions)
+- `VITE_SHOWCASE_BOARD_ID` – Optional showcase board UUID
 
 ## Security
 

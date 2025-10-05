@@ -1,8 +1,8 @@
 # Moodeight - Development Handover
 
 **Last Updated**: October 5, 2025
-**Phase Completed**: Phase 11 - Supabase Edge Functions ✅
-**Next Phase**: Phase 12.1 - OG Meta Tags SSR
+**Phase Completed**: Phase 12.1 - OG Meta Tags SSR ✅
+**Next Phase**: Phase 12.2 - Dynamic OG Image Generation
 
 ---
 
@@ -12,6 +12,72 @@
 - **Frontend**: React + TypeScript + Vite
 - **Backend**: Supabase (Auth, Postgres, Storage, Edge Functions)
 - **Deployment Target**: Cloudflare Pages
+
+---
+
+## Recent Highlights (Phase 12.1 - SSR)
+
+### Phase 12.1 - OG Meta Tags SSR ✅
+
+**Cloudflare Pages Function Implemented**
+
+**Deployment Summary:**
+- Created Pages Function at `/functions/b/[shareToken].ts` for server-side rendering of public board URLs
+- Implemented OG/Twitter meta tags with board name, description, and dynamic image URL
+- Added ETag caching (24h) based on `boards.updated_at` for performance
+- Auto-detects built asset paths (CSS/JS) from `dist/index.html`
+- Tested with both Wrangler dev server and normal Vite dev server
+
+**Files Created:**
+- `functions/b/[shareToken].ts` - Cloudflare Pages Function for SSR
+- `wrangler.toml` - Cloudflare Pages configuration
+- `.dev.vars.example` - Environment variable template for local development
+
+**Files Modified:**
+- `.gitignore` - Added `.dev.vars` and Wrangler files
+- `src/services/publicBoards.ts` - Fixed RPC response restructuring, added missing `share_token` field
+- `CLAUDE.md` - Added Deployment & SSR documentation section
+
+**Key Features:**
+- **Server-Side Rendering**: `/b/:shareToken` routes render HTML on the server with proper meta tags
+- **OG Meta Tags**:
+  - `og:title` - Board name
+  - `og:description` - Board description or fallback
+  - `og:image` - Dynamic OG image URL (`/api/og/:shareToken.png`)
+  - `og:image:width/height` - 1200×630
+  - `og:site_name` - "Moodeight"
+- **Twitter Card Tags**: `summary_large_image` card type with all required fields
+- **Robots Meta**: `noindex, nofollow` for unlisted boards
+- **Caching**:
+  - ETag generated from `boards.updated_at` timestamp
+  - 304 Not Modified responses when ETag matches
+  - `Cache-Control: public, max-age=86400` (24 hours)
+- **Asset Detection**: Reads `dist/index.html` to extract JS/CSS paths for production builds
+- **HTML Escaping**: Prevents XSS by escaping all dynamic content
+
+**Bug Fixes:**
+- Fixed RPC response structure to match `{ board: {...}, owner: {...}, images: [...] }` format
+- Added missing `share_token` field to board data (RPC doesn't return it)
+- Fixed CSS regex to properly detect stylesheet links
+- Fixed `escapeHtml` to handle null/undefined values
+- Added `next()` handler to let non-HTML requests pass through to static assets
+
+**Testing:**
+- Tested with valid share tokens - SSR works correctly
+- Page source shows proper OG meta tags with board name and description
+- CSS and JS assets load correctly with proper MIME types
+- ETag caching verified in response headers
+- Public board pages load and display correctly in browser
+
+**Environment Variables:**
+- `VITE_SUPABASE_URL` - Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY` - Secret key for server-side RPC calls
+- `VITE_SUPABASE_ANON_KEY` - Publishable key for client-side
+- `VITE_SHOWCASE_BOARD_ID` - Optional showcase board UUID
+
+**Known Limitations:**
+- OG image URL points to `/api/og/:shareToken.png` which will be implemented in Phase 12.2
+- Currently returns placeholder URL; social media previews won't show image until 12.2 is complete
 
 ---
 
