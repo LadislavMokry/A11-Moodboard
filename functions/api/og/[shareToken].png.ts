@@ -53,10 +53,12 @@ function generateETag(updatedAt: string): string {
 }
 
 /**
- * Get the Supabase public URL for an image
+ * Get the Supabase public URL for an image with transformation
+ * Uses Supabase's built-in image transformation to resize and optimize
  */
 function getImagePublicUrl(supabaseUrl: string, storagePath: string): string {
-  return `${supabaseUrl}/storage/v1/object/public/board-images/${storagePath}`;
+  // Use Supabase image transformation: resize to max 1200x630, quality 80
+  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=contain&quality=80`;
 }
 
 /**
