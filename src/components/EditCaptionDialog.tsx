@@ -14,11 +14,10 @@ const editCaptionSchema = z.object({
   caption: z
     .string()
     .max(MAX_CAPTION_LENGTH, `Caption must be ${MAX_CAPTION_LENGTH} characters or less`)
-    .optional()
-    .transform((val) => val?.trim() || null),
+    .nullable(),
 });
 
-type EditCaptionFormValues = z.infer<typeof editCaptionSchema>;
+type EditCaptionFormValues = { caption: string | null };
 
 interface EditCaptionDialogProps {
   open: boolean;

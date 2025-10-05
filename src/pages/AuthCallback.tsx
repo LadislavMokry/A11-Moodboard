@@ -18,7 +18,7 @@ export function AuthCallback() {
       if (event === 'SIGNED_IN' && session) {
         console.log('[AuthCallback] Sign in successful, redirecting to home');
         navigate('/', { replace: true });
-      } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+      } else if (event === 'SIGNED_OUT') {
         console.log('[AuthCallback] Sign in failed');
         setError('Authentication failed. Please try again.');
         setTimeout(() => navigate('/', { replace: true }), 2000);

@@ -5,7 +5,7 @@ import { z } from 'zod';
  */
 export function trimmedString(message?: string) {
   return z
-    .string(message ? { required_error: message } : undefined)
+    .string(message ? { message } : undefined)
     .trim();
 }
 

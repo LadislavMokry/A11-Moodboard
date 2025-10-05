@@ -41,13 +41,13 @@ export async function addImageToBoard(boardId: string, imageData: ImageCreate): 
   const { data, error } = await supabase.rpc('add_image_at_top', {
     p_board_id: boardId,
     p_storage_path: imageData.storage_path,
-    p_mime_type: imageData.mime_type ?? null,
-    p_width: imageData.width ?? null,
-    p_height: imageData.height ?? null,
-    p_size_bytes: imageData.size_bytes ?? null,
-    p_original_filename: imageData.original_filename ?? null,
-    p_source_url: imageData.source_url ?? null,
-    p_caption: imageData.caption ?? null,
+    p_mime_type: imageData.mime_type || '',
+    p_width: imageData.width || 0,
+    p_height: imageData.height || 0,
+    p_size_bytes: imageData.size_bytes || 0,
+    p_original_filename: imageData.original_filename || '',
+    p_source_url: imageData.source_url || '',
+    p_caption: imageData.caption || '',
   });
 
   if (error) {

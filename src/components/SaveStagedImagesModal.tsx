@@ -91,6 +91,8 @@ export function SaveStagedImagesModal({
       const newBoard = await createBoard.mutateAsync({
         name: newBoardName.trim(),
         description: null,
+        cover_rotation_enabled: true,
+        is_showcase: false,
       });
 
       // Upload images to the new board

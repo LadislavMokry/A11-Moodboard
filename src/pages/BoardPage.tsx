@@ -286,7 +286,7 @@ function BoardPageContent() {
                   }}
                   boardId={board.id}
                   imageId={editCaptionImage.id}
-                  currentCaption={editCaptionImage.caption}
+                  currentCaption={editCaptionImage.caption || null}
                 />
               )}
 

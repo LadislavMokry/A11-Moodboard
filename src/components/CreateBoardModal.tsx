@@ -21,10 +21,10 @@ const boardFormSchema = z.object({
   name: trimmedString(formErrors.required('Board name'))
     .min(1, formErrors.required('Board name'))
     .max(60, formErrors.maxLength('Board name', 60)),
-  description: descriptionPreprocess.optional(),
+  description: z.string().max(160, formErrors.maxLength('Description', 160)).nullable().optional(),
 });
 
-type BoardFormValues = z.infer<typeof boardFormSchema>;
+type BoardFormValues = { name: string; description?: string | null | undefined };
 
 interface CreateBoardModalProps {
   open: boolean;

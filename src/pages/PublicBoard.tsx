@@ -95,7 +95,7 @@ export default function PublicBoard() {
         {/* Error state */}
         {error && (
           <ErrorMessage
-            error={error instanceof Error ? error : new Error('Failed to load board')}
+            error={error as Error}
           />
         )}
 

@@ -2,8 +2,10 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Edit2, Trash2, MoreVertical } from 'lucide-react';
 import { ImageGridItem } from './ImageGridItem';
 import { type Image } from '@/schemas/image';
-import type { DraggableAttributes, SyntheticListenerMap } from '@dnd-kit/core';
+import type { DraggableAttributes } from '@dnd-kit/core';
 import type { CSSProperties } from 'react';
+
+type SyntheticListenerMap = Record<string, Function> | undefined;
 
 interface ImageGridItemWithMenuProps {
   image: Image;

@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, type CSSProperties } from 'react';
-import type { DraggableAttributes, SyntheticListenerMap } from '@dnd-kit/core';
+import type { DraggableAttributes } from '@dnd-kit/core';
 import { MoreVertical, Check } from 'lucide-react';
 import { type Image } from '@/schemas/image';
 import { getSupabaseThumbnail, getSupabasePublicUrl } from '@/lib/imageUtils';
 import { cn } from '@/lib/utils';
+
+type SyntheticListenerMap = Record<string, Function> | undefined;
 
 interface ImageGridItemProps {
   image: Image;

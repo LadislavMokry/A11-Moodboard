@@ -215,14 +215,14 @@ export function Lightbox({
       {/* Action buttons (download, copy URL, share, delete) */}
       <LightboxActions
         imageUrl={getSupabasePublicUrl(currentImage.storage_path)}
-        filename={currentImage.original_filename}
+        filename={currentImage.original_filename || ''}
         isOwner={isOwner}
         onDelete={onDelete ? () => onDelete(currentImage) : undefined}
       />
 
       {/* Caption panel (desktop only, right side) */}
       <LightboxCaptionPanel
-        caption={currentImage.caption}
+        caption={currentImage.caption || null}
         isOwner={isOwner}
         onEditClick={onEditCaption ? () => onEditCaption(currentImage) : undefined}
       />

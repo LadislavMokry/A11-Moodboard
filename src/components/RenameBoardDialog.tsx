@@ -54,7 +54,7 @@ export function RenameBoardDialog({
     try {
       await mutateAsync({
         boardId,
-        data: { name: values.name },
+        updates: { name: values.name },
       });
       toast.success('Board renamed');
       onOpenChange(false);

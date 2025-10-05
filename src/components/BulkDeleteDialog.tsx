@@ -31,7 +31,7 @@ export function BulkDeleteDialog({
 
     imageIds.forEach((imageId) => {
       deleteImage(
-        { boardId, imageId },
+        imageId,
         {
           onSuccess: () => {
             deletedCount++;
