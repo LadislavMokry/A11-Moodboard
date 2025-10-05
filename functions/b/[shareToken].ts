@@ -68,13 +68,14 @@ function escapeHtml(text: string | null | undefined): string {
 function generateHtml(
   data: PublicBoardData,
   shareToken: string,
+  baseUrl: string,
   assetManifest?: { js: string; css: string }
 ): string {
   const title = escapeHtml(data.board.name);
   const defaultDescription = `${data.owner.display_name || 'A user'}'s moodboard on Moodeight`;
   const description = escapeHtml(data.board.description || defaultDescription);
-  const ogImageUrl = `/api/og/${shareToken}.png`;
-  const boardUrl = `/b/${shareToken}`;
+  const ogImageUrl = `${baseUrl}/api/og/${shareToken}.png`;
+  const boardUrl = `${baseUrl}/b/${shareToken}`;
 
   // Use provided asset paths or fallback to development paths
   const jsPath = assetManifest?.js || '/src/main.tsx';
@@ -245,8 +246,11 @@ export async function onRequest(context: {
       console.warn('Could not read asset manifest, using fallback paths');
     }
 
+    // Get base URL from request
+    const baseUrl = new URL(request.url).origin;
+
     // Generate HTML with OG meta tags
-    const html = generateHtml(publicBoardData, shareToken, assetManifest);
+    const html = generateHtml(publicBoardData, shareToken, baseUrl, assetManifest);
 
     // Return HTML with caching headers
     return new Response(html, {
