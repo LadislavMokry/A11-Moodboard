@@ -138,29 +138,16 @@ export async function onRequest(context: {
       return new Response('No images available for preview', { status: 404 });
     }
 
-    // Get the public URL for the image
+    // Get the public URL for the image with transformation
     const imageUrl = getImagePublicUrl(env.VITE_SUPABASE_URL, ogImage.storage_path);
 
-    // Fetch the image from Supabase Storage
-    const imageResponse = await fetch(imageUrl);
-
-    if (!imageResponse.ok) {
-      console.error('Failed to fetch image from storage:', imageResponse.status);
-      return new Response('Failed to fetch image', { status: 500 });
-    }
-
-    // Get the image buffer
-    const imageBuffer = await imageResponse.arrayBuffer();
-
-    // Return the image with caching headers
-    return new Response(imageBuffer, {
-      status: 200,
+    // Redirect to the Supabase image transformation URL
+    // This is more efficient than proxying the image through our function
+    return new Response(null, {
+      status: 302,
       headers: {
-        'Content-Type': 'image/jpeg', // Must be JPEG, PNG, or GIF for WhatsApp/Facebook
-        'Content-Length': imageBuffer.byteLength.toString(),
-        'Cache-Control': 'public, max-age=86400, immutable', // 24 hours
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+        'Location': imageUrl,
+        'Cache-Control': 'public, max-age=86400', // 24 hours
         ETag: etag,
       },
     });
