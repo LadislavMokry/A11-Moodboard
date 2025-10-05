@@ -74,8 +74,9 @@ function generateHtml(
   const title = escapeHtml(data.board.name);
   const defaultDescription = `${data.owner.display_name || 'A user'}'s moodboard on Moodeight`;
   const description = escapeHtml(data.board.description || defaultDescription);
-  // Use our OG image endpoint
-  const ogImageUrl = `${baseUrl}/api/og/${shareToken}.png`;
+  // TEMP TEST: Use a small optimized test image (under 100KB, exactly 1200x630)
+  const ogImageUrl = 'https://via.placeholder.com/1200x630/4f46e5/ffffff?text=Moodeight';
+  // const ogImageUrl = `${baseUrl}/api/og/${shareToken}.png`;
   const boardUrl = `${baseUrl}/b/${shareToken}`;
 
   // Use provided asset paths or fallback to development paths
