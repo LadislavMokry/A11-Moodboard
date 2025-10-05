@@ -60,7 +60,8 @@ function getImagePublicUrl(supabaseUrl: string, storagePath: string): string {
   // Use Supabase image transformation: resize to 1200x630, quality 50 for smaller file size
   // WhatsApp requires: under 300KB, JPG or PNG only (no WebP!)
   // Facebook requires: JPG, PNG, or GIF only
-  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=50&format=jpeg`;
+  // Note: storagePath already includes "boards/" prefix, so we use it directly
+  return `${supabaseUrl}/storage/v1/object/public/board-images/${storagePath}?width=1200&height=630&quality=50`;
 }
 
 /**
