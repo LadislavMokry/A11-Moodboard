@@ -75,7 +75,8 @@ function generateHtml(
   const defaultDescription = `${data.owner.display_name || 'A user'}'s moodboard on Moodeight`;
   const description = escapeHtml(data.board.description || defaultDescription);
   // Use our OG image endpoint (serves from same domain for WhatsApp/FB Messenger compatibility)
-  const ogImageUrl = `${baseUrl}/api/og/${shareToken}.png`;
+  // Use .webp extension to match the actual content type served
+  const ogImageUrl = `${baseUrl}/api/og/${shareToken}.webp`;
   const boardUrl = `${baseUrl}/b/${shareToken}`;
 
   // Use provided asset paths or fallback to development paths
