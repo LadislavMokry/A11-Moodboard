@@ -245,7 +245,7 @@ export async function onRequest(context: {
           };
         }
       }
-    } catch (e) {
+    } catch (_e) {
       // In local dev or if ASSETS is not available, we'll use fallback paths
       console.warn('Could not read asset manifest, using fallback paths');
     }

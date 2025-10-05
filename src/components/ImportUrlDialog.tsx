@@ -63,7 +63,7 @@ export function ImportUrlDialog({
       });
       reset();
       onOpenChange(false);
-    } catch (error) {
+    } catch (_error) {
       // Error handling is done in the mutation
     } finally {
       setIsImporting(false);
