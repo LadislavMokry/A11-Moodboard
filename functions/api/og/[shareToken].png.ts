@@ -59,10 +59,9 @@ function generateETag(updatedAt: string): string {
 function getImagePublicUrl(supabaseUrl: string, storagePath: string): string {
   // Use Supabase render endpoint for image transformation
   // Facebook recommends: 1200x630 (1.91:1 aspect ratio)
-  // WhatsApp requires: under 300KB file size
-  // Use aggressive compression (quality=30) to meet both requirements
+  // WhatsApp REQUIRES: WebP format AND under 300KB file size (critical!)
   // Note: storagePath already includes "boards/" prefix, so we use it directly
-  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=30`;
+  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=75&format=webp`;
 }
 
 /**
@@ -159,7 +158,7 @@ export async function onRequest(context: {
     return new Response(imageBuffer, {
       status: 200,
       headers: {
-        'Content-Type': imageResponse.headers.get('Content-Type') || 'image/jpeg',
+        'Content-Type': imageResponse.headers.get('Content-Type') || 'image/webp',
         'Content-Length': imageBuffer.byteLength.toString(),
         'Cache-Control': 'public, max-age=86400, immutable', // 24 hours
         'Access-Control-Allow-Origin': '*',
