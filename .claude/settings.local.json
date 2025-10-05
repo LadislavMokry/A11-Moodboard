@@ -26,7 +26,15 @@
       "Bash(fi)",
       "Bash(done)",
       "Bash(psql \"postgresql://postgres.jqjkdfbgrtdlkkfwavyq:$SUPABASE_DB_PASSWORD@aws-0-us-east-1.pooler.supabase.com:6543/postgres\" -c \"SELECT get_public_board(''b4532b22-b6de-4602-ba73-824c562a2c72''::uuid) LIMIT 1;\")",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(curl -s \"https://a11-moodboard.pages.dev/b/test\")",
+      "Bash(curl -I \"https://a11-moodboard.pages.dev/\")",
+      "Bash(curl -s \"https://a11-moodboard.pages.dev/b/b4532b22-b6de-4602-ba73-824c562a2c72\")",
+      "Bash(curl -s \"https://a11-moodboard.pages.dev/b/b4532b22-b6de-4602-ba73-824c562a2c72\" -H \"Accept: text/html\")",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
