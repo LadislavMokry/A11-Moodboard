@@ -11,6 +11,7 @@ export const boardSchema = z.object({
   share_token: z.string().uuid(),
   cover_rotation_enabled: z.boolean().default(true),
   is_showcase: z.boolean().default(false),
+  og_image_id: z.string().uuid().nullable().optional(), // Image to use for OG preview
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -33,6 +34,7 @@ export const boardUpdateSchema = boardSchema.pick({
   name: true,
   description: true,
   cover_rotation_enabled: true,
+  og_image_id: true,
 }).partial();
 
 /**

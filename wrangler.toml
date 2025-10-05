@@ -5,13 +5,15 @@ compatibility_date = "2025-01-10"
 # Pages configuration
 pages_build_output_dir = "dist"
 
-# Environment variables for local development
-# Production variables should be set in Cloudflare Pages dashboard
+# Environment variables
+# Note: SUPABASE_SERVICE_ROLE_KEY must be set as encrypted secret in Cloudflare Dashboard
+# All VITE_* variables are build-time variables that get embedded in the frontend bundle
 [vars]
-# These will be overridden by Cloudflare Pages environment variables in production
+VITE_SUPABASE_URL = "https://jqjkdfbgrtdlkkfwavyq.supabase.co"
+# Add your Supabase publishable key here (safe to commit - it's designed to be public)
+VITE_SUPABASE_ANON_KEY = "sb_publishable_SDbpRmwVr40Dspe_XmdjaQ_mTn1g48L"
+# Optional: Showcase board ID for homepage
+# VITE_SHOWCASE_BOARD_ID = "your-board-uuid-here"
 
-# For local development, create a .dev.vars file with:
-# VITE_SUPABASE_URL=https://jqjkdfbgrtdlkkfwavyq.supabase.co
-# SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
-# VITE_SUPABASE_ANON_KEY=your-anon-key-here
-# VITE_SHOWCASE_BOARD_ID=your-showcase-board-id-here
+# IMPORTANT: SUPABASE_SERVICE_ROLE_KEY is a SECRET
+# It MUST be set as encrypted variable in Cloudflare Dashboard (not in this file)

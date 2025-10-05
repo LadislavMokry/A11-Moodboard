@@ -18,8 +18,17 @@ export async function getBoards(): Promise<BoardWithImages[]> {
   const { data, error } = await supabase
     .from('boards')
     .select(`
-      *,
-      images (*)
+      id,
+      owner_id,
+      name,
+      description,
+      share_token,
+      cover_rotation_enabled,
+      is_showcase,
+      og_image_id,
+      created_at,
+      updated_at,
+      images!images_board_id_fkey (*)
     `)
     .eq('owner_id', user.id)
     .order('updated_at', { ascending: false });
@@ -52,8 +61,17 @@ export async function getBoard(boardId: string): Promise<BoardWithImages> {
   const { data, error } = await supabase
     .from('boards')
     .select(`
-      *,
-      images:images(*)
+      id,
+      owner_id,
+      name,
+      description,
+      share_token,
+      cover_rotation_enabled,
+      is_showcase,
+      og_image_id,
+      created_at,
+      updated_at,
+      images:images!images_board_id_fkey(*)
     `)
     .eq('id', boardId)
     .eq('owner_id', user.id)

@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, type ReactNode } from 'react';
-import { ArrowLeft, CheckSquare, X } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { ArrowLeft, CheckSquare, X, Image } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { EditableText, type EditableTextHandle } from '@/components/EditableText';
 import { ShareButton } from '@/components/ShareButton';
+import { SetOgImageDialog } from '@/components/SetOgImageDialog';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
 import { type BoardWithImages } from '@/schemas/boardWithImages';
 import { getPublicBoardUrl } from '@/lib/shareUtils';
@@ -18,6 +19,7 @@ interface BoardPageHeaderProps {
 export function BoardPageHeader({ board, actions, onSelectClick, selectionMode = false }: BoardPageHeaderProps) {
   const nameEditorRef = useRef<EditableTextHandle>(null);
   const { mutateAsync: updateBoard } = useUpdateBoard();
+  const [showOgImageDialog, setShowOgImageDialog] = useState(false);
 
   const lastUpdated = useMemo(
     () =>
@@ -110,6 +112,15 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
         </div>
 
         <div className="flex flex-shrink-0 items-center gap-2">
+          <Button
+            onClick={() => setShowOgImageDialog(true)}
+            variant="ghost"
+            size="sm"
+            className="gap-2"
+          >
+            <Image className="w-4 h-4" />
+            Preview Image
+          </Button>
           <ShareButton
             url={shareUrl}
             title={board.name}
@@ -162,6 +173,8 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
           <span>Updated {lastUpdated}</span>
         </div>
       </div>
+
+      <SetOgImageDialog open={showOgImageDialog} onOpenChange={setShowOgImageDialog} board={board} />
     </header>
   );
 }

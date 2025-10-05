@@ -101,7 +101,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Phase 12: Deployment & SSR (Cloudflare Pages Functions)
 
 - [x] **12.1** OG Meta Tags SSR
-- [ ] **12.2** Dynamic OG Image Generation
+- [x] **12.2** Dynamic OG Image Generation
 - [ ] **12.3** Environment & Deployment Config
 
 ---
@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 41
+**Completed**: 42
 **In Progress**: 0
-**Remaining**: 11
+**Remaining**: 10
 
 ### By Phase:
 
@@ -143,7 +143,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 9** (Sharing): 3/3 ✅ COMPLETE
 - **Phase 10** (Advanced): 4/4 ✅ COMPLETE
 - **Phase 11** (Edge Functions): 4/4 ✅ COMPLETE - **DEPLOYED & TESTED**
-- **Phase 12** (Deployment): 1/3 - **SSR COMPLETE**
+- **Phase 12** (Deployment): 2/3 - **SSR & OG IMAGE COMPLETE**
 - **Phase 13** (Polish): 0/4
 - **Phase 14** (Testing): 0/3
 
@@ -164,10 +164,10 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Current Sprint
 
 **Active Phase**: Phase 12 - Deployment & SSR
-**Current Step**: 12.2 - Dynamic OG Image Generation
+**Current Step**: 12.3 - Environment & Deployment Config
 
 **Phases 1-11 Complete! 🎉**
-**Step 12.1 Complete! 🎉**
+**Steps 12.1 & 12.2 Complete! 🎉**
 
 **Phase 12.1 Completion Notes:**
 - ✅ Cloudflare Pages Function for SSR at `/b/:shareToken`
@@ -177,10 +177,20 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - ✅ Fixed RPC response structure and schema validation
 - ✅ Tested with both Wrangler dev and normal dev server
 
+**Phase 12.2 Completion Notes:**
+- ✅ Database migration: added `og_image_id` column to boards table
+- ✅ Updated `get_public_board` RPC to include `og_image_id`
+- ✅ Created OG image proxy endpoint at `/api/og/:shareToken.png`
+- ✅ Logic: uses designated OG image if set, falls back to first image
+- ✅ Updated schemas to include `og_image_id` field
+- ✅ Built UI component `SetOgImageDialog` for selecting OG preview image
+- ✅ Integrated dialog into BoardPageHeader with "Preview Image" button
+- ✅ Fixed PostgREST embedding conflict with foreign key hints (`!images_board_id_fkey`)
+- ✅ Users can now select which board image appears in social media previews
+
 **Next Up**:
 
-1. Dynamic OG Image Generation (1200×630 preview images at `/api/og/:shareToken.png`)
-2. Cloudflare Pages deployment configuration and production deployment
+1. Environment & Deployment Configuration for Cloudflare Pages production deployment
 
 **Deployment Reminder**:
 

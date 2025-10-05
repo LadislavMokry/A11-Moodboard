@@ -21,6 +21,7 @@ interface PublicBoardData {
     description: string | null;
     cover_rotation_enabled: boolean;
     is_showcase: boolean;
+    og_image_id: string | null;
     created_at: string;
     updated_at: string;
   };

@@ -25,7 +25,8 @@
       "Bash(echo:*)",
       "Bash(fi)",
       "Bash(done)",
-      "Bash(psql \"postgresql://postgres.jqjkdfbgrtdlkkfwavyq:$SUPABASE_DB_PASSWORD@aws-0-us-east-1.pooler.supabase.com:6543/postgres\" -c \"SELECT get_public_board(''b4532b22-b6de-4602-ba73-824c562a2c72''::uuid) LIMIT 1;\")"
+      "Bash(psql \"postgresql://postgres.jqjkdfbgrtdlkkfwavyq:$SUPABASE_DB_PASSWORD@aws-0-us-east-1.pooler.supabase.com:6543/postgres\" -c \"SELECT get_public_board(''b4532b22-b6de-4602-ba73-824c562a2c72''::uuid) LIMIT 1;\")",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
