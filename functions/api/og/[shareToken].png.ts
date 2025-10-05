@@ -152,8 +152,11 @@ export async function onRequest(context: {
     return new Response(imageBuffer, {
       status: 200,
       headers: {
-        'Content-Type': ogImage.mime_type || 'image/png',
-        'Cache-Control': 'public, max-age=86400', // 24 hours
+        'Content-Type': ogImage.mime_type || 'image/jpeg',
+        'Content-Length': imageBuffer.byteLength.toString(),
+        'Cache-Control': 'public, max-age=86400, immutable', // 24 hours
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
         ETag: etag,
       },
     });
