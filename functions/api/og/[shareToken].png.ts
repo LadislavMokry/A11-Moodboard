@@ -145,7 +145,12 @@ export async function onRequest(context: {
 
     // Fetch the image from Supabase Storage
     // We must proxy it because Facebook doesn't follow redirects for OG images
-    const imageResponse = await fetch(imageUrl);
+    // Send Accept: image/webp header so Supabase returns WebP instead of original format
+    const imageResponse = await fetch(imageUrl, {
+      headers: {
+        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+      },
+    });
 
     if (!imageResponse.ok) {
       console.error('Failed to fetch image from storage:', imageResponse.status);
