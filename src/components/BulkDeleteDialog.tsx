@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { AlertTriangle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useDeleteImage } from '@/hooks/useImageMutations';
+import { deleteImages } from '@/services/images';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface BulkDeleteDialogProps {
   open: boolean;
@@ -19,50 +21,28 @@ export function BulkDeleteDialog({
   imageIds,
   onDeleteSuccess,
 }: BulkDeleteDialogProps) {
-  const { mutate: deleteImage, isPending } = useDeleteImage(boardId);
-
+  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
   const imageCount = imageIds.length;
 
-  const handleDelete = () => {
-    // For now, delete images one by one
-    // TODO: In Phase 11, call delete_images Edge Function with array of IDs
-    let deletedCount = 0;
-    let errorCount = 0;
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteImages(imageIds);
 
-    imageIds.forEach((imageId) => {
-      deleteImage(
-        imageId,
-        {
-          onSuccess: () => {
-            deletedCount++;
-            if (deletedCount + errorCount === imageIds.length) {
-              if (errorCount === 0) {
-                toast.success(`${deletedCount} ${deletedCount === 1 ? 'image' : 'images'} deleted`);
-                onDeleteSuccess?.();
-                onOpenChange(false);
-              } else {
-                toast.error(`Deleted ${deletedCount}, failed ${errorCount}`);
-                onDeleteSuccess?.();
-                onOpenChange(false);
-              }
-            }
-          },
-          onError: (error) => {
-            errorCount++;
-            console.error('Failed to delete image:', error);
-            if (deletedCount + errorCount === imageIds.length) {
-              if (deletedCount === 0) {
-                toast.error(`Failed to delete ${imageCount} ${imageCount === 1 ? 'image' : 'images'}`);
-              } else {
-                toast.error(`Deleted ${deletedCount}, failed ${errorCount}`);
-                onDeleteSuccess?.();
-              }
-              onOpenChange(false);
-            }
-          },
-        },
-      );
-    });
+      // Invalidate queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+      queryClient.invalidateQueries({ queryKey: ['boards'] });
+
+      toast.success(`${imageCount} ${imageCount === 1 ? 'image' : 'images'} deleted`);
+      onDeleteSuccess?.();
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Failed to delete images:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to delete images');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -98,16 +78,16 @@ export function BulkDeleteDialog({
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isPending}
+              disabled={isDeleting}
             >
               Cancel
             </Button>
             <Button
               onClick={handleDelete}
-              disabled={isPending}
+              disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600 text-white"
             >
-              {isPending ? 'Deleting...' : `Delete ${imageCount === 1 ? 'image' : 'images'}`}
+              {isDeleting ? 'Deleting...' : `Delete ${imageCount === 1 ? 'image' : 'images'}`}
             </Button>
           </div>
         </Dialog.Content>

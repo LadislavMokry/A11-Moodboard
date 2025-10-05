@@ -182,7 +182,7 @@ export async function deleteBoard(boardId: string): Promise<void> {
 
   // Call edge function
   const { error } = await supabase.functions.invoke('delete_board', {
-    body: { board_id: boardId },
+    body: { boardId },
   });
 
   if (error) {

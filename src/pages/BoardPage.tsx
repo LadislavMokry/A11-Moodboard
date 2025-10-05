@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, MoreVertical } from 'lucide-react';
+import { Share2, MoreVertical, Link as LinkIcon } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { BoardPageHeader } from '@/components/BoardPageHeader';
 import { SortableImageGrid } from '@/components/SortableImageGrid';
@@ -15,6 +15,7 @@ import { BoardPageMenu } from '@/components/BoardPageMenu';
 import { RenameBoardDialog } from '@/components/RenameBoardDialog';
 import { DeleteBoardDialog } from '@/components/DeleteBoardDialog';
 import { RegenerateShareTokenDialog } from '@/components/RegenerateShareTokenDialog';
+import { ImportUrlDialog } from '@/components/ImportUrlDialog';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { SelectionProvider, useSelection } from '@/contexts/SelectionContext';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -57,6 +58,8 @@ function BoardPageContent() {
   const [showRenameBoardDialog, setShowRenameBoardDialog] = useState(false);
   const [showDeleteBoardDialog, setShowDeleteBoardDialog] = useState(false);
   const [showRegenerateTokenDialog, setShowRegenerateTokenDialog] = useState(false);
+  const [showImportUrlDialog, setShowImportUrlDialog] = useState(false);
+  const [pastedUrl, setPastedUrl] = useState<string | undefined>();
 
   const sortedImages = useMemo(
     () => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []),
@@ -158,6 +161,37 @@ function BoardPageContent() {
     },
   });
 
+  // Handle URL paste (Ctrl+V with text)
+  useEffect(() => {
+    if (!board || !isOwner) return;
+
+    const handlePasteUrl = async (e: ClipboardEvent) => {
+      // Only handle if no input/textarea is focused
+      const activeElement = document.activeElement;
+      if (activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      const text = e.clipboardData?.getData('text/plain');
+      if (!text) return;
+
+      // Check if it's a valid URL
+      try {
+        const url = new URL(text);
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+          // Open import dialog with the URL
+          setPastedUrl(text);
+          setShowImportUrlDialog(true);
+        }
+      } catch {
+        // Not a valid URL, ignore
+      }
+    };
+
+    window.addEventListener('paste', handlePasteUrl);
+    return () => window.removeEventListener('paste', handlePasteUrl);
+  }, [board, isOwner]);
+
   return (
     <Layout>
       <ImageDropZone
@@ -196,17 +230,28 @@ function BoardPageContent() {
                 actions={
                   <>
                     {isOwner ? (
-                      <ImageUploadButton
-                        onSelectFiles={(files) => {
-                          if (!files) {
-                            return;
-                          }
-                          uploadImages(files);
-                        }}
-                        uploading={uploading}
-                        accept={accept}
-                        inProgressCount={activeUploads}
-                      />
+                      <>
+                        <ImageUploadButton
+                          onSelectFiles={(files) => {
+                            if (!files) {
+                              return;
+                            }
+                            uploadImages(files);
+                          }}
+                          uploading={uploading}
+                          accept={accept}
+                          inProgressCount={activeUploads}
+                        />
+                        <Button
+                          onClick={() => setShowImportUrlDialog(true)}
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                        >
+                          <LinkIcon className="w-4 h-4" />
+                          Import URL
+                        </Button>
+                      </>
                     ) : null}
                     <Button
                       onClick={handleShareClick}
@@ -353,6 +398,19 @@ function BoardPageContent() {
                   onOpenChange={setShowRegenerateTokenDialog}
                   boardId={board.id}
                   currentShareToken={board.share_token}
+                />
+              )}
+
+              {/* Import URL Dialog */}
+              {showImportUrlDialog && (
+                <ImportUrlDialog
+                  open={showImportUrlDialog}
+                  onOpenChange={(open) => {
+                    setShowImportUrlDialog(open);
+                    if (!open) setPastedUrl(undefined); // Clear pasted URL when closing
+                  }}
+                  boardId={board.id}
+                  initialUrl={pastedUrl}
                 />
               )}
             </>

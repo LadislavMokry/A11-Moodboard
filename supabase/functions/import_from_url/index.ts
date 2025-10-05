@@ -216,9 +216,12 @@ serve(async (req) => {
       p_board_id: boardId,
       p_storage_path: storagePath,
       p_mime_type: contentType,
+      p_width: 0,  // Will be updated by frontend when image loads
+      p_height: 0, // Will be updated by frontend when image loads
       p_size_bytes: imageSize,
       p_original_filename: originalFilename,
       p_source_url: url,
+      p_caption: body.caption || '',
     });
 
     if (rpcError) {
@@ -228,8 +231,8 @@ serve(async (req) => {
       return json(500, { error: `Failed to create image record: ${rpcError.message}` });
     }
 
-    // Return created image object
-    return json(200, { image: newImage });
+    // Return created image object directly (not wrapped)
+    return json(200, newImage);
 
   } catch (error) {
     console.error('Unexpected error:', error);
