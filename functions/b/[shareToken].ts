@@ -105,8 +105,8 @@ function generateHtml(
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="800" />
-    <meta property="og:image:height" content="420" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${title}" />
     <meta property="og:site_name" content="Moodeight" />
 
