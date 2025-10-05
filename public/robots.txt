@@ -1,0 +1,22 @@
+# Allow all crawlers to access public board pages
+# These are unlisted but should be scrapable by social media bots
+
+User-agent: *
+Disallow: /staging
+Disallow: /boards
+
+# Explicitly allow social media bots to scrape public board URLs
+User-agent: facebookexternalhit
+Allow: /b/
+
+User-agent: Twitterbot
+Allow: /b/
+
+User-agent: LinkedInBot
+Allow: /b/
+
+User-agent: Slackbot
+Allow: /b/
+
+User-agent: WhatsApp
+Allow: /b/
