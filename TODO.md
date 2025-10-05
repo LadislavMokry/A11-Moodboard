@@ -126,9 +126,9 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 ## Progress Summary
 
 **Total Steps**: 52
-**Completed**: 36
+**Completed**: 40
 **In Progress**: 0
-**Remaining**: 16
+**Remaining**: 12
 
 ### By Phase:
 
@@ -142,7 +142,7 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - **Phase 8** (Image Management): 3/3 ✅ COMPLETE
 - **Phase 9** (Sharing): 3/3 ✅ COMPLETE
 - **Phase 10** (Advanced): 4/4 ✅ COMPLETE
-- **Phase 11** (Edge Functions): 4/4 ✅ COMPLETE
+- **Phase 11** (Edge Functions): 4/4 ✅ COMPLETE - **DEPLOYED & TESTED**
 - **Phase 12** (Deployment): 0/3
 - **Phase 13** (Polish): 0/4
 - **Phase 14** (Testing): 0/3
@@ -167,6 +167,13 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 **Current Step**: 12.1 - OG Meta Tags SSR
 
 **Phases 1-11 Complete! 🎉**
+
+**Phase 11 Completion Notes:**
+- ✅ All 4 Edge Functions deployed and tested
+- ✅ URL import UI with Ctrl+V paste detection
+- ✅ Bulk delete properly implemented
+- ✅ Build/lint errors resolved (0 errors, 22 warnings)
+- ✅ Cloudflare Wrangler CLI installed and ready
 
 **Next Up**:
 
@@ -197,17 +204,28 @@ High-level tracking checklist for building the Moodeight moodboard application. 
 - [x] RLS policies enabled and tested
 - [x] Storage buckets created (board-images, avatars)
 - [x] Storage policies configured
-- [ ] Edge Functions deployed and tested
+- [x] **Edge Functions deployed and tested** ✅
+  - [x] import_from_url (server-side image import)
+  - [x] delete_images (bulk delete with storage cleanup)
+  - [x] delete_board (transactional board deletion)
+  - [x] transfer_images (copy/move images between boards)
 - [x] Auth providers configured (Google OAuth)
 
 ### Cloudflare Pages Setup
 
 - [ ] Repository connected
 - [ ] Build settings configured
+  - **Build command**: `npm run build`
+  - **Build output directory**: `dist`
 - [ ] Environment variables set (secrets)
+  - **New Supabase API Keys**: Use `sb_publishable_*` keys (not legacy anon keys)
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_ANON_KEY` (use publishable key: `sb_publishable_*`)
+  - `VITE_SHOWCASE_BOARD_ID`
 - [ ] Pages Functions deployed
 - [ ] Custom domain configured (optional)
 - [ ] SSL certificate active
+- [x] **Wrangler CLI installed** ✅
 
 ### Post-Deployment
 
