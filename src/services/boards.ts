@@ -26,6 +26,7 @@ export async function getBoards(): Promise<BoardWithImages[]> {
       cover_rotation_enabled,
       is_showcase,
       og_image_id,
+      og_image_path,
       created_at,
       updated_at,
       images!images_board_id_fkey (*)
@@ -69,6 +70,7 @@ export async function getBoard(boardId: string): Promise<BoardWithImages> {
       cover_rotation_enabled,
       is_showcase,
       og_image_id,
+      og_image_path,
       created_at,
       updated_at,
       images:images!images_board_id_fkey(*)
@@ -206,6 +208,28 @@ export async function deleteBoard(boardId: string): Promise<void> {
   if (error) {
     throw new Error(`Failed to delete board: ${error.message}`);
   }
+}
+
+/**
+ * Generates a pre-optimized OG preview image for a board
+ * Calls the generate-og-image Edge Function
+ */
+export async function generateOgImage(boardId: string, imageId: string): Promise<{ ogImagePath: string; size: number; contentType: string }> {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new BoardOwnershipError('Must be authenticated to generate OG image');
+  }
+
+  const { data, error } = await supabase.functions.invoke('generate-og-image', {
+    body: { boardId, imageId },
+  });
+
+  if (error) {
+    throw new Error(`Failed to generate OG image: ${error.message}`);
+  }
+
+  return data;
 }
 
 /**

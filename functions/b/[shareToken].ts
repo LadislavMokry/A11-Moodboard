@@ -74,9 +74,13 @@ function generateHtml(
   const title = escapeHtml(data.board.name);
   const defaultDescription = `${data.owner.display_name || 'A user'}'s moodboard on Moodeight`;
   const description = escapeHtml(data.board.description || defaultDescription);
-  // Use our OG image endpoint (serves from same domain for WhatsApp/FB Messenger compatibility)
-  // Use .webp extension to match the actual content type served
-  const ogImageUrl = `${baseUrl}/api/og/${shareToken}.webp`;
+
+  // Use pre-generated OG image if available, otherwise fall back to dynamic endpoint
+  const supabaseUrl = 'https://jqjkdfbgrtdlkkfwavyq.supabase.co';
+  const ogImageUrl = data.board.og_image_path
+    ? `${supabaseUrl}/storage/v1/object/public/og-images/${data.board.og_image_path}`
+    : `${baseUrl}/api/og/${shareToken}.webp`;
+
   const boardUrl = `${baseUrl}/b/${shareToken}`;
 
   // Use provided asset paths or fallback to development paths

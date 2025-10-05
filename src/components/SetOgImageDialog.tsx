@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useUpdateBoard } from '@/hooks/useBoardMutations';
 import { type BoardWithImages } from '@/schemas/boardWithImages';
 import { getSupabaseThumbnail } from '@/lib/imageUtils';
+import { generateOgImage } from '@/services/boards';
 import { toast } from 'sonner';
 
 interface SetOgImageDialogProps {
@@ -29,20 +30,24 @@ export function SetOgImageDialog({ open, onOpenChange, board }: SetOgImageDialog
   const handleSave = async () => {
     setIsUpdating(true);
     try {
-      await updateBoard({
-        boardId: board.id,
-        updates: { og_image_id: selectedImageId },
-      });
+      // Determine which image to use
+      const imageToUse = selectedImageId || board.images[0]?.id;
+
+      if (!imageToUse) {
+        toast.error('No image available to generate preview');
+        return;
+      }
+
+      // Generate the OG preview image
+      const result = await generateOgImage(board.id, imageToUse);
 
       toast.success(
-        selectedImageId
-          ? 'OG preview image updated'
-          : 'OG preview image cleared (will use first image)'
+        `Preview image generated (${result.size}KB ${result.contentType})`
       );
       onOpenChange(false);
     } catch (error) {
-      console.error('Failed to update OG image:', error);
-      toast.error('Failed to update OG preview image');
+      console.error('Failed to generate OG image:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate preview image');
     } finally {
       setIsUpdating(false);
     }

@@ -12,6 +12,7 @@ export const boardSchema = z.object({
   cover_rotation_enabled: z.boolean().default(true),
   is_showcase: z.boolean().default(false),
   og_image_id: z.string().uuid().nullable().optional(), // Image to use for OG preview
+  og_image_path: z.string().nullable().optional(), // Pre-generated OG preview path
   created_at: z.string(),
   updated_at: z.string(),
 });
