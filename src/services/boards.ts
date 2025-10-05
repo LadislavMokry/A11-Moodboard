@@ -31,7 +31,7 @@ export async function getBoards(): Promise<BoardWithImages[]> {
       images!images_board_id_fkey (*)
     `)
     .eq('owner_id', user.id)
-    .order('updated_at', { ascending: false });
+    .order('updated_at', { ascending: false }) as any;
 
   if (error) {
     throw new Error(`Failed to fetch boards: ${error.message}`);
@@ -75,7 +75,7 @@ export async function getBoard(boardId: string): Promise<BoardWithImages> {
     `)
     .eq('id', boardId)
     .eq('owner_id', user.id)
-    .single();
+    .single() as any;
 
   if (error) {
     if (error.code === 'PGRST116') {
