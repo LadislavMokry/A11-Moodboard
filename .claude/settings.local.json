@@ -16,7 +16,15 @@
       "Bash(npm run dev:*)",
       "Bash(git checkout:*)",
       "Bash(npm run lint)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(if grep -q '\"\"Content-Type\"\": \"\"application/json\"\"' \"$file\")",
+      "Bash(! grep -q \"Access-Control-Allow-Origin\" \"$file\")",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(fi)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

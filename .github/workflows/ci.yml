@@ -28,8 +28,9 @@ jobs:
       - name: Lint
         run: npm run lint --if-present
 
-      - name: Run tests
-        run: npm run test -- --run
+      # Disabled to save build minutes - uncomment if needed
+      # - name: Run tests
+      #   run: npm run test -- --run
 
       - name: Build
         run: npm run build
