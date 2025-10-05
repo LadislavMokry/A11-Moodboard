@@ -74,7 +74,9 @@ function generateHtml(
   const title = escapeHtml(data.board.name);
   const defaultDescription = `${data.owner.display_name || 'A user'}'s moodboard on Moodeight`;
   const description = escapeHtml(data.board.description || defaultDescription);
-  const ogImageUrl = `${baseUrl}/api/og/${shareToken}.png`;
+  // TEMPORARY: Test with a known-good image URL
+  const ogImageUrl = 'https://picsum.photos/1200/630';
+  // const ogImageUrl = `${baseUrl}/api/og/${shareToken}.png`;
   const boardUrl = `${baseUrl}/b/${shareToken}`;
 
   // Use provided asset paths or fallback to development paths
