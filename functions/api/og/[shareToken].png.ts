@@ -62,7 +62,7 @@ function getImagePublicUrl(supabaseUrl: string, storagePath: string): string {
   // WhatsApp REQUIRES: WebP format AND under 300KB file size (critical!)
   // Supabase automatically converts to WebP for compatible browsers
   // Note: storagePath already includes "boards/" prefix, so we use it directly
-  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=60`;
+  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=35`;
 }
 
 /**
