@@ -167,15 +167,15 @@ export async function onRequest(context: {
 
   // Let non-HTML requests (assets, API calls, etc.) pass through to static files
   const url = new URL(request.url);
-  if (url.pathname !== `/b/${shareToken}`) {
+
+  // Only handle /b/:shareToken paths (strip query params for comparison)
+  const pathname = url.pathname;
+  if (pathname !== `/b/${shareToken}`) {
     return next();
   }
 
-  // Only handle HTML requests (no file extension or explicit .html)
-  const acceptHeader = request.headers.get('Accept') || '';
-  if (!acceptHeader.includes('text/html')) {
-    return next();
-  }
+  // Always handle /b/ routes with SSR (don't check Accept header)
+  // Facebook's bot might not send the right Accept header
 
   // Validate shareToken is a valid UUID
   const uuidRegex =
