@@ -121,7 +121,7 @@ export function Lightbox({
 
   // Mobile swipe gestures
   const bindSwipe = useDrag(
-    ({ offset: [ox, oy], velocity: [vx, vy], direction: [dx, dy], last, cancel }) => {
+    ({ offset: [ox, oy], velocity: [vx, vy], direction: [dx, _dy], last, cancel }) => {
       // Only enable swipe when not zoomed and on mobile
       if (scale > MIN_SCALE || !isMobile) {
         cancel?.();

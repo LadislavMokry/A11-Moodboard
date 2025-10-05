@@ -84,10 +84,20 @@ export async function updateImage(imageId: string, updates: ImageUpdate): Promis
 
 export async function deleteImage(imageId: string): Promise<void> {
   const { error } = await supabase.functions.invoke('delete_images', {
-    body: { image_ids: [imageId] },
+    body: { imageIds: [imageId] },
   });
 
   if (error) {
     throw new Error(`Failed to delete image: ${error.message}`);
+  }
+}
+
+export async function deleteImages(imageIds: string[]): Promise<void> {
+  const { error } = await supabase.functions.invoke('delete_images', {
+    body: { imageIds },
+  });
+
+  if (error) {
+    throw new Error(`Failed to delete images: ${error.message}`);
   }
 }

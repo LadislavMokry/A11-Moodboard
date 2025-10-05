@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState as _useState } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
 import { getSupabasePublicUrl } from '@/lib/imageUtils';

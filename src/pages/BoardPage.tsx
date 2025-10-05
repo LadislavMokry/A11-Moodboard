@@ -44,7 +44,7 @@ function BoardPageContent() {
     selectionMode,
     selectedIds,
     toggleSelection,
-    selectAll,
+    selectAll: _selectAll,
     enterSelectionMode,
     exitSelectionMode,
   } = useSelection();

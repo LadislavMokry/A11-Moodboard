@@ -14,7 +14,7 @@ interface BoardCardMenuProps {
 }
 
 export function BoardCardMenu({
-  open,
+  open: _open,
   onOpenChange,
   onRename,
   onShare,

@@ -322,7 +322,7 @@ export function useImageUpload(boardId: string | undefined): UseImageUploadResul
       }));
 
       const toastId = hotToast.custom(
-        (t) => (
+        (_t) => (
           <UploadProgressToast
             uploads={toastItems}
             onCancel={cancelUpload}

@@ -15,7 +15,7 @@ export function TransferTarget({ show, onDrop }: TransferTargetProps) {
     id: 'transfer-target',
   });
 
-  const handleDrop = () => {
+  const _handleDrop = () => {
     if (isOver) {
       onDrop();
     }

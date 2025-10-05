@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/lib/toast';
 import { Loader2, Plus, X } from 'lucide-react';
 
-const descriptionPreprocess = z.preprocess((value) => {
+const _descriptionPreprocess = z.preprocess((value) => {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;

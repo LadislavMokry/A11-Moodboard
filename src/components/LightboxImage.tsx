@@ -38,7 +38,7 @@ export function LightboxImage({ image, scale, onScaleChange, onPanChange }: Ligh
   const getMaxPan = () => {
     if (!imgRef.current || !containerRef.current) return { maxX: 0, maxY: 0 };
 
-    const imgRect = imgRef.current.getBoundingClientRect();
+    const _imgRect = imgRef.current.getBoundingClientRect();
     const containerRect = containerRef.current.getBoundingClientRect();
 
     const scaledWidth = imageDimensions.width * scale;

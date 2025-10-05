@@ -10,7 +10,7 @@ interface BoardPageMenuProps {
 }
 
 export function BoardPageMenu({
-  open,
+  open: _open,
   onOpenChange,
   onRename,
   onRegenerateLink,

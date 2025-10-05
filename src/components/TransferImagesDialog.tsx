@@ -100,7 +100,7 @@ export function TransferImagesDialog({
 
       reset();
       setShowCreateForm(false);
-    } catch (error) {
+    } catch (_error) {
       // Error handling is done by the mutation
     }
   });

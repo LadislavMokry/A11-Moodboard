@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
+import { Sparkles as _Sparkles } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { useAuth } from '@/hooks/useAuth';
 import { useBoards } from '@/hooks/useBoards';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { EmptyState } from '@/components/EmptyState';
+import { EmptyState as _EmptyState } from '@/components/EmptyState';
 import { SignInButton } from '@/components/SignInButton';
 import { BoardCard } from '@/components/BoardCard';
 import { ShareDialog } from '@/components/ShareDialog';

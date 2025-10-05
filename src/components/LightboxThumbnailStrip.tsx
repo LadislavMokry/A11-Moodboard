@@ -31,7 +31,7 @@ export function LightboxThumbnailStrip({
     // Calculate range around current index
     const halfWindow = Math.floor(MAX_THUMBNAILS / 2);
     let start = Math.max(0, currentIndex - halfWindow);
-    let end = Math.min(images.length, start + MAX_THUMBNAILS);
+    const end = Math.min(images.length, start + MAX_THUMBNAILS);
 
     // Adjust if we're near the end
     if (end - start < MAX_THUMBNAILS) {
