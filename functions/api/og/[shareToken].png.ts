@@ -60,8 +60,9 @@ function getImagePublicUrl(supabaseUrl: string, storagePath: string): string {
   // Use Supabase render endpoint for image transformation
   // Facebook recommends: 1200x630 (1.91:1 aspect ratio)
   // WhatsApp REQUIRES: WebP format AND under 300KB file size (critical!)
+  // Supabase automatically converts to WebP for compatible browsers
   // Note: storagePath already includes "boards/" prefix, so we use it directly
-  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=75&format=webp`;
+  return `${supabaseUrl}/storage/v1/render/image/public/board-images/${storagePath}?width=1200&height=630&resize=cover&quality=60`;
 }
 
 /**
