@@ -89,7 +89,7 @@ export default function Home() {
   // Logged-in user homepage
   return (
     <Layout>
-              <section className="flex">        {/* Left column: Horizontal Board Cards */}
+              <section className="flex border-b border-neutral-200 dark:border-neutral-800">        {/* Left column: Horizontal Board Cards */}
         <div className="w-1/3 p-4 overflow-y-auto">
           <h2 className="text-2xl font-semibold mb-4">Your Boards</h2>
           {boardsLoading ? (
