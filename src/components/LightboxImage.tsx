@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { useSpring, animated } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
-import { getSupabasePublicUrl } from '@/lib/imageUtils';
+import { getSupabasePublicUrl, getSupabaseThumbnail } from '@/lib/imageUtils';
+import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/Skeleton';
 
 interface LightboxImageProps {
   image: Image;
@@ -16,11 +18,13 @@ const MAX_SCALE = 5;
 
 export function LightboxImage({ image, scale, onScaleChange, onPanChange }: LightboxImageProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
   const src = getSupabasePublicUrl(image.storage_path);
+  const previewSrc = getSupabaseThumbnail(image.storage_path, 600);
 
   const [{ x, y }, api] = useSpring(() => ({
     x: 0,
@@ -28,17 +32,18 @@ export function LightboxImage({ image, scale, onScaleChange, onPanChange }: Ligh
     config: { tension: 300, friction: 30 },
   }));
 
-  // Reset zoom and pan when image changes
+  // Reset zoom, pan and loading state when image changes
   useEffect(() => {
     onScaleChange(1);
     api.start({ x: 0, y: 0, immediate: true });
+    setIsLoading(true);
+    setIsPreviewLoaded(false);
   }, [image.id, onScaleChange, api]);
 
   // Calculate max pan bounds based on image size and scale
   const getMaxPan = () => {
     if (!imgRef.current || !containerRef.current) return { maxX: 0, maxY: 0 };
 
-    const _imgRect = imgRef.current.getBoundingClientRect();
     const containerRect = containerRef.current.getBoundingClientRect();
 
     const scaledWidth = imageDimensions.width * scale;
@@ -114,28 +119,48 @@ export function LightboxImage({ image, scale, onScaleChange, onPanChange }: Ligh
     },
   );
 
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
+  const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = event.currentTarget;
     setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+    setIsLoading(false);
+  };
+
+  const handleImageError = () => {
     setIsLoading(false);
   };
 
   return (
     <div
       ref={containerRef}
-      className="flex items-center justify-center w-full h-full p-4 touch-none"
+      className="relative flex h-full w-full items-center justify-center p-4 touch-none"
+      style={{ contain: 'layout paint' }}
       {...bind()}
     >
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-neutral-600 border-t-white rounded-full animate-spin" />
-        </div>
+      {previewSrc && (
+        <img
+          src={previewSrc}
+          alt=""
+          aria-hidden="true"
+          className={cn(
+            'absolute inset-0 h-full w-full object-contain blur-2xl transition-opacity duration-300',
+            isLoading && isPreviewLoaded ? 'opacity-100' : 'opacity-0',
+          )}
+          onLoad={() => setIsPreviewLoaded(true)}
+        />
       )}
+
+      <Skeleton
+        className={cn(
+          'absolute inset-0 h-full w-full transition-opacity duration-300',
+          (isPreviewLoaded || !isLoading) ? 'opacity-0' : 'opacity-100',
+        )}
+      />
+
       <animated.img
         ref={imgRef}
         src={src}
         alt={image.caption || ''}
-        className="max-w-full max-h-full object-contain select-none"
+        className="relative z-10 max-h-full max-w-full select-none object-contain"
         style={{
           opacity: isLoading ? 0 : 1,
           transition: 'opacity 200ms ease-in-out',
@@ -143,6 +168,7 @@ export function LightboxImage({ image, scale, onScaleChange, onPanChange }: Ligh
           cursor: scale > MIN_SCALE ? 'grab' : 'zoom-in',
         }}
         onLoad={handleImageLoad}
+        onError={handleImageError}
         draggable={false}
       />
     </div>

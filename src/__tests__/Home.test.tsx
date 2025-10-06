@@ -97,6 +97,29 @@ describe('Home page', () => {
     expect(screen.getByText(/Loading your session/i)).toBeInTheDocument();
   });
 
+  it('renders board card skeletons while boards load', () => {
+    mockUseAuth.mockReturnValue({
+      ...baseAuth,
+      user: { id: 'user-1', email: 'user@example.com' } as any,
+    });
+
+    mockUseBoards.mockReturnValue(
+      createBoardsReturn({
+        isLoading: true,
+        data: undefined,
+      }),
+    );
+
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+
+    const skeletons = screen.getAllByTestId('board-card-skeleton');
+    expect(skeletons).toHaveLength(6);
+  });
+
   it('renders boards grid when data is available', () => {
     mockUseAuth.mockReturnValue({
       ...baseAuth,

@@ -281,7 +281,75 @@ Other websites that successfully show images in WhatsApp:
 - Supabase Image Transformations: https://supabase.com/docs/guides/storage/serving/image-transformations
 - Medium article on WhatsApp OG: https://medium.com/@eduardojs999/how-to-use-whatsapp-open-graph-preview-with-next-js-avoiding-common-pitfalls-88fea4b7c949
 
+## Latest Attempt: Pre-generated JPG Images (2025-10-06)
+
+Following the working Kindone implementation (which uses static PNG), we implemented pre-generated OG images:
+
+### Implementation
+1. ✅ Created Edge Function `generate-og-image` that:
+   - Fetches source image from board
+   - Transforms to 1200x630 at quality=80
+   - Requests JPG format (changed from WebP based on Kindone analysis)
+   - Uploads to `og-images` bucket in Supabase Storage
+   - Updates `boards.og_image_path` column
+
+2. ✅ Updated SSR function to:
+   - Use direct Supabase Storage URL when `og_image_path` is set
+   - Dynamically set `og:image:type` based on file extension
+   - Fall back to dynamic endpoint if no pre-generated image
+
+3. ✅ Created UI component `SetOgImageDialog`:
+   - Allows users to select which image to use for OG preview
+   - Accessible from board page header (Image icon button)
+   - Triggers Edge Function to generate and upload OG image
+
+### Results
+- ✅ Pre-generated JPG images successfully created (26KB for test board)
+- ✅ Direct Supabase Storage URLs serving correctly
+- ✅ `og:image:type` correctly set to `image/jpeg`
+- ✅ Facebook Debugger shows image
+- ❌ **WhatsApp STILL does not show image**
+- ❌ **Facebook Messenger STILL does not show image**
+
+### Test Board
+- URL: https://a11-moodboard.pages.dev/b/4d730d0b-ac24-4fd8-930f-ab4ae76b63ec
+- OG Image: https://jqjkdfbgrtdlkkfwavyq.supabase.co/storage/v1/object/public/og-images/33170fa6-664e-442f-8162-593d370fc8d9.jpg
+- Size: 26KB
+- Format: JPG (Content-Type: image/jpeg)
+- Dimensions: 1200x630
+
+### Comparison with Working Kindone Implementation
+**Kindone (works in WhatsApp):**
+- Static PNG file (512×512)
+- Direct CDN URL
+- `og:image:type`: not explicitly set (defaults to image/png)
+- URL: https://kindone.ai/favicon/web-app-manifest-512x512.png
+
+**A11-Moodboard (doesn't work in WhatsApp):**
+- Pre-generated JPG file (1200×630)
+- Direct Supabase Storage URL
+- `og:image:type`: image/jpeg
+- URL: https://jqjkdfbgrtdlkkfwavyq.supabase.co/storage/v1/object/public/og-images/{boardId}.jpg
+
+### Possible Remaining Issues
+1. **Domain trust** - WhatsApp might trust `kindone.ai` but not `supabase.co`
+2. **Image dimensions** - Kindone uses square 512×512, we use 1200×630
+3. **Supabase-specific headers** - Storage bucket might have headers WhatsApp rejects
+4. **CORS/Security headers** - Supabase adds various headers that might interfere
+5. **Cloudflare caching** - Between our domain and Supabase, caching might be an issue
+6. **WhatsApp cache** - Old failed attempts might be cached by WhatsApp
+7. **Unknown WhatsApp requirements** - No official WhatsApp OG documentation exists
+
+### Conclusion
+Despite matching Kindone's approach (static image on CDN), WhatsApp still refuses to show the image. The issue appears to be beyond format, size, or implementation approach. Without official WhatsApp documentation or clearer error messages, further debugging would require:
+- Testing with completely different domains
+- Hosting images on different CDNs
+- Waiting for WhatsApp's cache to expire (unknown duration)
+- Direct contact with Meta/WhatsApp support
+
+**Status: Moving on** - Core functionality works (Facebook Debugger shows image correctly), but WhatsApp/Messenger remain incompatible for unknown reasons.
+
 ---
 
-*Last updated: 2025-10-05*
-*Status: Image shows in Facebook Debugger but NOT in WhatsApp or Messenger*
+*Last updated: 2025-10-06*
+*Status: Image shows in Facebook Debugger but NOT in WhatsApp or Messenger (tried WebP, JPG, pre-generated, direct CDN)*

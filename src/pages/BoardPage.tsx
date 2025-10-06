@@ -1,25 +1,19 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Share2, MoreVertical, Link as LinkIcon } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { BoardPageHeader } from '@/components/BoardPageHeader';
 import { SortableImageGrid } from '@/components/SortableImageGrid';
-import { Lightbox } from '@/components/Lightbox';
-import { EditCaptionDialog } from '@/components/EditCaptionDialog';
-import { DeleteImageDialog } from '@/components/DeleteImageDialog';
-import { BulkDeleteDialog } from '@/components/BulkDeleteDialog';
 import { SelectionToolbar } from '@/components/SelectionToolbar';
-import { TransferImagesDialog } from '@/components/TransferImagesDialog';
 import { TransferTarget } from '@/components/TransferTarget';
 import { BoardPageMenu } from '@/components/BoardPageMenu';
-import { RenameBoardDialog } from '@/components/RenameBoardDialog';
-import { DeleteBoardDialog } from '@/components/DeleteBoardDialog';
-import { RegenerateShareTokenDialog } from '@/components/RegenerateShareTokenDialog';
-import { ImportUrlDialog } from '@/components/ImportUrlDialog';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { SelectionProvider, useSelection } from '@/contexts/SelectionContext';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import { ImageGridSkeleton } from '@/components/ImageGridSkeleton';
+import { Skeleton } from '@/components/Skeleton';
+import { LightboxSkeleton } from '@/components/LightboxSkeleton';
 import { useBoard } from '@/hooks/useBoard';
 import { useAuth } from '@/hooks/useAuth';
 import { useLightbox } from '@/hooks/useLightbox';
@@ -34,6 +28,23 @@ import { type Image } from '@/schemas/image';
 type BoardRouteParams = {
   boardId: string;
 };
+
+const LightboxLazy = lazy(async () => ({ default: (await import('@/components/Lightbox')).Lightbox }));
+
+const EditCaptionDialogLazy = lazy(async () => ({ default: (await import('@/components/EditCaptionDialog')).EditCaptionDialog }));
+const DeleteImageDialogLazy = lazy(async () => ({ default: (await import('@/components/DeleteImageDialog')).DeleteImageDialog }));
+const BulkDeleteDialogLazy = lazy(async () => ({ default: (await import('@/components/BulkDeleteDialog')).BulkDeleteDialog }));
+const TransferImagesDialogLazy = lazy(async () => ({ default: (await import('@/components/TransferImagesDialog')).TransferImagesDialog }));
+const RenameBoardDialogLazy = lazy(async () => ({ default: (await import('@/components/RenameBoardDialog')).RenameBoardDialog }));
+const DeleteBoardDialogLazy = lazy(async () => ({ default: (await import('@/components/DeleteBoardDialog')).DeleteBoardDialog }));
+const RegenerateShareTokenDialogLazy = lazy(async () => ({ default: (await import('@/components/RegenerateShareTokenDialog')).RegenerateShareTokenDialog }));
+const ImportUrlDialogLazy = lazy(async () => ({ default: (await import('@/components/ImportUrlDialog')).ImportUrlDialog }));
+
+const modalFallback = (sizeClass = 'h-48 w-[28rem]') => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+    <Skeleton className={"rounded-2xl " + sizeClass} />
+  </div>
+);
 
 function BoardPageContent() {
   const { boardId } = useParams<BoardRouteParams>();
@@ -208,8 +219,12 @@ function BoardPageContent() {
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           {/* Loading state */}
           {isLoading && (
-            <div className="flex items-center justify-center min-h-[50vh]">
-              <LoadingSpinner />
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64" />
+              </div>
+              <ImageGridSkeleton count={8} />
             </div>
           )}
 
@@ -306,112 +321,130 @@ function BoardPageContent() {
 
               {/* Lightbox */}
               {lightbox.isOpen && sortedImages.length > 0 && (
-                <Lightbox
-                  images={sortedImages}
-                  initialIndex={lightbox.currentIndex}
-                  currentIndex={lightbox.currentIndex}
-                  onClose={lightbox.close}
-                  onNext={lightbox.goToNext}
-                  onPrev={lightbox.goToPrev}
-                  onJumpTo={lightbox.jumpTo}
-                  isOwner={isOwner}
-                  onEditCaption={(image) => setEditCaptionImage(image)}
-                  onDelete={(image) => setDeleteImageData(image)}
-                />
+                <Suspense fallback={<LightboxSkeleton />}>
+                  <LightboxLazy
+                    images={sortedImages}
+                    initialIndex={lightbox.currentIndex}
+                    currentIndex={lightbox.currentIndex}
+                    onClose={lightbox.close}
+                    onNext={lightbox.goToNext}
+                    onPrev={lightbox.goToPrev}
+                    onJumpTo={lightbox.jumpTo}
+                    isOwner={isOwner}
+                    onEditCaption={(image) => setEditCaptionImage(image)}
+                    onDelete={(image) => setDeleteImageData(image)}
+                  />
+                </Suspense>
               )}
 
               {/* Edit Caption Dialog */}
               {editCaptionImage && (
-                <EditCaptionDialog
-                  open={Boolean(editCaptionImage)}
-                  onOpenChange={(open) => {
-                    if (!open) {
-                      setEditCaptionImage(null);
-                    }
-                  }}
-                  boardId={board.id}
-                  imageId={editCaptionImage.id}
-                  currentCaption={editCaptionImage.caption || null}
-                />
+                <Suspense fallback={modalFallback('h-64 w-[32rem]')}>
+                  <EditCaptionDialogLazy
+                    open={Boolean(editCaptionImage)}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        setEditCaptionImage(null);
+                      }
+                    }}
+                    boardId={board.id}
+                    imageId={editCaptionImage.id}
+                    currentCaption={editCaptionImage.caption || null}
+                  />
+                </Suspense>
               )}
 
               {/* Delete Image Dialog */}
               {deleteImageData && (
-                <DeleteImageDialog
-                  open={Boolean(deleteImageData)}
-                  onOpenChange={(open) => {
-                    if (!open) {
-                      setDeleteImageData(null);
-                    }
-                  }}
-                  boardId={board.id}
-                  image={deleteImageData}
-                  onDeleteSuccess={handleDeleteSuccess}
-                />
+                <Suspense fallback={modalFallback('h-56 w-[28rem]')}>
+                  <DeleteImageDialogLazy
+                    open={Boolean(deleteImageData)}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        setDeleteImageData(null);
+                      }
+                    }}
+                    boardId={board.id}
+                    image={deleteImageData}
+                    onDeleteSuccess={handleDeleteSuccess}
+                  />
+                </Suspense>
               )}
 
               {/* Bulk Delete Dialog */}
               {showBulkDeleteDialog && (
-                <BulkDeleteDialog
-                  open={showBulkDeleteDialog}
-                  onOpenChange={setShowBulkDeleteDialog}
-                  boardId={board.id}
-                  imageIds={Array.from(selectedIds)}
-                  onDeleteSuccess={handleBulkDeleteSuccess}
-                />
+                <Suspense fallback={modalFallback('h-64 w-[32rem]')}>
+                  <BulkDeleteDialogLazy
+                    open={showBulkDeleteDialog}
+                    onOpenChange={setShowBulkDeleteDialog}
+                    boardId={board.id}
+                    imageIds={Array.from(selectedIds)}
+                    onDeleteSuccess={handleBulkDeleteSuccess}
+                  />
+                </Suspense>
               )}
 
               {/* Transfer Images Dialog */}
               {showTransferDialog && (
-                <TransferImagesDialog
-                  open={showTransferDialog}
-                  onOpenChange={setShowTransferDialog}
-                  imageIds={Array.from(selectedIds)}
-                  sourceBoardId={board.id}
-                />
+                <Suspense fallback={modalFallback('h-72 w-[34rem]')}>
+                  <TransferImagesDialogLazy
+                    open={showTransferDialog}
+                    onOpenChange={setShowTransferDialog}
+                    imageIds={Array.from(selectedIds)}
+                    sourceBoardId={board.id}
+                  />
+                </Suspense>
               )}
 
               {/* Rename Board Dialog */}
               {showRenameBoardDialog && (
-                <RenameBoardDialog
-                  open={showRenameBoardDialog}
-                  onOpenChange={setShowRenameBoardDialog}
-                  boardId={board.id}
-                  currentName={board.name}
-                />
+                <Suspense fallback={modalFallback('h-56 w-[30rem]')}>
+                  <RenameBoardDialogLazy
+                    open={showRenameBoardDialog}
+                    onOpenChange={setShowRenameBoardDialog}
+                    boardId={board.id}
+                    currentName={board.name}
+                  />
+                </Suspense>
               )}
 
               {/* Delete Board Dialog */}
               {showDeleteBoardDialog && (
-                <DeleteBoardDialog
-                  open={showDeleteBoardDialog}
-                  onOpenChange={setShowDeleteBoardDialog}
-                  boardId={board.id}
-                  boardName={board.name}
-                />
+                <Suspense fallback={modalFallback('h-60 w-[30rem]')}>
+                  <DeleteBoardDialogLazy
+                    open={showDeleteBoardDialog}
+                    onOpenChange={setShowDeleteBoardDialog}
+                    boardId={board.id}
+                    boardName={board.name}
+                  />
+                </Suspense>
               )}
 
               {/* Regenerate Share Token Dialog */}
               {showRegenerateTokenDialog && (
-                <RegenerateShareTokenDialog
-                  open={showRegenerateTokenDialog}
-                  onOpenChange={setShowRegenerateTokenDialog}
-                  boardId={board.id}
-                  currentShareToken={board.share_token}
-                />
+                <Suspense fallback={modalFallback('h-48 w-[28rem]')}>
+                  <RegenerateShareTokenDialogLazy
+                    open={showRegenerateTokenDialog}
+                    onOpenChange={setShowRegenerateTokenDialog}
+                    boardId={board.id}
+                    currentShareToken={board.share_token}
+                  />
+                </Suspense>
               )}
 
               {/* Import URL Dialog */}
               {showImportUrlDialog && (
-                <ImportUrlDialog
-                  open={showImportUrlDialog}
-                  onOpenChange={(open) => {
-                    setShowImportUrlDialog(open);
-                    if (!open) setPastedUrl(undefined); // Clear pasted URL when closing
-                  }}
-                  boardId={board.id}
-                  initialUrl={pastedUrl}
-                />
+                <Suspense fallback={modalFallback('h-72 w-[36rem]')}>
+                  <ImportUrlDialogLazy
+                    open={showImportUrlDialog}
+                    onOpenChange={(open) => {
+                      setShowImportUrlDialog(open);
+                      if (!open) setPastedUrl(undefined); // Clear pasted URL when closing
+                    }}
+                    boardId={board.id}
+                    initialUrl={pastedUrl}
+                  />
+                </Suspense>
               )}
             </>
           )}

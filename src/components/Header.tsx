@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { ThemeToggle, themeOptions } from '@/components/ThemeToggle';
 import { SignInButton } from '@/components/SignInButton';
 import { Avatar } from '@/components/Avatar';
+import { Skeleton } from '@/components/Skeleton';
 import { Button } from '@/components/ui/button';
-import { CreateBoardModal } from '@/components/CreateBoardModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +28,8 @@ const iconMap: Record<Theme, ThemeIcon> = {
   light: Sun,
   dark: Moon,
 };
+
+const CreateBoardModalLazy = lazy(async () => ({ default: (await import('@/components/CreateBoardModal')).CreateBoardModal }));
 
 export function Header() {
   const { user, loading, signOut, signInWithGoogle } = useAuth();
@@ -160,7 +162,18 @@ export function Header() {
           </div>
         </div>
       </div>
-      <CreateBoardModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
+
+      <Suspense
+        fallback={(
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm" data-testid="create-board-modal-fallback">
+            <Skeleton className="h-40 w-80" />
+          </div>
+        )}
+      >
+        {isCreateModalOpen ? (
+          <CreateBoardModalLazy open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
+        ) : null}
+      </Suspense>
     </header>
   );
 }

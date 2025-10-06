@@ -9,6 +9,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { EmptyState as _EmptyState } from '@/components/EmptyState';
 import { SignInButton } from '@/components/SignInButton';
 import { BoardCard } from '@/components/BoardCard';
+import { BoardCardSkeleton } from '@/components/BoardCardSkeleton';
 import { ShareDialog } from '@/components/ShareDialog';
 import { getPublicBoardUrl } from '@/lib/shareUtils';
 import { ShowcaseBoard } from '@/components/ShowcaseBoard';
@@ -83,8 +84,21 @@ export default function Home() {
   if (boardsLoading) {
     return (
       <Layout>
-        <section className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-          <LoadingSpinner message="Loading your boards" />
+        <section className="space-y-8">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+              Your boards
+            </h1>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              Pick up where you left off. Create, curate, and share your visual story.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <BoardCardSkeleton key={i} />
+            ))}
+          </div>
         </section>
       </Layout>
     );
