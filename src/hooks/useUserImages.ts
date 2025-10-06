@@ -28,7 +28,7 @@ export function useUserImages({ userId, enabled = true }: UseUserImagesProps) {
           return boardSchema.parse(board).id;
         } catch (e) {
           if (e instanceof ZodError) {
-            console.error("ZodError parsing board:", e.errors, "Data:", board);
+            console.error("ZodError parsing board:", e.issues, "Data:", board);
           }
           throw e;
         }
@@ -54,7 +54,7 @@ export function useUserImages({ userId, enabled = true }: UseUserImagesProps) {
           return imageSchema.parse(item);
         } catch (e) {
           if (e instanceof ZodError) {
-            console.error("ZodError parsing image:", e.errors, "Data:", item);
+            console.error("ZodError parsing image:", e.issues, "Data:", item);
           }
           throw e;
         }
