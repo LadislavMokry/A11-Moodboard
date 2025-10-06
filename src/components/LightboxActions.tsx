@@ -1,7 +1,7 @@
-import { Download, Link2, Share2, Trash2 } from 'lucide-react';
-import { downloadImage } from '@/lib/download';
-import { copyToClipboard } from '@/lib/clipboard';
-import { toast } from 'sonner';
+import { copyToClipboard } from "@/lib/clipboard";
+import { downloadImage } from "@/lib/download";
+import { Download, Link2, Share2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface LightboxActionsProps {
   imageUrl: string;
@@ -11,34 +11,37 @@ interface LightboxActionsProps {
   isOwner?: boolean;
 }
 
-export function LightboxActions({
-  imageUrl,
-  filename,
-  onCopyUrl,
-  onDelete,
-  isOwner = false,
-}: LightboxActionsProps) {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const canShare = typeof navigator !== 'undefined' && 'share' in navigator;
+export function LightboxActions({ imageUrl, filename, onCopyUrl, onDelete, isOwner = false }: LightboxActionsProps) {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const canShare = typeof navigator !== "undefined" && "share" in navigator;
 
   const handleDownload = async () => {
     try {
+      // Check if we're on iOS Safari
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
       await downloadImage(imageUrl, filename);
-      toast.success('Download started');
+
+      if (isIOS && isSafari) {
+        toast.success("Image opened in new tab - long press to save to gallery");
+      } else {
+        toast.success("Download started");
+      }
     } catch (error) {
-      toast.error('Failed to download image');
-      console.error('Download failed:', error);
+      toast.error("Failed to download image");
+      console.error("Download failed:", error);
     }
   };
 
   const handleCopyUrl = async () => {
     try {
       await copyToClipboard(imageUrl);
-      toast.success('URL copied to clipboard');
+      toast.success("URL copied to clipboard");
       onCopyUrl?.();
     } catch (error) {
-      toast.error('Failed to copy URL');
-      console.error('Copy failed:', error);
+      toast.error("Failed to copy URL");
+      console.error("Copy failed:", error);
     }
   };
 
@@ -47,11 +50,11 @@ export function LightboxActions({
       try {
         await navigator.share({
           title: filename,
-          url: imageUrl,
+          url: imageUrl
         });
       } catch (error) {
         // User cancelled or share failed, fall back to copy
-        if ((error as Error).name !== 'AbortError') {
+        if ((error as Error).name !== "AbortError") {
           await handleCopyUrl();
         }
       }
@@ -62,7 +65,10 @@ export function LightboxActions({
   };
 
   return (
-    <div className="absolute top-4 right-4 flex gap-2" style={{ zIndex: 30 }}>
+    <div
+      className="absolute top-4 right-4 flex gap-2"
+      style={{ zIndex: 30 }}
+    >
       {/* Download button */}
       <button
         onClick={handleDownload}

@@ -1,34 +1,31 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { ArrowLeft, CheckSquare, X, Image } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { EditableText, type EditableTextHandle } from '@/components/EditableText';
-import { ShareButton } from '@/components/ShareButton';
-import { SetOgImageDialog } from '@/components/SetOgImageDialog';
-import { useUpdateBoard } from '@/hooks/useBoardMutations';
-import { type BoardWithImages } from '@/schemas/boardWithImages';
-import { getPublicBoardUrl } from '@/lib/shareUtils';
+import { EditableText, type EditableTextHandle } from "@/components/EditableText";
+import { SetOgImageDialog } from "@/components/SetOgImageDialog";
+import { ShareButton } from "@/components/ShareButton";
+import { useUpdateBoard } from "@/hooks/useBoardMutations";
+import { getPublicBoardUrl } from "@/lib/shareUtils";
+import { type BoardWithImages } from "@/schemas/boardWithImages";
+import { ArrowLeft } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 interface BoardPageHeaderProps {
   board: BoardWithImages;
   actions?: ReactNode;
-  onSelectClick?: () => void;
-  selectionMode?: boolean;
 }
 
-export function BoardPageHeader({ board, actions, onSelectClick, selectionMode = false }: BoardPageHeaderProps) {
+export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
   const nameEditorRef = useRef<EditableTextHandle>(null);
   const { mutateAsync: updateBoard } = useUpdateBoard();
   const [showOgImageDialog, setShowOgImageDialog] = useState(false);
 
   const lastUpdated = useMemo(
     () =>
-      new Date(board.updated_at).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
+      new Date(board.updated_at).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
       }),
-    [board.updated_at],
+    [board.updated_at]
   );
 
   const imageCount = board.images.length;
@@ -38,20 +35,20 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
     async (newName: string) => {
       await updateBoard({
         boardId: board.id,
-        updates: { name: newName },
+        updates: { name: newName }
       });
     },
-    [board.id, updateBoard],
+    [board.id, updateBoard]
   );
 
   const handleDescriptionSave = useCallback(
     async (newDescription: string) => {
       await updateBoard({
         boardId: board.id,
-        updates: { description: newDescription.length === 0 ? null : newDescription },
+        updates: { description: newDescription.length === 0 ? null : newDescription }
       });
     },
-    [board.id, updateBoard],
+    [board.id, updateBoard]
   );
 
   useEffect(() => {
@@ -60,14 +57,14 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
         return;
       }
 
-      if (event.key.toLowerCase() !== 'e') {
+      if (event.key.toLowerCase() !== "e") {
         return;
       }
 
       const activeElement = document.activeElement as HTMLElement | null;
       if (activeElement && activeElement.tagName) {
         const tagName = activeElement.tagName.toLowerCase();
-        if (['input', 'textarea', 'select'].includes(tagName) || activeElement.isContentEditable) {
+        if (["input", "textarea", "select"].includes(tagName) || activeElement.isContentEditable) {
           return;
         }
       }
@@ -81,9 +78,9 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
       editor.startEditing();
     };
 
-    window.addEventListener('keydown', handleShortcut);
+    window.addEventListener("keydown", handleShortcut);
     return () => {
-      window.removeEventListener('keydown', handleShortcut);
+      window.removeEventListener("keydown", handleShortcut);
     };
   }, []);
 
@@ -112,15 +109,6 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
         </div>
 
         <div className="flex flex-shrink-0 items-center gap-2">
-          <Button
-            onClick={() => setShowOgImageDialog(true)}
-            variant="ghost"
-            size="sm"
-            className="gap-2"
-          >
-            <Image className="w-4 h-4" />
-            Preview Image
-          </Button>
           <ShareButton
             url={shareUrl}
             title={board.name}
@@ -128,26 +116,6 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
             variant="ghost"
             size="sm"
           />
-          {onSelectClick && (
-            <Button
-              onClick={onSelectClick}
-              variant={selectionMode ? 'outline' : 'ghost'}
-              size="sm"
-              className="gap-2"
-            >
-              {selectionMode ? (
-                <>
-                  <X className="w-4 h-4" />
-                  Cancel
-                </>
-              ) : (
-                <>
-                  <CheckSquare className="w-4 h-4" />
-                  Select
-                </>
-              )}
-            </Button>
-          )}
           {actions}
         </div>
       </div>
@@ -167,14 +135,18 @@ export function BoardPageHeader({ board, actions, onSelectClick, selectionMode =
 
         <div className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-500">
           <span>
-            {imageCount} {imageCount === 1 ? 'image' : 'images'}
+            {imageCount} {imageCount === 1 ? "image" : "images"}
           </span>
           <span>�</span>
           <span>Updated {lastUpdated}</span>
         </div>
       </div>
 
-      <SetOgImageDialog open={showOgImageDialog} onOpenChange={setShowOgImageDialog} board={board} />
+      <SetOgImageDialog
+        open={showOgImageDialog}
+        onOpenChange={setShowOgImageDialog}
+        board={board}
+      />
     </header>
   );
 }

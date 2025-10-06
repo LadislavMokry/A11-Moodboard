@@ -1,46 +1,46 @@
-import { useMemo, useState, useEffect, lazy, Suspense } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, MoreVertical, Link as LinkIcon } from 'lucide-react';
-import { Layout } from '@/components/Layout';
-import { BoardPageHeader } from '@/components/BoardPageHeader';
-import { SortableImageGrid } from '@/components/SortableImageGrid';
-import { SelectionToolbar } from '@/components/SelectionToolbar';
-import { TransferTarget } from '@/components/TransferTarget';
-import { BoardPageMenu } from '@/components/BoardPageMenu';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { SelectionProvider, useSelection } from '@/contexts/SelectionContext';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { ErrorMessage } from '@/components/ErrorMessage';
-import { ImageGridSkeleton } from '@/components/ImageGridSkeleton';
-import { Skeleton } from '@/components/Skeleton';
-import { LightboxSkeleton } from '@/components/LightboxSkeleton';
-import { useBoard } from '@/hooks/useBoard';
-import { useAuth } from '@/hooks/useAuth';
-import { useLightbox } from '@/hooks/useLightbox';
-import { Button } from '@/components/ui/button';
-import { ImageUploadButton } from '@/components/ImageUploadButton';
-import { ImageDropZone } from '@/components/ImageDropZone';
-import { useImageUpload } from '@/hooks/useImageUpload';
-import { useClipboardPaste } from '@/hooks/useClipboardPaste';
-import { toast } from '@/lib/toast';
-import { type Image } from '@/schemas/image';
+import { BoardPageHeader } from "@/components/BoardPageHeader";
+import { BoardPageMenu } from "@/components/BoardPageMenu";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { ImageDropZone } from "@/components/ImageDropZone";
+import { ImageGridSkeleton } from "@/components/ImageGridSkeleton";
+import { ImageUploadButton } from "@/components/ImageUploadButton";
+import { Layout } from "@/components/Layout";
+import { LightboxSkeleton } from "@/components/LightboxSkeleton";
+import { SelectionToolbar } from "@/components/SelectionToolbar";
+import { Skeleton } from "@/components/Skeleton";
+import { SortableImageGrid } from "@/components/SortableImageGrid";
+import { TransferTarget } from "@/components/TransferTarget";
+import { Button } from "@/components/ui/button";
+import { SelectionProvider, useSelection } from "@/contexts/SelectionContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useBoard } from "@/hooks/useBoard";
+import { useClipboardPaste } from "@/hooks/useClipboardPaste";
+import { useImageUpload } from "@/hooks/useImageUpload";
+import { useLightbox } from "@/hooks/useLightbox";
+import { toast } from "@/lib/toast";
+import { type Image } from "@/schemas/image";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { MoreVertical } from "lucide-react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 type BoardRouteParams = {
   boardId: string;
 };
 
-const LightboxLazy = lazy(async () => ({ default: (await import('@/components/Lightbox')).Lightbox }));
+const LightboxLazy = lazy(async () => ({ default: (await import("@/components/Lightbox")).Lightbox }));
 
-const EditCaptionDialogLazy = lazy(async () => ({ default: (await import('@/components/EditCaptionDialog')).EditCaptionDialog }));
-const DeleteImageDialogLazy = lazy(async () => ({ default: (await import('@/components/DeleteImageDialog')).DeleteImageDialog }));
-const BulkDeleteDialogLazy = lazy(async () => ({ default: (await import('@/components/BulkDeleteDialog')).BulkDeleteDialog }));
-const TransferImagesDialogLazy = lazy(async () => ({ default: (await import('@/components/TransferImagesDialog')).TransferImagesDialog }));
-const RenameBoardDialogLazy = lazy(async () => ({ default: (await import('@/components/RenameBoardDialog')).RenameBoardDialog }));
-const DeleteBoardDialogLazy = lazy(async () => ({ default: (await import('@/components/DeleteBoardDialog')).DeleteBoardDialog }));
-const RegenerateShareTokenDialogLazy = lazy(async () => ({ default: (await import('@/components/RegenerateShareTokenDialog')).RegenerateShareTokenDialog }));
-const ImportUrlDialogLazy = lazy(async () => ({ default: (await import('@/components/ImportUrlDialog')).ImportUrlDialog }));
+const EditCaptionDialogLazy = lazy(async () => ({ default: (await import("@/components/EditCaptionDialog")).EditCaptionDialog }));
+const DeleteImageDialogLazy = lazy(async () => ({ default: (await import("@/components/DeleteImageDialog")).DeleteImageDialog }));
+const BulkDeleteDialogLazy = lazy(async () => ({ default: (await import("@/components/BulkDeleteDialog")).BulkDeleteDialog }));
+const TransferImagesDialogLazy = lazy(async () => ({ default: (await import("@/components/TransferImagesDialog")).TransferImagesDialog }));
+const RenameBoardDialogLazy = lazy(async () => ({ default: (await import("@/components/RenameBoardDialog")).RenameBoardDialog }));
+const DeleteBoardDialogLazy = lazy(async () => ({ default: (await import("@/components/DeleteBoardDialog")).DeleteBoardDialog }));
+const RegenerateShareTokenDialogLazy = lazy(async () => ({ default: (await import("@/components/RegenerateShareTokenDialog")).RegenerateShareTokenDialog }));
+const ImportUrlDialogLazy = lazy(async () => ({ default: (await import("@/components/ImportUrlDialog")).ImportUrlDialog }));
+const SetOgImageDialogLazy = lazy(async () => ({ default: (await import("@/components/SetOgImageDialog")).SetOgImageDialog }));
 
-const modalFallback = (sizeClass = 'h-48 w-[28rem]') => (
+const modalFallback = (sizeClass = "h-48 w-[28rem]") => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
     <Skeleton className={"rounded-2xl " + sizeClass} />
   </div>
@@ -52,14 +52,7 @@ function BoardPageContent() {
   const { user } = useAuth();
   const { data: board, isLoading, error } = useBoard(boardId);
   const { uploadImages, handlePaste, uploading, progress, accept } = useImageUpload(board?.id);
-  const {
-    selectionMode,
-    selectedIds,
-    toggleSelection,
-    selectAll: _selectAll,
-    enterSelectionMode,
-    exitSelectionMode,
-  } = useSelection();
+  const { selectionMode, selectedIds, toggleSelection, selectAll: _selectAll, enterSelectionMode, exitSelectionMode } = useSelection();
 
   const [editCaptionImage, setEditCaptionImage] = useState<Image | null>(null);
   const [deleteImageData, setDeleteImageData] = useState<Image | null>(null);
@@ -70,12 +63,10 @@ function BoardPageContent() {
   const [showDeleteBoardDialog, setShowDeleteBoardDialog] = useState(false);
   const [showRegenerateTokenDialog, setShowRegenerateTokenDialog] = useState(false);
   const [showImportUrlDialog, setShowImportUrlDialog] = useState(false);
+  const [showOgImageDialog, setShowOgImageDialog] = useState(false);
   const [pastedUrl, setPastedUrl] = useState<string | undefined>();
 
-  const sortedImages = useMemo(
-    () => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []),
-    [board?.images],
-  );
+  const sortedImages = useMemo(() => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []), [board?.images]);
 
   const lightbox = useLightbox(sortedImages.length);
 
@@ -88,10 +79,7 @@ function BoardPageContent() {
     }
   }, [board, user, isOwner, navigate]);
 
-  const activeUploads = useMemo(
-    () => Object.values(progress).filter((value) => value < 100).length,
-    [progress],
-  );
+  const activeUploads = useMemo(() => Object.values(progress).filter((value) => value < 100).length, [progress]);
 
   const handleImageClick = (image: Image) => {
     if (selectionMode) {
@@ -156,20 +144,15 @@ function BoardPageContent() {
     }
   };
 
-  const handleShareClick = () => {
-    // TODO: Open share dialog (Phase 7)
-    console.log('Share clicked');
-  };
-
   useClipboardPaste({
     enabled: Boolean(board && isOwner && !uploading),
     onPaste: (files) => {
       if (!board || !isOwner || files.length === 0) {
         return;
       }
-      toast.success('Image pasted, uploading...');
+      toast.success("Image pasted, uploading...");
       handlePaste(files);
-    },
+    }
   });
 
   // Handle URL paste (Ctrl+V with text)
@@ -179,17 +162,17 @@ function BoardPageContent() {
     const handlePasteUrl = async (e: ClipboardEvent) => {
       // Only handle if no input/textarea is focused
       const activeElement = document.activeElement;
-      if (activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA') {
+      if (activeElement?.tagName === "INPUT" || activeElement?.tagName === "TEXTAREA") {
         return;
       }
 
-      const text = e.clipboardData?.getData('text/plain');
+      const text = e.clipboardData?.getData("text/plain");
       if (!text) return;
 
       // Check if it's a valid URL
       try {
         const url = new URL(text);
-        if (url.protocol === 'http:' || url.protocol === 'https:') {
+        if (url.protocol === "http:" || url.protocol === "https:") {
           // Open import dialog with the URL
           setPastedUrl(text);
           setShowImportUrlDialog(true);
@@ -199,8 +182,8 @@ function BoardPageContent() {
       }
     };
 
-    window.addEventListener('paste', handlePasteUrl);
-    return () => window.removeEventListener('paste', handlePasteUrl);
+    window.addEventListener("paste", handlePasteUrl);
+    return () => window.removeEventListener("paste", handlePasteUrl);
   }, [board, isOwner]);
 
   return (
@@ -229,19 +212,13 @@ function BoardPageContent() {
           )}
 
           {/* Error state */}
-          {error && (
-            <ErrorMessage
-              error={error instanceof Error ? error : new Error('Failed to load board')}
-            />
-          )}
+          {error && <ErrorMessage error={error instanceof Error ? error : new Error("Failed to load board")} />}
 
           {/* Board content */}
           {board && (
             <>
               <BoardPageHeader
                 board={board}
-                onSelectClick={isOwner ? handleSelectClick : undefined}
-                selectionMode={selectionMode}
                 actions={
                   <>
                     {isOwner ? (
@@ -257,42 +234,33 @@ function BoardPageContent() {
                           accept={accept}
                           inProgressCount={activeUploads}
                         />
-                        <Button
-                          onClick={() => setShowImportUrlDialog(true)}
-                          variant="outline"
-                          size="sm"
-                          className="gap-2"
-                        >
-                          <LinkIcon className="w-4 h-4" />
-                          Import URL
-                        </Button>
-                      </>
-                    ) : null}
-                    <Button
-                      onClick={handleShareClick}
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      Share
-                    </Button>
-                    {isOwner && (
-                      <DropdownMenu.Root open={boardMenuOpen} onOpenChange={setBoardMenuOpen}>
-                        <DropdownMenu.Trigger asChild>
-                          <Button variant="ghost" size="sm" className="px-2">
-                            <MoreVertical className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenu.Trigger>
-                        <BoardPageMenu
+                        <DropdownMenu.Root
                           open={boardMenuOpen}
                           onOpenChange={setBoardMenuOpen}
-                          onRename={() => setShowRenameBoardDialog(true)}
-                          onRegenerateLink={() => setShowRegenerateTokenDialog(true)}
-                          onDelete={() => setShowDeleteBoardDialog(true)}
-                        />
-                      </DropdownMenu.Root>
-                    )}
+                        >
+                          <DropdownMenu.Trigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="px-2"
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenu.Trigger>
+                          <BoardPageMenu
+                            open={boardMenuOpen}
+                            onOpenChange={setBoardMenuOpen}
+                            onRename={() => setShowRenameBoardDialog(true)}
+                            onRegenerateLink={() => setShowRegenerateTokenDialog(true)}
+                            onSetPreviewImage={() => setShowOgImageDialog(true)}
+                            onImportUrl={() => setShowImportUrlDialog(true)}
+                            onSelect={handleSelectClick}
+                            selectionMode={selectionMode}
+                            onDelete={() => setShowDeleteBoardDialog(true)}
+                          />
+                        </DropdownMenu.Root>
+                      </>
+                    ) : null}
                   </>
                 }
               />
@@ -310,7 +278,10 @@ function BoardPageContent() {
 
               {/* Selection Toolbar */}
               {selectionMode && selectedIds.size > 0 && (
-                <SelectionToolbar onDelete={handleBulkDelete} onTransfer={handleTransfer} />
+                <SelectionToolbar
+                  onDelete={handleBulkDelete}
+                  onTransfer={handleTransfer}
+                />
               )}
 
               {/* Transfer Target (drag-to-transfer) */}
@@ -339,7 +310,7 @@ function BoardPageContent() {
 
               {/* Edit Caption Dialog */}
               {editCaptionImage && (
-                <Suspense fallback={modalFallback('h-64 w-[32rem]')}>
+                <Suspense fallback={modalFallback("h-64 w-[32rem]")}>
                   <EditCaptionDialogLazy
                     open={Boolean(editCaptionImage)}
                     onOpenChange={(open) => {
@@ -356,7 +327,7 @@ function BoardPageContent() {
 
               {/* Delete Image Dialog */}
               {deleteImageData && (
-                <Suspense fallback={modalFallback('h-56 w-[28rem]')}>
+                <Suspense fallback={modalFallback("h-56 w-[28rem]")}>
                   <DeleteImageDialogLazy
                     open={Boolean(deleteImageData)}
                     onOpenChange={(open) => {
@@ -373,7 +344,7 @@ function BoardPageContent() {
 
               {/* Bulk Delete Dialog */}
               {showBulkDeleteDialog && (
-                <Suspense fallback={modalFallback('h-64 w-[32rem]')}>
+                <Suspense fallback={modalFallback("h-64 w-[32rem]")}>
                   <BulkDeleteDialogLazy
                     open={showBulkDeleteDialog}
                     onOpenChange={setShowBulkDeleteDialog}
@@ -386,7 +357,7 @@ function BoardPageContent() {
 
               {/* Transfer Images Dialog */}
               {showTransferDialog && (
-                <Suspense fallback={modalFallback('h-72 w-[34rem]')}>
+                <Suspense fallback={modalFallback("h-72 w-[34rem]")}>
                   <TransferImagesDialogLazy
                     open={showTransferDialog}
                     onOpenChange={setShowTransferDialog}
@@ -398,7 +369,7 @@ function BoardPageContent() {
 
               {/* Rename Board Dialog */}
               {showRenameBoardDialog && (
-                <Suspense fallback={modalFallback('h-56 w-[30rem]')}>
+                <Suspense fallback={modalFallback("h-56 w-[30rem]")}>
                   <RenameBoardDialogLazy
                     open={showRenameBoardDialog}
                     onOpenChange={setShowRenameBoardDialog}
@@ -410,7 +381,7 @@ function BoardPageContent() {
 
               {/* Delete Board Dialog */}
               {showDeleteBoardDialog && (
-                <Suspense fallback={modalFallback('h-60 w-[30rem]')}>
+                <Suspense fallback={modalFallback("h-60 w-[30rem]")}>
                   <DeleteBoardDialogLazy
                     open={showDeleteBoardDialog}
                     onOpenChange={setShowDeleteBoardDialog}
@@ -422,7 +393,7 @@ function BoardPageContent() {
 
               {/* Regenerate Share Token Dialog */}
               {showRegenerateTokenDialog && (
-                <Suspense fallback={modalFallback('h-48 w-[28rem]')}>
+                <Suspense fallback={modalFallback("h-48 w-[28rem]")}>
                   <RegenerateShareTokenDialogLazy
                     open={showRegenerateTokenDialog}
                     onOpenChange={setShowRegenerateTokenDialog}
@@ -434,7 +405,7 @@ function BoardPageContent() {
 
               {/* Import URL Dialog */}
               {showImportUrlDialog && (
-                <Suspense fallback={modalFallback('h-72 w-[36rem]')}>
+                <Suspense fallback={modalFallback("h-72 w-[36rem]")}>
                   <ImportUrlDialogLazy
                     open={showImportUrlDialog}
                     onOpenChange={(open) => {
@@ -443,6 +414,17 @@ function BoardPageContent() {
                     }}
                     boardId={board.id}
                     initialUrl={pastedUrl}
+                  />
+                </Suspense>
+              )}
+
+              {/* Set OG Image Dialog */}
+              {showOgImageDialog && (
+                <Suspense fallback={modalFallback("h-80 w-[40rem]")}>
+                  <SetOgImageDialogLazy
+                    open={showOgImageDialog}
+                    onOpenChange={setShowOgImageDialog}
+                    board={board}
                   />
                 </Suspense>
               )}

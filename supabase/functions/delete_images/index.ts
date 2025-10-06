@@ -24,7 +24,7 @@ function json(status: number, data: unknown) {
     headers: {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+      "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
     }
   });
 }
@@ -83,20 +83,18 @@ serve(async (req) => {
 
   // Validate all UUIDs
   for (const id of imageIds) {
-    if (typeof id !== 'string' || !isValidUUID(id)) {
+    if (typeof id !== "string" || !isValidUUID(id)) {
       return json(400, { error: `Invalid UUID format: ${id}` });
     }
   }
 
   try {
     // Query images with imageIds, join boards to get owner_id
-    const { data: images, error: queryError } = await admin
-      .from('images')
-      .select('id, storage_path, board_id, boards!inner(owner_id)')
-      .in('id', imageIds);
+    // Use explicit foreign key name to disambiguate (images.board_id -> boards.id)
+    const { data: images, error: queryError } = await admin.from("images").select("id, storage_path, board_id, boards!images_board_id_fkey!inner(owner_id)").in("id", imageIds);
 
     if (queryError) {
-      console.error('Query error:', queryError);
+      console.error("Query error:", queryError);
       return json(500, { error: `Failed to query images: ${queryError.message}` });
     }
 
@@ -113,33 +111,31 @@ serve(async (req) => {
     }));
 
     // Verify user owns all images (via board ownership)
-    const unauthorizedImages = imageRows.filter(img => img.owner_id !== userId);
+    const unauthorizedImages = imageRows.filter((img) => img.owner_id !== userId);
     if (unauthorizedImages.length > 0) {
       return json(403, {
         error: "Forbidden: You do not own all the specified images",
-        unauthorizedImageIds: unauthorizedImages.map(img => img.id)
+        unauthorizedImageIds: unauthorizedImages.map((img) => img.id)
       });
     }
 
     // If user requested more images than exist, that's not an error
     // We'll just delete what we found
-    const foundImageIds = imageRows.map(img => img.id);
-    const notFoundIds = imageIds.filter(id => !foundImageIds.includes(id));
+    const foundImageIds = imageRows.map((img) => img.id);
+    const notFoundIds = imageIds.filter((id) => !foundImageIds.includes(id));
 
     // Delete storage objects (collect errors but continue)
     const storageErrors: string[] = [];
-    const storagePaths = imageRows.map(img => img.storage_path);
+    const storagePaths = imageRows.map((img) => img.storage_path);
 
     // Delete in batches (Supabase storage API may have limits)
     const STORAGE_BATCH_SIZE = 20;
     for (let i = 0; i < storagePaths.length; i += STORAGE_BATCH_SIZE) {
       const batch = storagePaths.slice(i, i + STORAGE_BATCH_SIZE);
-      const { error: storageError } = await admin.storage
-        .from('board-images')
-        .remove(batch);
+      const { error: storageError } = await admin.storage.from("board-images").remove(batch);
 
       if (storageError) {
-        console.error('Storage delete error for batch:', batch, storageError);
+        console.error("Storage delete error for batch:", batch, storageError);
         storageErrors.push(`Failed to delete storage batch ${i / STORAGE_BATCH_SIZE + 1}: ${storageError.message}`);
         // Continue with other batches even if one fails
       }
@@ -147,13 +143,10 @@ serve(async (req) => {
 
     // Delete image rows from DB (single DELETE query with IN clause)
     // This uses a transaction automatically
-    const { error: deleteError } = await admin
-      .from('images')
-      .delete()
-      .in('id', foundImageIds);
+    const { error: deleteError } = await admin.from("images").delete().in("id", foundImageIds);
 
     if (deleteError) {
-      console.error('Database delete error:', deleteError);
+      console.error("Database delete error:", deleteError);
       return json(500, {
         error: `Failed to delete image records: ${deleteError.message}`,
         storageErrors: storageErrors.length > 0 ? storageErrors : undefined
@@ -166,10 +159,8 @@ serve(async (req) => {
       errors: storageErrors.length > 0 ? storageErrors : undefined,
       notFound: notFoundIds.length > 0 ? notFoundIds : undefined
     });
-
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error("Unexpected error:", error);
     return json(500, { error: "Internal server error" });
   }
 });
-

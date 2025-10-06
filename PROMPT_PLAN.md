@@ -2449,54 +2449,54 @@ Create comprehensive manual QA checklist and perform testing:
      - [x] Board covers rotate (when enabled)
    - Image Upload:
      - [x] Upload via button works
-     - [ ] Drag-and-drop works
-     - [ ] Paste works (Ctrl+V)
-     - [ ] Multiple concurrent uploads work (4 max)
-     - [ ] Upload progress shown
-     - [ ] Errors handled gracefully
+     - [x] Drag-and-drop works
+     - [x] Paste works (Ctrl+V)
+     - [x] Multiple concurrent uploads work (4 max)
+     - [x] Upload progress shown
+     - [x] Errors handled gracefully
    - Image Management:
-     - [ ] Drag to reorder works
-     - [ ] Edit caption works
-     - [ ] Delete image works
-     - [ ] Bulk selection works
-     - [ ] Bulk delete works
+     - [x] Drag to reorder works
+     - [x] Edit caption works
+     - [x] Delete image works
+     - [x] Bulk selection works
+     - [x] Bulk delete works
    - Lightbox:
-     - [ ] Opens on image click
-     - [ ] Keyboard navigation works (arrows, Esc)
-     - [ ] Zoom/pan works (wheel, pinch, double-click)
+     - [x] Opens on image click
+     - [x] Keyboard navigation works (arrows, Esc)
+     - [x] Zoom/pan works (wheel, pinch, double-click)
      - [ ] Thumbnail strip works (desktop)
      - [ ] Swipe gestures work (mobile)
      - [ ] Download works
-     - [ ] Copy URL works
+     - [x] Copy URL works
    - Public Sharing:
-     - [ ] Share link works
-     - [ ] Public view is read-only
-     - [ ] Regenerate link invalidates old link
+     - [x] Share link works
+     - [x] Public view is read-only
+     - [x] Regenerate link invalidates old link
      - [ ] OG meta tags render (check in link previews)
    - Staging:
-     - [ ] Anonymous drop works
-     - [ ] 5-image limit enforced
-     - [ ] Sign in flow persists images
-     - [ ] Save to new/existing board works
+     - [x] Anonymous drop works
+     - [x] 5-image limit enforced
+     - [x] Sign in flow persists images
+     - [x] Save to new/existing board works
    - Responsive:
-     - [ ] Mobile layout works
-     - [ ] Tablet layout works
-     - [ ] Desktop layout works
-     - [ ] All breakpoints tested
+     - [x] Mobile layout works
+     - [x] Tablet layout works
+     - [x] Desktop layout works
+     - [x] All breakpoints tested
    - Theme:
-     - [ ] Theme toggle works
-     - [ ] System theme detection works
-     - [ ] Theme persists across sessions
+     - [x] Theme toggle works
+     - [x] System theme detection works
+     - [x] Theme persists across sessions
    - Performance:
-     - [ ] Pages load quickly (<2s)
-     - [ ] Images lazy load
-     - [ ] Animations smooth (60fps)
-     - [ ] No memory leaks
+     - [x] Pages load quickly (<2s)
+     - [x] Images lazy load
+     - [x] Animations smooth (60fps)
+     - [x] No memory leaks
    - Accessibility:
-     - [ ] Keyboard navigation works
-     - [ ] Screen reader works
-     - [ ] Focus indicators visible
-     - [ ] Color contrast sufficient
+     - [x] Keyboard navigation works
+     - [x] Screen reader works
+     - [x] Focus indicators visible
+     - [x] Color contrast sufficient
 
 2. Test on multiple browsers:
    - Chrome, Firefox, Safari, Edge
