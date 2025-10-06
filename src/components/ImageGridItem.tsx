@@ -235,7 +235,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
           alt={image.caption || ""}
           loading="lazy"
           decoding="async"
-          className={cn("relative z-10 transition-opacity duration-500 will-change-opacity", isFullLoaded || isGif ? "opacity-100" : "opacity-0")}
+          className={cn("relative z-10")}
           style={{ width: "auto", height: "auto" }}
           onLoad={() => {
             console.log(`ImageGridItem (${image.id}): Full image loaded`);
