@@ -74,7 +74,7 @@ export function ShowcaseBoard() {
         images={board.images}
         minCardWidth={180} // Smaller cards for denser layout
         gap={8} // Tight spacing
-        maxHeight="100vh" // Fixed height, no scrolling
+        maxHeight="100%" // Fixed height, no scrolling
         alternatingDirection={true} // Enable waterfall alternating directions
       />
     </div>
