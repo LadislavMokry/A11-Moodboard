@@ -199,7 +199,7 @@ function BoardPageContent() {
           }
         }}
       >
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="px-6 py-8">
           {/* Loading state */}
           {isLoading && (
             <div className="space-y-8">

@@ -146,10 +146,10 @@ export function SortableImageGrid({
     );
   }
 
-  // Read-only mode: render simple grid without drag-and-drop
+  // Read-only mode: render masonry-style column layout without drag-and-drop
   if (readOnly) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
         {orderedImages.map((image) => (
           <SortableImageItemWithMenu
             key={image.id}
@@ -176,7 +176,7 @@ export function SortableImageGrid({
       onDragCancel={handleDragCancel}
     >
       <SortableContext items={orderedImages.map((image) => image.id)} strategy={rectSortingStrategy}>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
           {orderedImages.map((image) => (
             <SortableImageItemWithMenu
               key={image.id}

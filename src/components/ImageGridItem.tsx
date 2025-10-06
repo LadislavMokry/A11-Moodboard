@@ -147,7 +147,6 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
   };
 
   const imageContainerStyle: CSSProperties = {
-    aspectRatio: image.width && image.height ? `${image.width} / ${image.height}` : undefined,
     contain: "layout paint"
   };
 
@@ -178,7 +177,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
             src={previewSrc}
             alt=""
             aria-hidden="true"
-            className={cn("absolute inset-0 h-full w-full scale-105 transform-gpu object-cover blur-lg transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0")}
+            className={cn("absolute inset-0 h-full w-full scale-105 transform-gpu object-contain blur-lg transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0")}
             onLoad={() => setIsPreviewLoaded(true)}
             loading="lazy"
             decoding="async"
@@ -192,7 +191,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
           alt={image.caption || ""}
           loading="lazy"
           decoding="async"
-          className={cn("relative z-10 h-auto w-full object-cover transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-100" : "opacity-0")}
+          className={cn("relative z-10 h-auto w-full object-contain transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-100" : "opacity-0")}
           onLoad={() => {
             setIsFullLoaded(true);
             if (!isGif) {
