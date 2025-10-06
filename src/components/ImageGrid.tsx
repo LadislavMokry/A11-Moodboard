@@ -1,4 +1,5 @@
 import { type Image } from "@/schemas/image";
+import { BoardMasonryGrid } from "./BoardMasonryGrid";
 import { ImageGridItem } from "./ImageGridItem";
 import { MasonryGrid } from "./MasonryGrid";
 
@@ -14,7 +15,7 @@ export function ImageGrid({ images, onImageClick, onImageMenuClick }: ImageGridP
 
   if (enableMasonry) {
     return (
-      <MasonryGrid
+      <BoardMasonryGrid
         images={images}
         onImageClick={onImageClick}
         onImageMenuClick={onImageMenuClick}

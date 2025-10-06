@@ -207,7 +207,10 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       {/* Image */}
       <div
         className="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800"
-        style={imageContainerStyle}
+        style={{
+          paddingBottom: image.width && image.height ? `${(image.height / image.width) * 100}%` : "100%",
+          ...imageContainerStyle
+        }}
       >
         <Skeleton className={cn("absolute inset-0 h-full w-full transition-opacity duration-500", (isPreviewLoaded || isFullLoaded) && "opacity-0")} />
 
@@ -235,7 +238,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
           alt={image.caption || ""}
           loading="lazy"
           decoding="async"
-          className={cn("relative z-10 object-contain")}
+          className={cn("absolute inset-0 h-full w-full object-contain")}
           style={{ width: "auto", height: "auto" }}
           onLoad={() => {
             console.log(`ImageGridItem (${image.id}): Full image loaded`);
