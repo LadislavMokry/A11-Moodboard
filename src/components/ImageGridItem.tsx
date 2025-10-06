@@ -28,6 +28,7 @@ interface ImageGridItemProps {
 const LOW_RES_WIDTH = 40;
 
 export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMenuClick, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, forceHover }: ImageGridItemProps) {
+  console.log(`ImageGridItem (${image.id}): Rendering`, { isSelected, isDragging, selectionMode });
   const isGif = image.mime_type?.toLowerCase() === "image/gif";
   const [isHovered, setIsHovered] = useState(false);
   const effectiveIsHovered = forceHover !== undefined ? forceHover : isHovered;
@@ -36,6 +37,8 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
   const [isFullLoaded, setIsFullLoaded] = useState(false);
   const captionRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+
+  console.log(`ImageGridItem (${image.id}): State`, { isPreviewLoaded, isFullLoaded, isGif });
 
   // Touch handling for mobile
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
@@ -208,7 +211,10 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
             aria-hidden="true"
             className={cn("absolute inset-0 scale-105 transform-gpu blur-lg transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0")}
             style={{ width: "auto", height: "auto" }}
-            onLoad={() => setIsPreviewLoaded(true)}
+            onLoad={() => {
+              console.log(`ImageGridItem (${image.id}): Preview loaded`);
+              setIsPreviewLoaded(true)
+            }}
             loading="lazy"
             decoding="async"
           />
@@ -225,12 +231,14 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
           className={cn("relative z-10 transition-opacity duration-500 will-change-opacity", isFullLoaded || isGif ? "opacity-100" : "opacity-0")}
           style={{ width: "auto", height: "auto" }}
           onLoad={() => {
+            console.log(`ImageGridItem (${image.id}): Full image loaded`);
             setIsFullLoaded(true);
             if (!isGif) {
               setIsPreviewLoaded(true);
             }
           }}
           onError={() => {
+            console.error(`ImageGridItem (${image.id}): Full image failed to load`);
             setIsFullLoaded(true);
             setIsPreviewLoaded(true);
           }}

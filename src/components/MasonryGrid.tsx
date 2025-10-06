@@ -38,6 +38,7 @@ interface MasonryGridProps {
  * - Responsive column count
  */
 export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWidth = 220, gap = 12, selectionMode = false, selectedIds = new Set(), onToggleSelection, setItemRef, dragAttributes, dragListeners, dragStyle, isDragging = false, dataTestId, maxHeight = "100vh", alternatingDirection = true }: MasonryGridProps) {
+  console.log("MasonryGrid: Rendering", { imageCount: images.length, minCardWidth, gap, selectionMode, isDragging, maxHeight, alternatingDirection });
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -46,7 +47,9 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
     if (!containerWidth) return 2; // Default fallback
 
     const columns = Math.max(1, Math.floor(containerWidth / minCardWidth));
-    return Math.min(columns, 6); // Max 6 columns
+    const count = Math.min(columns, 6); // Max 6 columns
+    console.log("MasonryGrid: Calculated columnCount", { containerWidth, minCardWidth, count });
+    return count;
   }, [containerWidth, minCardWidth]);
 
   // ResizeObserver to track container width changes
@@ -56,12 +59,14 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
+        console.log("MasonryGrid: ResizeObserver entry", { contentRectWidth: entry.contentRect.width });
         setContainerWidth(entry.contentRect.width);
       }
     });
 
     resizeObserver.observe(container);
     setContainerWidth(container.offsetWidth);
+    console.log("MasonryGrid: Initial container width", { offsetWidth: container.offsetWidth });
 
     return () => resizeObserver.disconnect();
   }, []);
@@ -79,9 +84,13 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
   );
 
   // Sort images by position (should already be sorted from API, but ensure it)
-  const sortedImages = useMemo(() => [...images].sort((a, b) => a.position - b.position), [images]);
+  const sortedImages = useMemo(() => {
+    console.log("MasonryGrid: Sorting images");
+    return [...images].sort((a, b) => a.position - b.position);
+  }, [images]);
 
   if (sortedImages.length === 0) {
+    console.log("MasonryGrid: No images to display");
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <p className="text-lg text-neutral-600 dark:text-neutral-400">No images yet</p>
@@ -97,6 +106,7 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
     const columnIndex = index % columnCount;
     columns[columnIndex].push(image);
   });
+  console.log("MasonryGrid: Distributed images into columns", { columnCount, columns });
 
   const containerStyle: CSSProperties = {
     height: maxHeight,
