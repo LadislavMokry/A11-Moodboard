@@ -123,7 +123,6 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
       {columns.map((columnImages, columnIndex) => {
         // Alternate direction for each column
         const isReversed = alternatingDirection && columnIndex % 2 === 1;
-        const displayImages = isReversed ? [...columnImages].reverse() : columnImages;
 
         return (
           <div
@@ -134,7 +133,7 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
             }}
             className={cn("waterfall-column", isReversed && "flex-col-reverse")}
           >
-            {displayImages.map((image) => (
+            {columnImages.map((image) => (
               <ImageGridItem
                 key={image.id}
                 image={image}

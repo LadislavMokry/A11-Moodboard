@@ -35,6 +35,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(isGif);
   const [isFullLoaded, setIsFullLoaded] = useState(false);
   const captionRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   // Touch handling for mobile
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
@@ -43,31 +44,38 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
   const [preventClick, setPreventClick] = useState(false);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Reset progressive loading state when the image changes
+  // Reset loading state when image ID changes
   useEffect(() => {
     setIsFullLoaded(false);
     setIsPreviewLoaded(isGif);
   }, [image.id, isGif]);
 
-  // Handle cached images that might load immediately
+  // Effect to handle image loading, including cached images
   useEffect(() => {
+    // Immediately mark GIFs as loaded
     if (isGif) {
       setIsFullLoaded(true);
       setIsPreviewLoaded(true);
+      return;
     }
-  }, [isGif]);
 
-  // Fallback: show images after 2 seconds if they haven't loaded yet (handles cached images)
-  useEffect(() => {
+    const img = imgRef.current;
+    if (img?.complete) {
+      // If image is already loaded from cache, mark as loaded
+      setIsFullLoaded(true);
+      setIsPreviewLoaded(true);
+    }
+
+    // Fallback timer to ensure visibility
     const timer = setTimeout(() => {
       if (!isFullLoaded) {
         setIsFullLoaded(true);
         setIsPreviewLoaded(true);
       }
-    }, 2000);
+    }, 2000); // 2-second safety net
 
     return () => clearTimeout(timer);
-  }, [isFullLoaded]);
+  }, [isGif, isFullLoaded, image.id]);
 
   // Check if caption text overflows and needs marquee
   useEffect(() => {
@@ -207,6 +215,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
         )}
 
         <img
+          ref={imgRef}
           src={isGif ? srcFull : src720}
           srcSet={isGif ? undefined : srcSet}
           sizes={isGif ? undefined : sizes}
