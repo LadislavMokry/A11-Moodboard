@@ -157,7 +157,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       {...(dragAttributes ?? {})}
       {...(dragListeners ?? {})}
       style={combinedStyle}
-      className={cn("group relative mb-4 break-inside-avoid cursor-pointer touch-manipulation transition-opacity duration-200", isDragging && "opacity-50", className)}
+      className={cn("group relative break-inside-avoid cursor-pointer touch-manipulation transition-opacity duration-200", isDragging && "opacity-50", className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}

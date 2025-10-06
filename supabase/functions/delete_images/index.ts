@@ -124,6 +124,28 @@ serve(async (req) => {
     const foundImageIds = imageRows.map((img) => img.id);
     const notFoundIds = imageIds.filter((id) => !foundImageIds.includes(id));
 
+    // Clear og_image_id references in boards before deleting images
+    // This prevents foreign key constraint violations
+    const { error: clearOgError } = await admin.from("boards").update({ og_image_id: null }).in("og_image_id", foundImageIds);
+
+    if (clearOgError) {
+      console.error("Error clearing og_image_id references:", clearOgError);
+      return json(500, {
+        error: `Failed to clear OG image references: ${clearOgError.message}`
+      });
+    }
+
+    // Delete board_cover_images entries before deleting images
+    // This prevents foreign key constraint violations
+    const { error: coverDeleteError } = await admin.from("board_cover_images").delete().in("image_id", foundImageIds);
+
+    if (coverDeleteError) {
+      console.error("Error deleting board_cover_images:", coverDeleteError);
+      return json(500, {
+        error: `Failed to delete board cover image references: ${coverDeleteError.message}`
+      });
+    }
+
     // Delete storage objects (collect errors but continue)
     const storageErrors: string[] = [];
     const storagePaths = imageRows.map((img) => img.storage_path);

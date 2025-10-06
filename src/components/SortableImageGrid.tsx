@@ -1,27 +1,10 @@
-import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import {
-  DndContext,
-  DragOverlay,
-  PointerSensor,
-  TouchSensor,
-  KeyboardSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
-  type DragCancelEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  arrayMove,
-  rectSortingStrategy,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
-import { type Image } from '@/schemas/image';
-import { CustomDragOverlay } from '@/components/CustomDragOverlay';
-import { useImageReorder } from '@/hooks/useImageReorder';
-import { SortableImageItemWithMenu } from '@/components/SortableImageItemWithMenu';
+import { CustomDragOverlay } from "@/components/CustomDragOverlay";
+import { SortableImageItemWithMenu } from "@/components/SortableImageItemWithMenu";
+import { useImageReorder } from "@/hooks/useImageReorder";
+import { type Image } from "@/schemas/image";
+import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragCancelEvent, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { SortableContext, arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface SortableImageGridProps {
   boardId: string | undefined;
@@ -39,17 +22,7 @@ function sortImages(images: Image[]): Image[] {
   return [...images].sort((a, b) => a.position - b.position);
 }
 
-export function SortableImageGrid({
-  boardId,
-  images,
-  onImageClick,
-  onEditCaption,
-  onDelete,
-  selectionMode = false,
-  selectedIds = new Set(),
-  onToggleSelection,
-  readOnly = false,
-}: SortableImageGridProps) {
+export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption, onDelete, selectionMode = false, selectedIds = new Set(), onToggleSelection, readOnly = false }: SortableImageGridProps) {
   const [orderedImages, setOrderedImages] = useState<Image[]>(() => sortImages(images));
   const [activeId, setActiveId] = useState<string | null>(null);
   const { queueReorder } = useImageReorder(boardId);
@@ -57,7 +30,7 @@ export function SortableImageGrid({
 
   useEffect(() => {
     const sorted = sortImages(images);
-    const key = sorted.map((image) => `${image.id}:${image.position}`).join('|');
+    const key = sorted.map((image) => `${image.id}:${image.position}`).join("|");
 
     if (imagesKeyRef.current === key) {
       return;
@@ -70,30 +43,27 @@ export function SortableImageGrid({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 6,
-      },
+        distance: 6
+      }
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
         delay: 300,
-        tolerance: 8,
-      },
+        tolerance: 8
+      }
     }),
     useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
+      coordinateGetter: sortableKeyboardCoordinates
+    })
   );
 
-  const activeImage = useMemo(
-    () => (activeId ? orderedImages.find((image) => image.id === activeId) ?? null : null),
-    [activeId, orderedImages],
-  );
+  const activeImage = useMemo(() => (activeId ? orderedImages.find((image) => image.id === activeId) ?? null : null), [activeId, orderedImages]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
 
     // Haptic feedback on drag start (if supported)
-    if ('vibrate' in navigator) {
+    if ("vibrate" in navigator) {
       navigator.vibrate(50);
     }
   }, []);
@@ -120,28 +90,26 @@ export function SortableImageGrid({
         const moved = arrayMove(current, oldIndex, newIndex);
         const updated = moved.map((image, index) => ({
           ...image,
-          position: index + 1,
+          position: index + 1
         }));
 
         queueReorder({
           imageId: String(active.id),
           newIndex,
-          updatedImages: updated,
+          updatedImages: updated
         });
 
         return updated;
       });
     },
-    [queueReorder],
+    [queueReorder]
   );
 
   if (orderedImages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <p className="text-lg text-neutral-600 dark:text-neutral-400">No images yet</p>
-        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-500">
-          {readOnly ? 'This board is empty' : 'Upload images to get started'}
-        </p>
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-500">{readOnly ? "This board is empty" : "Upload images to get started"}</p>
       </div>
     );
   }
@@ -149,7 +117,13 @@ export function SortableImageGrid({
   // Read-only mode: render masonry-style column layout without drag-and-drop
   if (readOnly) {
     return (
-      <div className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
+      <div
+        className="gap-4"
+        style={{
+          columnWidth: "280px",
+          columnGap: "1rem" // 16px to match gap-4
+        }}
+      >
         {orderedImages.map((image) => (
           <SortableImageItemWithMenu
             key={image.id}
@@ -175,8 +149,14 @@ export function SortableImageGrid({
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <SortableContext items={orderedImages.map((image) => image.id)} strategy={rectSortingStrategy}>
-        <div className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
+      <SortableContext items={orderedImages.map((image) => image.id)}>
+        <div
+          className="gap-4"
+          style={{
+            columnWidth: "280px",
+            columnGap: "1rem" // 16px to match gap-4
+          }}
+        >
           {orderedImages.map((image) => (
             <SortableImageItemWithMenu
               key={image.id}
@@ -192,9 +172,7 @@ export function SortableImageGrid({
         </div>
       </SortableContext>
 
-      <DragOverlay dropAnimation={null}>
-        {activeImage ? <CustomDragOverlay image={activeImage} /> : null}
-      </DragOverlay>
+      <DragOverlay dropAnimation={null}>{activeImage ? <CustomDragOverlay image={activeImage} /> : null}</DragOverlay>
     </DndContext>
   );
 }
