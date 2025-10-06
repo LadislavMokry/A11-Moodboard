@@ -118,7 +118,7 @@ describe("ShowcaseBoard", () => {
     });
 
     // Verify masonry grid is present
-    const masonryGrid = container.querySelector('[style*="grid-auto-flow"]');
+    const masonryGrid = container.querySelector('[style*="display: flex"]');
     expect(masonryGrid).toBeInTheDocument();
   });
 
@@ -154,12 +154,12 @@ describe("ShowcaseBoard", () => {
     const { container } = renderShowcaseBoard();
 
     await waitFor(() => {
-      // Verify masonry grid container has correct CSS Grid properties
-      const masonryGrid = container.querySelector('[style*="grid-auto-flow"]');
+      // Verify masonry grid container has correct flexbox properties
+      const masonryGrid = container.querySelector('[style*="display: flex"]');
       expect(masonryGrid).toBeInTheDocument();
       expect(masonryGrid).toHaveStyle({
-        display: "grid",
-        gridAutoFlow: "row dense"
+        display: "flex",
+        height: "100vh"
       });
     });
   });
@@ -214,7 +214,7 @@ describe("ShowcaseBoard", () => {
 
     await waitFor(() => {
       // Verify all images are rendered within the masonry grid
-      const masonryGrid = container.querySelector('[style*="grid-auto-flow"]');
+      const masonryGrid = container.querySelector('[style*="display: flex"]');
       const images = masonryGrid?.querySelectorAll("img:not([aria-hidden])");
 
       expect(images?.length).toBe(3);

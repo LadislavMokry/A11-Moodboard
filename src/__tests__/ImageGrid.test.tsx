@@ -138,7 +138,7 @@ describe("ImageGrid", () => {
     const { container } = render(<ImageGrid images={mockImages} />);
 
     // Should use masonry layout when enabled
-    const masonryGrid = container.querySelector('[style*="grid-auto-flow"]');
+    const masonryGrid = container.querySelector('[style*="display: flex"]');
     expect(masonryGrid).toBeInTheDocument();
 
     // Should not have the old CSS columns layout

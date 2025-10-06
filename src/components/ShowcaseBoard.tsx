@@ -58,10 +58,10 @@ export function ShowcaseBoard() {
     >
       <MasonryGrid
         images={board.images}
-        minCardWidth={220} // Slightly larger for homepage showcase
-        gap={16} // More generous spacing for homepage
-        wideAspectRatio={1.8} // More permissive wide image threshold
-        wideSpan={2}
+        minCardWidth={180} // Smaller cards for denser layout
+        gap={8} // Tight spacing
+        maxHeight="100vh" // Fixed height, no scrolling
+        alternatingDirection={true} // Enable waterfall alternating directions
       />
     </div>
   );

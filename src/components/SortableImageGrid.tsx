@@ -128,8 +128,6 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
           onImageMenuClick={(image, event) => onEditCaption?.(image)} // Map to edit caption for menu
           minCardWidth={200} // Smaller cards like Savee
           gap={12} // Tighter gutters
-          wideAspectRatio={1.6} // Wide images span 2 columns
-          wideSpan={2}
           selectionMode={selectionMode}
           selectedIds={selectedIds}
           onToggleSelection={onToggleSelection}

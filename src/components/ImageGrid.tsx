@@ -20,8 +20,6 @@ export function ImageGrid({ images, onImageClick, onImageMenuClick }: ImageGridP
         onImageMenuClick={onImageMenuClick}
         minCardWidth={200} // Smaller cards like Savee
         gap={12} // Tighter gutters
-        wideAspectRatio={1.6} // Wide images span 2 columns
-        wideSpan={2}
       />
     );
   }
