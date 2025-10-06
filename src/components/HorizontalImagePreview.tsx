@@ -25,14 +25,14 @@ export function HorizontalImagePreview({ images }: HorizontalImagePreviewProps) 
 
   return (
     <div className="flex h-full w-full gap-1">
-      {Array.from({ length: 4 }).map((_, tileIndex) => {
+      {Array.from({ length: 2 }).map((_, tileIndex) => {
         const image = displayImages[(currentImageIndex + tileIndex) % images.length];
 
         if (!image) {
           return (
             <div
               key={tileIndex}
-              className="flex-1 h-full bg-neutral-200 dark:bg-neutral-700 rounded-md flex items-center justify-center"
+              className="flex-1 h-full bg-neutral-200 dark:bg-neutral-700 rounded-md flex items-center justify-center aspect-square"
             >
               <ImageIcon className="h-8 w-8 text-neutral-300 dark:text-neutral-600" />
             </div>
@@ -42,7 +42,7 @@ export function HorizontalImagePreview({ images }: HorizontalImagePreviewProps) 
         return (
           <div
             key={tileIndex}
-            className="flex-1 h-full overflow-hidden rounded-md relative"
+            className="flex-1 h-full overflow-hidden rounded-md relative aspect-square"
           >
             <AnimatePresence mode="wait">
               <motion.img
