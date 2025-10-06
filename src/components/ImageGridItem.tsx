@@ -167,7 +167,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
     >
       {/* Image */}
       <div
-        className="relative overflow-hidden rounded-sm bg-neutral-100 dark:bg-neutral-800"
+        className="relative bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700"
         style={imageContainerStyle}
       >
         <Skeleton className={cn("absolute inset-0 h-full w-full transition-opacity duration-500", (isPreviewLoaded || isFullLoaded) && "opacity-0")} />
@@ -177,7 +177,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
             src={previewSrc}
             alt=""
             aria-hidden="true"
-            className={cn("absolute inset-0 h-full w-full scale-105 transform-gpu object-contain blur-lg transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0")}
+            className={cn("absolute inset-0 max-w-full h-auto scale-105 transform-gpu blur-lg transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0")}
             onLoad={() => setIsPreviewLoaded(true)}
             loading="lazy"
             decoding="async"
@@ -191,7 +191,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
           alt={image.caption || ""}
           loading="lazy"
           decoding="async"
-          className={cn("relative z-10 h-auto w-full object-contain transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-100" : "opacity-0")}
+          className={cn("relative z-10 max-w-full h-auto transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-100" : "opacity-0")}
           onLoad={() => {
             setIsFullLoaded(true);
             if (!isGif) {
