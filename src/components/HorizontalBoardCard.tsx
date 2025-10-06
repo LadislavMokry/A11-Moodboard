@@ -49,7 +49,7 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
         className="flex-1 flex items-center p-2 pr-0 overflow-hidden"
       >
         {/* Horizontal Image Preview */}
-        <div className="w-1/2 h-32 flex-shrink-0 rounded-md overflow-hidden relative">
+        <div className="w-40 h-32 flex-shrink-0 rounded-md overflow-hidden relative">
           <HorizontalImagePreview images={board.images} />
         </div>
 

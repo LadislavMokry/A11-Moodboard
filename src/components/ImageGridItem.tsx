@@ -196,7 +196,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       {...(dragAttributes ?? {})}
       {...(dragListeners ?? {})}
       style={combinedStyle}
-      className={cn("group relative break-inside-avoid cursor-pointer touch-manipulation transition-opacity duration-200 border-2 border-neutral-200 dark:border-neutral-700", isDragging && "opacity-50", className)}
+      className={cn("group relative break-inside-avoid cursor-pointer touch-manipulation transition-opacity duration-200", isDragging && "opacity-50", className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
@@ -235,7 +235,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
           alt={image.caption || ""}
           loading="lazy"
           decoding="async"
-          className={cn("relative z-10")}
+          className={cn("relative z-10 object-contain")}
           style={{ width: "auto", height: "auto" }}
           onLoad={() => {
             console.log(`ImageGridItem (${image.id}): Full image loaded`);
