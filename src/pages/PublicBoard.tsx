@@ -7,7 +7,7 @@ import { SortableImageGrid } from "@/components/SortableImageGrid";
 import { useLightbox } from "@/hooks/useLightbox";
 import { usePublicBoard } from "@/hooks/usePublicBoard";
 import { type Image } from "@/schemas/image";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
