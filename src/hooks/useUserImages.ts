@@ -16,7 +16,7 @@ export function useUserImages({ userId, enabled = true }: UseUserImagesProps) {
       // 1. Fetch all boards owned by the user
       const { data: boardsData, error: boardsError } = await supabase
         .from('boards')
-        .select('id')
+        .select('*')
         .eq('owner_id', userId);
 
       if (boardsError) {
