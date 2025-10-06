@@ -112,12 +112,12 @@ Deno.serve(async (req) => {
     }
 
     // Fetch the transformed image from Supabase Storage
-    // Use Supabase's render endpoint with explicit WebP request
-    const transformUrl = `${supabaseUrl}/storage/v1/render/image/public/board-images/${image.storage_path}?width=1200&height=630&resize=cover&quality=35`;
+    // Request JPG format for WhatsApp compatibility (WhatsApp doesn't support WebP for OG images)
+    const transformUrl = `${supabaseUrl}/storage/v1/render/image/public/board-images/${image.storage_path}?width=1200&height=630&resize=cover&quality=80&format=origin`;
 
     const imageResponse = await fetch(transformUrl, {
       headers: {
-        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+        'Accept': 'image/jpeg,image/jpg,image/*,*/*;q=0.8',
       },
     });
 
@@ -130,7 +130,7 @@ Deno.serve(async (req) => {
     }
 
     const imageBuffer = await imageResponse.arrayBuffer();
-    const contentType = imageResponse.headers.get('Content-Type') || 'image/webp';
+    const contentType = imageResponse.headers.get('Content-Type') || 'image/jpeg';
 
     // Check file size (WhatsApp requires < 300KB)
     if (imageBuffer.byteLength > 300 * 1024) {

@@ -81,6 +81,9 @@ function generateHtml(
     ? `${supabaseUrl}/storage/v1/object/public/og-images/${data.board.og_image_path}`
     : `${baseUrl}/api/og/${shareToken}.webp`;
 
+  // Determine image type from path extension (jpg for pre-generated, webp for dynamic)
+  const ogImageType = data.board.og_image_path?.endsWith('.jpg') ? 'image/jpeg' : 'image/webp';
+
   const boardUrl = `${baseUrl}/b/${shareToken}`;
 
   // Use provided asset paths or fallback to development paths
@@ -109,7 +112,7 @@ function generateHtml(
     <meta property="og:description" content="${description}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:secure_url" content="${ogImageUrl}" />
-    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:type" content="${ogImageType}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${title}" />
