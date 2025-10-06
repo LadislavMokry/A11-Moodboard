@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { useShowcaseBoard } from '@/hooks/useShowcaseBoard';
-import { getSupabaseThumbnail } from '@/lib/imageUtils';
-import { type Image } from '@/schemas/image';
+import { useShowcaseBoard } from "@/hooks/useShowcaseBoard";
+import { getSupabaseThumbnail } from "@/lib/imageUtils";
+import { type Image } from "@/schemas/image";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Animated showcase board for the homepage (signed-out view)
@@ -22,7 +22,7 @@ export function ShowcaseBoard() {
           }
         });
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
 
     if (containerRef.current) {
@@ -39,7 +39,7 @@ export function ShowcaseBoard() {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-violet-600" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-pink-600" />
       </div>
     );
   }
@@ -63,7 +63,7 @@ export function ShowcaseBoard() {
   return (
     <div
       ref={containerRef}
-      className={`showcase-board h-full w-full ${isVisible ? '' : 'opacity-0'}`}
+      className={`showcase-board h-full w-full ${isVisible ? "" : "opacity-0"}`}
     >
       <div className="flex h-full gap-4">
         {columns.map((columnImages, columnIndex) => (
@@ -76,12 +76,12 @@ export function ShowcaseBoard() {
                 key={image.id}
                 className="overflow-hidden rounded-lg"
                 style={{
-                  aspectRatio: image.width && image.height ? image.width / image.height : 1,
+                  aspectRatio: image.width && image.height ? image.width / image.height : 1
                 }}
               >
                 <img
                   src={getSupabaseThumbnail(image.storage_path, 600)}
-                  alt={image.caption || ''}
+                  alt={image.caption || ""}
                   loading="lazy"
                   className="h-full w-full object-cover"
                 />

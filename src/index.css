@@ -35,11 +35,11 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --chart-1: oklch(0.646 0.222 350);
+  --chart-2: oklch(0.6 0.118 330);
+  --chart-3: oklch(0.398 0.07 310);
+  --chart-4: oklch(0.828 0.189 290);
+  --chart-5: oklch(0.769 0.188 270);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -52,11 +52,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #ec4899;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #ec4899;
 }
 
 body {
@@ -137,14 +137,14 @@ h1 {
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-1: oklch(0.646 0.222 350);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --chart-4: oklch(0.828 0.189 290);
+  --chart-5: oklch(0.769 0.188 270);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary: oklch(0.646 0.222 350);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
@@ -188,6 +188,36 @@ h1 {
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Force pink color for all discover links (logo and navigation) */
+  a[data-discover="true"] {
+    color: #ec4899 !important;
+  }
+  a[data-discover="true"]:hover {
+    color: #ec4899 !important;
+  }
+  a[data-discover="true"]:focus {
+    color: #ec4899 !important;
+  }
+  a[data-discover="true"]:active {
+    color: #ec4899 !important;
+  }
+  a[data-discover="true"]:visited {
+    color: #ec4899 !important;
+  }
+
+  /* Force all links to be pink */
+  a {
+    color: #ec4899 !important;
+  }
+  a:hover {
+    color: #ec4899 !important;
+  }
+
+  /* Override any violet colors with maximum specificity */
+  a[class*="text-"]:not([class*="text-pink"]) {
+    color: #ec4899 !important;
   }
 
   /* Reduce motion for users who prefer it */

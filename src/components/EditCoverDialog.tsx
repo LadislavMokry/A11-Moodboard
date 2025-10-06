@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
-import { X, Check } from 'lucide-react';
-import { type BoardWithImages } from '@/schemas/boardWithImages';
-import { getSupabaseThumbnail } from '@/lib/imageUtils';
-import { setBoardCoverImages } from '@/services/boardCoverImages';
-import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
+import { getSupabaseThumbnail } from "@/lib/imageUtils";
+import { type BoardWithImages } from "@/schemas/boardWithImages";
+import { setBoardCoverImages } from "@/services/boardCoverImages";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { Check, X } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface EditCoverDialogProps {
   open: boolean;
@@ -17,11 +17,7 @@ interface EditCoverDialogProps {
  * Dialog for editing board cover images
  * User can select up to 12 images from the board to use in the rotating cover
  */
-export function EditCoverDialog({
-  open,
-  onOpenChange,
-  board,
-}: EditCoverDialogProps) {
+export function EditCoverDialog({ open, onOpenChange, board }: EditCoverDialogProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const queryClient = useQueryClient();
@@ -33,7 +29,7 @@ export function EditCoverDialog({
         next.delete(imageId);
       } else {
         if (next.size >= 12) {
-          toast.error('Maximum 12 cover images allowed');
+          toast.error("Maximum 12 cover images allowed");
           return prev;
         }
         next.add(imageId);
@@ -48,14 +44,14 @@ export function EditCoverDialog({
       await setBoardCoverImages(board.id, Array.from(selectedIds));
 
       // Invalidate queries to refetch board data
-      await queryClient.invalidateQueries({ queryKey: ['boards'] });
-      await queryClient.invalidateQueries({ queryKey: ['board', board.id] });
+      await queryClient.invalidateQueries({ queryKey: ["boards"] });
+      await queryClient.invalidateQueries({ queryKey: ["board", board.id] });
 
-      toast.success('Cover images updated');
+      toast.success("Cover images updated");
       onOpenChange(false);
     } catch (error) {
-      console.error('Failed to save cover images:', error);
-      toast.error('Failed to save cover images');
+      console.error("Failed to save cover images:", error);
+      toast.error("Failed to save cover images");
     } finally {
       setSaving(false);
     }
@@ -67,29 +63,30 @@ export function EditCoverDialog({
       await setBoardCoverImages(board.id, []);
 
       // Invalidate queries
-      await queryClient.invalidateQueries({ queryKey: ['boards'] });
-      await queryClient.invalidateQueries({ queryKey: ['board', board.id] });
+      await queryClient.invalidateQueries({ queryKey: ["boards"] });
+      await queryClient.invalidateQueries({ queryKey: ["board", board.id] });
 
       setSelectedIds(new Set());
-      toast.success('Cover images cleared');
+      toast.success("Cover images cleared");
       onOpenChange(false);
     } catch (error) {
-      console.error('Failed to clear cover images:', error);
-      toast.error('Failed to clear cover images');
+      console.error("Failed to clear cover images:", error);
+      toast.error("Failed to clear cover images");
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
         <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-neutral-200 bg-white p-6 shadow-xl dark:border-neutral-800 dark:bg-neutral-900">
           <div className="mb-4 flex items-center justify-between">
-            <Dialog.Title className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-              Edit Cover Images
-            </Dialog.Title>
+            <Dialog.Title className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Edit Cover Images</Dialog.Title>
             <Dialog.Close asChild>
               <button
                 type="button"
@@ -101,16 +98,12 @@ export function EditCoverDialog({
             </Dialog.Close>
           </div>
 
-          <Dialog.Description className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
-            Select up to 12 images to display in the rotating board cover. If no images are selected, all board images will be used.
-          </Dialog.Description>
+          <Dialog.Description className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">Select up to 12 images to display in the rotating board cover. If no images are selected, all board images will be used.</Dialog.Description>
 
           {/* Image Grid */}
           <div className="mb-6 max-h-96 overflow-y-auto rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
             {board.images.length === 0 ? (
-              <p className="text-center text-sm text-neutral-500 dark:text-neutral-400">
-                No images in this board yet. Upload some images first.
-              </p>
+              <p className="text-center text-sm text-neutral-500 dark:text-neutral-400">No images in this board yet. Upload some images first.</p>
             ) : (
               <div className="grid grid-cols-4 gap-3">
                 {board.images.map((image) => {
@@ -120,11 +113,7 @@ export function EditCoverDialog({
                       key={image.id}
                       type="button"
                       onClick={() => toggleImage(image.id)}
-                      className={`group relative aspect-square overflow-hidden rounded-lg border-2 transition-all ${
-                        isSelected
-                          ? 'border-violet-500 ring-2 ring-violet-500/20'
-                          : 'border-transparent hover:border-neutral-300 dark:hover:border-neutral-700'
-                      }`}
+                      className={`group relative aspect-square overflow-hidden rounded-lg border-2 transition-all ${isSelected ? "border-pink-500 ring-2 ring-pink-500/20" : "border-transparent hover:border-neutral-300 dark:hover:border-neutral-700"}`}
                     >
                       <img
                         src={getSupabaseThumbnail(image.storage_path, 360)}
@@ -132,8 +121,8 @@ export function EditCoverDialog({
                         className="h-full w-full object-cover"
                       />
                       {isSelected && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-violet-500/20">
-                          <div className="rounded-full bg-violet-500 p-1">
+                        <div className="absolute inset-0 flex items-center justify-center bg-pink-500/20">
+                          <div className="rounded-full bg-pink-500 p-1">
                             <Check className="h-4 w-4 text-white" />
                           </div>
                         </div>
@@ -146,9 +135,7 @@ export function EditCoverDialog({
           </div>
 
           {/* Selection Count */}
-          <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
-            {selectedIds.size} of 12 images selected
-          </p>
+          <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">{selectedIds.size} of 12 images selected</p>
 
           {/* Actions */}
           <div className="flex gap-3">
@@ -164,9 +151,9 @@ export function EditCoverDialog({
               type="button"
               onClick={handleSave}
               disabled={saving || board.images.length === 0}
-              className="flex-1 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700 disabled:opacity-50"
+              className="flex-1 rounded-lg bg-pink-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-700 disabled:opacity-50"
             >
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? "Saving..." : "Save"}
             </button>
           </div>
         </Dialog.Content>

@@ -1,18 +1,16 @@
-import { useEffect } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Loader2, X } from 'lucide-react';
-import { useUpdateBoard } from '@/hooks/useBoardMutations';
-import { trimmedString, formErrors } from '@/lib/formValidation';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/lib/toast';
+import { Button } from "@/components/ui/button";
+import { useUpdateBoard } from "@/hooks/useBoardMutations";
+import { formErrors, trimmedString } from "@/lib/formValidation";
+import { toast } from "@/lib/toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as Dialog from "@radix-ui/react-dialog";
+import { Loader2, X } from "lucide-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const renameBoardSchema = z.object({
-  name: trimmedString(formErrors.required('Board name'))
-    .min(1, formErrors.required('Board name'))
-    .max(60, formErrors.maxLength('Board name', 60)),
+  name: trimmedString(formErrors.required("Board name")).min(1, formErrors.required("Board name")).max(60, formErrors.maxLength("Board name", 60))
 });
 
 type RenameBoardFormValues = z.infer<typeof renameBoardSchema>;
@@ -24,22 +22,17 @@ interface RenameBoardDialogProps {
   currentName: string;
 }
 
-export function RenameBoardDialog({
-  open,
-  onOpenChange,
-  boardId,
-  currentName,
-}: RenameBoardDialogProps) {
+export function RenameBoardDialog({ open, onOpenChange, boardId, currentName }: RenameBoardDialogProps) {
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors }
   } = useForm<RenameBoardFormValues>({
     resolver: zodResolver(renameBoardSchema),
     defaultValues: {
-      name: currentName,
-    },
+      name: currentName
+    }
   });
 
   const { mutateAsync, isPending } = useUpdateBoard();
@@ -54,34 +47,33 @@ export function RenameBoardDialog({
     try {
       await mutateAsync({
         boardId,
-        updates: { name: values.name },
+        updates: { name: values.name }
       });
-      toast.success('Board renamed');
+      toast.success("Board renamed");
       onOpenChange(false);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to rename board';
+      const message = error instanceof Error ? error.message : "Failed to rename board";
       toast.error(message);
     }
   });
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
         <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-[min(90vw,400px)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-neutral-200 bg-white p-6 shadow-xl focus:outline-none dark:border-neutral-800 dark:bg-neutral-900">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <Dialog.Title className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                Rename board
-              </Dialog.Title>
-              <Dialog.Description className="text-sm text-neutral-500 dark:text-neutral-400">
-                Give your board a new name.
-              </Dialog.Description>
+              <Dialog.Title className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Rename board</Dialog.Title>
+              <Dialog.Description className="text-sm text-neutral-500 dark:text-neutral-400">Give your board a new name.</Dialog.Description>
             </div>
             <Dialog.Close asChild>
               <button
                 type="button"
-                className="rounded-full p-1 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                className="rounded-full p-1 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-500 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -89,7 +81,11 @@ export function RenameBoardDialog({
             </Dialog.Close>
           </div>
 
-          <form className="mt-6 space-y-5" onSubmit={onSubmit} noValidate>
+          <form
+            className="mt-6 space-y-5"
+            onSubmit={onSubmit}
+            noValidate
+          >
             <div className="space-y-2">
               <label
                 htmlFor="board-name"
@@ -103,13 +99,16 @@ export function RenameBoardDialog({
                   type="text"
                   autoComplete="off"
                   autoFocus
-                  {...register('name')}
-                  className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-                  aria-invalid={errors.name ? 'true' : 'false'}
+                  {...register("name")}
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                  aria-invalid={errors.name ? "true" : "false"}
                 />
               </div>
               {errors.name ? (
-                <p className="text-xs text-red-500" role="alert">
+                <p
+                  className="text-xs text-red-500"
+                  role="alert"
+                >
                   {errors.name.message}
                 </p>
               ) : null}
@@ -125,14 +124,17 @@ export function RenameBoardDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button
+                type="submit"
+                disabled={isPending}
+              >
                 {isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Saving...
                   </>
                 ) : (
-                  'Save'
+                  "Save"
                 )}
               </Button>
             </div>

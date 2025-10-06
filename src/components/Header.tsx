@@ -47,15 +47,19 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-neutral-800 dark:bg-neutral-950/95 dark:supports-[backdrop-filter]:bg-neutral-950/60">
+    <header
+      data-header
+      className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-neutral-800 dark:bg-neutral-950/95 dark:supports-[backdrop-filter]:bg-neutral-950/60"
+    >
       <div className="flex h-16 w-full items-center justify-between px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         {/* Logo */}
         <Link
           to="/"
-          className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 hover:opacity-80 transition-opacity"
+          className="text-xl font-semibold tracking-tight hover:opacity-80 transition-opacity"
           aria-label="Moodeight - Home"
+          data-logo="true"
         >
-          moodeight
+          <span>moodeight</span>
         </Link>
 
         {/* Right side navigation */}

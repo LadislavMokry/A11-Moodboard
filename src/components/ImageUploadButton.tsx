@@ -1,7 +1,7 @@
-import { useRef } from 'react';
-import { Upload } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Upload } from "lucide-react";
+import { useRef } from "react";
 
 interface ImageUploadButtonProps {
   onSelectFiles: (files: FileList | null) => void;
@@ -11,13 +11,7 @@ interface ImageUploadButtonProps {
   className?: string;
 }
 
-export function ImageUploadButton({
-  onSelectFiles,
-  uploading,
-  accept,
-  inProgressCount,
-  className,
-}: ImageUploadButtonProps) {
+export function ImageUploadButton({ onSelectFiles, uploading, accept, inProgressCount, className }: ImageUploadButtonProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleClick = () => {
@@ -27,11 +21,11 @@ export function ImageUploadButton({
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const { files } = event.target;
     onSelectFiles(files);
-    event.target.value = '';
+    event.target.value = "";
   };
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn("relative", className)}>
       <input
         ref={inputRef}
         type="file"
@@ -50,11 +44,7 @@ export function ImageUploadButton({
       >
         <Upload className="h-4 w-4" />
         Upload
-        {uploading && inProgressCount > 0 ? (
-          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-700 dark:bg-violet-500/20 dark:text-violet-200">
-            {inProgressCount}
-          </span>
-        ) : null}
+        {uploading && inProgressCount > 0 ? <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-semibold text-pink-700 dark:bg-pink-500/20 dark:text-pink-200">{inProgressCount}</span> : null}
       </Button>
     </div>
   );
