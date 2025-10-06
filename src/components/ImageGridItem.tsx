@@ -49,6 +49,26 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
     setIsPreviewLoaded(isGif);
   }, [image.id, isGif]);
 
+  // Handle cached images that might load immediately
+  useEffect(() => {
+    if (isGif) {
+      setIsFullLoaded(true);
+      setIsPreviewLoaded(true);
+    }
+  }, [isGif]);
+
+  // Fallback: show images after 2 seconds if they haven't loaded yet (handles cached images)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isFullLoaded) {
+        setIsFullLoaded(true);
+        setIsPreviewLoaded(true);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [isFullLoaded]);
+
   // Check if caption text overflows and needs marquee
   useEffect(() => {
     if (captionRef.current && image.caption) {
@@ -193,7 +213,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
           alt={image.caption || ""}
           loading="lazy"
           decoding="async"
-          className={cn("relative z-10 transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-100" : "opacity-0")}
+          className={cn("relative z-10 transition-opacity duration-500 will-change-opacity", isFullLoaded || isGif ? "opacity-100" : "opacity-0")}
           style={{ width: "auto", height: "auto" }}
           onLoad={() => {
             setIsFullLoaded(true);

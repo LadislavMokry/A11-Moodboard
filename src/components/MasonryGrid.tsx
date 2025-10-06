@@ -154,8 +154,7 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
             ...(dragStyle ?? {}),
             gridRowEnd: image.gridRowSpan ? `span ${image.gridRowSpan}` : undefined,
             gridColumnEnd: image.gridColumnSpan && image.gridColumnSpan > 1 ? `span ${image.gridColumnSpan}` : undefined,
-            // Reserve space to prevent layout shift
-            aspectRatio: image.aspectRatio,
+            // Let ImageGridItem handle aspect ratios naturally
             minHeight: "100px" // Minimum height to prevent too small cards
           };
 
