@@ -9,7 +9,10 @@ export const queryClient = new QueryClient({
     queries: {
       retry: 3, // 3 retries with exponential backoff
       retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 30000),
-      staleTime: 60 * 1000, // 1 minute default
+      staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh longer
+      gcTime: 10 * 60 * 1000, // 10 minutes - cache garbage collection (formerly cacheTime)
+      refetchOnWindowFocus: false, // Don't refetch on window focus for better UX
+      refetchOnReconnect: true, // Do refetch on reconnect
       onError: (error) => {
         // Global error handler for queries
         console.error("Query error:", error);
@@ -20,6 +23,7 @@ export const queryClient = new QueryClient({
       }
     },
     mutations: {
+      retry: 1, // Retry mutations once on failure
       onError: (error) => {
         // Global error handler for mutations
         console.error("Mutation error:", error);

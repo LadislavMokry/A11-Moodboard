@@ -1,34 +1,27 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Sparkles as _Sparkles } from 'lucide-react';
-import { Layout } from '@/components/Layout';
-import { useAuth } from '@/hooks/useAuth';
-import { useBoards } from '@/hooks/useBoards';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { ErrorMessage } from '@/components/ErrorMessage';
-import { EmptyState as _EmptyState } from '@/components/EmptyState';
-import { SignInButton } from '@/components/SignInButton';
-import { BoardCard } from '@/components/BoardCard';
-import { BoardCardSkeleton } from '@/components/BoardCardSkeleton';
-import { ShareDialog } from '@/components/ShareDialog';
-import { getPublicBoardUrl } from '@/lib/shareUtils';
-import { ShowcaseBoard } from '@/components/ShowcaseBoard';
+import { BoardCard } from "@/components/BoardCard";
+import { BoardCardSkeleton } from "@/components/BoardCardSkeleton";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { Layout } from "@/components/Layout";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { ShowcaseBoard } from "@/components/ShowcaseBoard";
+import { SignInButton } from "@/components/SignInButton";
+import { useAuth } from "@/hooks/useAuth";
+import { useBoards } from "@/hooks/useBoards";
+import { getPublicBoardUrl } from "@/lib/shareUtils";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const ShareDialog = lazy(() => import("@/components/ShareDialog").then((m) => ({ default: m.ShareDialog })));
 
 export default function Home() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [shareDialogBoard, setShareDialogBoard] = useState<{ id: string; name: string; shareToken: string } | null>(null);
-  const {
-    data: boards,
-    isLoading: boardsLoading,
-    isError,
-    error,
-    refetch,
-  } = useBoards();
+  const { data: boards, isLoading: boardsLoading, isError, error, refetch } = useBoards();
 
   useEffect(() => {
     if (user && !boardsLoading && boards && boards.length === 0) {
-      navigate('/staging', { replace: true });
+      navigate("/staging", { replace: true });
     }
   }, [user, boards, boardsLoading, navigate]);
 
@@ -51,16 +44,12 @@ export default function Home() {
             {/* Hero Content - Right on desktop, top on mobile */}
             <div className="flex flex-col items-center justify-center gap-8 text-center md:order-2 md:w-1/3">
               <div className="space-y-6">
-                <h1 className="text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-5xl">
-                  Capture your vibe.
-                </h1>
-                <p className="text-base text-neutral-600 dark:text-neutral-300 md:text-lg">
-                  Drop images and arrange them into living moodboards. Share instantly with a single link.
-                </p>
+                <h1 className="text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-5xl">Capture your vibe.</h1>
+                <p className="text-base text-neutral-600 dark:text-neutral-300 md:text-lg">Drop images and arrange them into living moodboards. Share instantly with a single link.</p>
               </div>
               <div className="flex flex-col gap-4 sm:flex-row">
                 <button
-                  onClick={() => navigate('/staging')}
+                  onClick={() => navigate("/staging")}
                   className="rounded-lg bg-violet-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-violet-700"
                 >
                   Create a board
@@ -86,12 +75,8 @@ export default function Home() {
       <Layout>
         <section className="space-y-8">
           <div className="space-y-2">
-            <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-              Your boards
-            </h1>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-              Pick up where you left off. Create, curate, and share your visual story.
-            </p>
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">Your boards</h1>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Pick up where you left off. Create, curate, and share your visual story.</p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -105,12 +90,15 @@ export default function Home() {
   }
 
   if (isError && error) {
-    const resolvedError = error instanceof Error ? error : new Error('Failed to load boards');
+    const resolvedError = error instanceof Error ? error : new Error("Failed to load boards");
 
     return (
       <Layout>
         <section className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-          <ErrorMessage error={resolvedError} onRetry={() => refetch()} />
+          <ErrorMessage
+            error={resolvedError}
+            onRetry={() => refetch()}
+          />
         </section>
       </Layout>
     );
@@ -130,12 +118,8 @@ export default function Home() {
     <Layout>
       <section className="space-y-8">
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-            Your boards
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Pick up where you left off. Create, curate, and share your visual story.
-          </p>
+          <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">Your boards</h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Pick up where you left off. Create, curate, and share your visual story.</p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -144,12 +128,12 @@ export default function Home() {
               key={board.id}
               board={board}
               onShare={(boardId) => {
-                const targetBoard = boards.find(b => b.id === boardId);
+                const targetBoard = boards.find((b) => b.id === boardId);
                 if (targetBoard) {
                   setShareDialogBoard({
                     id: targetBoard.id,
                     name: targetBoard.name,
-                    shareToken: targetBoard.share_token,
+                    shareToken: targetBoard.share_token
                   });
                 }
               }}
@@ -159,12 +143,14 @@ export default function Home() {
 
         {/* Share Dialog */}
         {shareDialogBoard && (
-          <ShareDialog
-            open={!!shareDialogBoard}
-            onOpenChange={(open) => !open && setShareDialogBoard(null)}
-            url={getPublicBoardUrl(shareDialogBoard.shareToken)}
-            title={shareDialogBoard.name}
-          />
+          <Suspense fallback={null}>
+            <ShareDialog
+              open={true}
+              onOpenChange={(open) => !open && setShareDialogBoard(null)}
+              url={getPublicBoardUrl(shareDialogBoard.shareToken)}
+              title={shareDialogBoard.name}
+            />
+          </Suspense>
         )}
       </section>
     </Layout>

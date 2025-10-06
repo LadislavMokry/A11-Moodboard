@@ -1,10 +1,10 @@
-﻿import { useState, useRef, useEffect, type CSSProperties } from 'react';
-import type { DraggableAttributes } from '@dnd-kit/core';
-import { MoreVertical, Check } from 'lucide-react';
-import { type Image } from '@/schemas/image';
-import { getSupabaseThumbnail, getSupabasePublicUrl } from '@/lib/imageUtils';
-import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/Skeleton';
+﻿import { Skeleton } from "@/components/Skeleton";
+import { getSupabasePublicUrl, getSupabaseThumbnail } from "@/lib/imageUtils";
+import { cn } from "@/lib/utils";
+import { type Image } from "@/schemas/image";
+import type { DraggableAttributes } from "@dnd-kit/core";
+import { Check, MoreVertical } from "lucide-react";
+import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 
 type SyntheticListenerMap = Record<string, Function> | undefined;
 
@@ -26,22 +26,8 @@ interface ImageGridItemProps {
 
 const LOW_RES_WIDTH = 40;
 
-export function ImageGridItem({
-  image,
-  onClick,
-  onMenuClick,
-  setRef,
-  dragAttributes,
-  dragListeners,
-  style,
-  className,
-  isDragging = false,
-  dataTestId,
-  selectionMode = false,
-  isSelected = false,
-  onToggleSelection,
-}: ImageGridItemProps) {
-  const isGif = image.mime_type?.toLowerCase() === 'image/gif';
+export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMenuClick, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection }: ImageGridItemProps) {
+  const isGif = image.mime_type?.toLowerCase() === "image/gif";
   const [isHovered, setIsHovered] = useState(false);
   const [shouldMarquee, setShouldMarquee] = useState(false);
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(isGif);
@@ -70,24 +56,24 @@ export function ImageGridItem({
   const srcFull = getSupabasePublicUrl(image.storage_path);
 
   const srcSet = `${src360} 360w, ${src720} 720w, ${src1080} 1080w`;
-  const sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
+  const sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (selectionMode) {
       onToggleSelection?.();
     } else {
       onClick?.();
     }
-  };
+  }, [selectionMode, onToggleSelection, onClick]);
 
   const combinedStyle: CSSProperties = {
     ...(style ?? {}),
-    contain: 'layout paint',
+    contain: "layout paint"
   };
 
   const imageContainerStyle: CSSProperties = {
     aspectRatio: image.width && image.height ? `${image.width} / ${image.height}` : undefined,
-    contain: 'layout paint',
+    contain: "layout paint"
   };
 
   return (
@@ -97,11 +83,7 @@ export function ImageGridItem({
       {...(dragAttributes ?? {})}
       {...(dragListeners ?? {})}
       style={combinedStyle}
-      className={cn(
-        'group relative mb-4 break-inside-avoid cursor-pointer touch-manipulation transition-opacity duration-200',
-        isDragging && 'opacity-50',
-        className,
-      )}
+      className={cn("group relative mb-4 break-inside-avoid cursor-pointer touch-manipulation transition-opacity duration-200", isDragging && "opacity-50", className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
@@ -111,19 +93,14 @@ export function ImageGridItem({
         className="relative overflow-hidden rounded-sm bg-neutral-100 dark:bg-neutral-800"
         style={imageContainerStyle}
       >
-        <Skeleton
-          className={cn('absolute inset-0 h-full w-full transition-opacity duration-500', (isPreviewLoaded || isFullLoaded) && 'opacity-0')}
-        />
+        <Skeleton className={cn("absolute inset-0 h-full w-full transition-opacity duration-500", (isPreviewLoaded || isFullLoaded) && "opacity-0")} />
 
         {!isGif && previewSrc && (
           <img
             src={previewSrc}
             alt=""
             aria-hidden="true"
-            className={cn(
-              'absolute inset-0 h-full w-full scale-105 transform-gpu object-cover blur-lg transition-opacity duration-500',
-              isFullLoaded ? 'opacity-0' : isPreviewLoaded ? 'opacity-100' : 'opacity-0',
-            )}
+            className={cn("absolute inset-0 h-full w-full scale-105 transform-gpu object-cover blur-lg transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0")}
             onLoad={() => setIsPreviewLoaded(true)}
             loading="lazy"
             decoding="async"
@@ -134,13 +111,10 @@ export function ImageGridItem({
           src={isGif ? srcFull : src720}
           srcSet={isGif ? undefined : srcSet}
           sizes={isGif ? undefined : sizes}
-          alt={image.caption || ''}
+          alt={image.caption || ""}
           loading="lazy"
           decoding="async"
-          className={cn(
-            'relative z-10 h-auto w-full object-cover transition-opacity duration-500',
-            isFullLoaded ? 'opacity-100' : 'opacity-0',
-          )}
+          className={cn("relative z-10 h-auto w-full object-cover transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-100" : "opacity-0")}
           onLoad={() => {
             setIsFullLoaded(true);
             if (!isGif) {
@@ -165,27 +139,20 @@ export function ImageGridItem({
         {/* 2px white outline on hover (only when not in selection mode) */}
         {!selectionMode && (
           <div
-            className={cn(
-              'pointer-events-none absolute inset-0 transition-opacity duration-150',
-              isHovered ? 'opacity-100' : 'opacity-0',
-            )}
-            style={{ boxShadow: 'inset 0 0 0 2px white' }}
+            className={cn("pointer-events-none absolute inset-0 transition-opacity duration-150", isHovered ? "opacity-100" : "opacity-0")}
+            style={{ boxShadow: "inset 0 0 0 2px white" }}
           />
         )}
 
         {/* Checkbox (top-left) - shown in selection mode or on hover */}
         {(selectionMode || isHovered) && (
           <button
-            className={cn(
-              'absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm border-2 transition-all duration-150',
-              'bg-black/60 backdrop-blur-sm hover:bg-black/80',
-              isSelected ? 'border-violet-500 bg-violet-500' : 'border-white',
-            )}
+            className={cn("absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm border-2 transition-all duration-150", "bg-black/60 backdrop-blur-sm hover:bg-black/80", isSelected ? "border-violet-500 bg-violet-500" : "border-white")}
             onClick={(event) => {
               event.stopPropagation();
               onToggleSelection?.();
             }}
-            aria-label={isSelected ? 'Deselect image' : 'Select image'}
+            aria-label={isSelected ? "Deselect image" : "Select image"}
             type="button"
           >
             {isSelected && <Check className="h-4 w-4 text-white" />}
@@ -194,18 +161,10 @@ export function ImageGridItem({
 
         {/* Bottom-third caption overlay (visible on hover if caption exists) */}
         {image.caption && (
-          <div
-            className={cn(
-              'absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent px-3 py-2 transition-opacity duration-200',
-              isHovered ? 'opacity-100' : 'opacity-0',
-            )}
-          >
+          <div className={cn("absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent px-3 py-2 transition-opacity duration-200", isHovered ? "opacity-100" : "opacity-0")}>
             <div
               ref={captionRef}
-              className={cn(
-                'whitespace-nowrap overflow-hidden text-sm text-white',
-                shouldMarquee && isHovered ? 'animate-marquee' : '',
-              )}
+              className={cn("whitespace-nowrap overflow-hidden text-sm text-white", shouldMarquee && isHovered ? "animate-marquee" : "")}
             >
               {image.caption}
             </div>
@@ -215,10 +174,7 @@ export function ImageGridItem({
         {/* Three-dot menu button (top-right, visible on hover, hidden in selection mode) */}
         {!selectionMode && (
           <button
-            className={cn(
-              'absolute right-2 top-2 rounded-sm bg-black/60 p-1.5 backdrop-blur-sm transition-opacity duration-150 hover:bg-black/80',
-              isHovered ? 'opacity-100' : 'opacity-0',
-            )}
+            className={cn("absolute right-2 top-2 rounded-sm bg-black/60 p-1.5 backdrop-blur-sm transition-opacity duration-150 hover:bg-black/80", isHovered ? "opacity-100" : "opacity-0")}
             onClick={(event) => {
               event.stopPropagation();
               onMenuClick?.(event);
@@ -231,4 +187,4 @@ export function ImageGridItem({
       </div>
     </div>
   );
-}
+});

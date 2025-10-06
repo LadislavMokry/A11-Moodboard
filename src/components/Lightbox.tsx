@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { useDrag } from '@use-gesture/react';
-import { useSpring, animated } from '@react-spring/web';
-import { type Image } from '@/schemas/image';
-import { LightboxImage } from '@/components/LightboxImage';
-import { LightboxControls } from '@/components/LightboxControls';
-import { LightboxThumbnailStrip } from '@/components/LightboxThumbnailStrip';
-import { LightboxCaptionPanel } from '@/components/LightboxCaptionPanel';
-import { LightboxActions } from '@/components/LightboxActions';
-import { getSupabasePublicUrl } from '@/lib/imageUtils';
+import { LightboxActions } from "@/components/LightboxActions";
+import { LightboxCaptionPanel } from "@/components/LightboxCaptionPanel";
+import { LightboxControls } from "@/components/LightboxControls";
+import { LightboxImage } from "@/components/LightboxImage";
+import { LightboxThumbnailStrip } from "@/components/LightboxThumbnailStrip";
+import { getSupabasePublicUrl } from "@/lib/imageUtils";
+import { type Image } from "@/schemas/image";
+import { animated, useSpring } from "@react-spring/web";
+import { useDrag } from "@use-gesture/react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 interface LightboxProps {
   images: Image[];
@@ -30,18 +30,7 @@ const SWIPE_THRESHOLD = 50;
 const SWIPE_VELOCITY_THRESHOLD = 0.5;
 const DISMISS_THRESHOLD = 100;
 
-export function Lightbox({
-  images,
-  currentIndex,
-  onClose,
-  onNext,
-  onPrev,
-  onJumpTo,
-  onEditCaption,
-  onDelete,
-  isOwner = false,
-  hideThumbnails = false,
-}: LightboxProps) {
+export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, onNext, onPrev, onJumpTo, onEditCaption, onDelete, isOwner = false, hideThumbnails = false }: LightboxProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -54,15 +43,15 @@ export function Lightbox({
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Spring for swipe gestures
   const [{ x: swipeX, y: swipeY }, swipeApi] = useSpring(() => ({
     x: 0,
     y: 0,
-    config: { tension: 300, friction: 30 },
+    config: { tension: 300, friction: 30 }
   }));
 
   // Focus trap: focus close button when lightbox opens
@@ -116,7 +105,7 @@ export function Lightbox({
         onJumpTo(index);
       }
     },
-    [onJumpTo],
+    [onJumpTo]
   );
 
   // Mobile swipe gestures
@@ -159,8 +148,8 @@ export function Lightbox({
     {
       from: () => [0, 0],
       filterTaps: true,
-      axis: undefined,
-    },
+      axis: undefined
+    }
   );
 
   const currentImage = images[currentIndex];
@@ -187,7 +176,7 @@ export function Lightbox({
             ? {
                 x: swipeX,
                 y: swipeY,
-                touchAction: 'none',
+                touchAction: "none"
               }
             : undefined
         }
@@ -215,7 +204,7 @@ export function Lightbox({
       {/* Action buttons (download, copy URL, share, delete) */}
       <LightboxActions
         imageUrl={getSupabasePublicUrl(currentImage.storage_path)}
-        filename={currentImage.original_filename || ''}
+        filename={currentImage.original_filename || ""}
         isOwner={isOwner}
         onDelete={onDelete ? () => onDelete(currentImage) : undefined}
       />
@@ -245,4 +234,4 @@ export function Lightbox({
       />
     </div>
   );
-}
+});

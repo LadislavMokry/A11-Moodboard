@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Image as ImageIcon } from 'lucide-react';
-import { useCoverRotation } from '@/hooks/useCoverRotation';
-import { getSupabaseThumbnail } from '@/lib/imageUtils';
-import { type Image } from '@/schemas/image';
+import { useCoverRotation } from "@/hooks/useCoverRotation";
+import { getSupabaseThumbnail } from "@/lib/imageUtils";
+import { type Image } from "@/schemas/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { Image as ImageIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface RotatingBoardCoverProps {
   /**
@@ -31,12 +31,7 @@ interface RotatingBoardCoverProps {
  * - Pauses on hover
  * - Respects rotationEnabled setting
  */
-export function RotatingBoardCover({
-  images,
-  boardName,
-  rotationEnabled,
-  coverImageIds,
-}: RotatingBoardCoverProps) {
+export function RotatingBoardCover({ images, boardName, rotationEnabled, coverImageIds }: RotatingBoardCoverProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -46,14 +41,12 @@ export function RotatingBoardCover({
       setIsMobile(window.innerWidth < 768);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Filter images to cover pool (either custom or all images)
-  const coverImages = coverImageIds && coverImageIds.length > 0
-    ? images.filter((img) => coverImageIds.includes(img.id))
-    : images;
+  const coverImages = coverImageIds && coverImageIds.length > 0 ? images.filter((img) => coverImageIds.includes(img.id)) : images;
 
   // Determine if rotation should be paused
   const shouldPause = isHovered || !rotationEnabled || (isMobile && !rotationEnabled);
@@ -62,7 +55,7 @@ export function RotatingBoardCover({
   const currentIndices = useCoverRotation({
     totalImages: coverImages.length,
     paused: shouldPause,
-    tileInterval: 2000,
+    tileInterval: 2000
   });
 
   // Empty state
@@ -110,8 +103,10 @@ export function RotatingBoardCover({
                 key={`${tileIndex}-${image.id}`}
                 src={getSupabaseThumbnail(image.storage_path, 360)}
                 alt={image.caption || boardName}
-                className="h-full w-full object-cover"
-                loading="lazy"
+                className="h-full w-full object-cover will-change-opacity"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
