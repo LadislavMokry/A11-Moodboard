@@ -14,6 +14,8 @@ VITE_SUPABASE_URL = "https://jqjkdfbgrtdlkkfwavyq.supabase.co"
 VITE_SUPABASE_ANON_KEY = "sb_publishable_SDbpRmwVr40Dspe_XmdjaQ_mTn1g48L"
 # Optional: Showcase board ID for homepage
 # VITE_SHOWCASE_BOARD_ID = "your-board-uuid-here"
+# Enable masonry grid layout (Pinterest-style)
+VITE_ENABLE_MASONRY = "true"
 
 # IMPORTANT: SUPABASE_SERVICE_ROLE_KEY is a SECRET
 # It MUST be set as encrypted variable in Cloudflare Dashboard (not in this file)

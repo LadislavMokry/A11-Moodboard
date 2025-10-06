@@ -1,4 +1,4 @@
-import { ImageGrid } from "@/components/ImageGrid";
+import { MasonryGrid } from "@/components/MasonryGrid";
 import { type Image } from "@/schemas/image";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -24,8 +24,8 @@ const mockImages: Image[] = [
     storage_path: "boards/123/image2.jpg",
     caption: "Second Image",
     position: 2,
-    width: 1920,
-    height: 1080,
+    width: 1080,
+    height: 1920,
     mime_type: "image/jpeg",
     size_bytes: 1024000,
     original_filename: "image2.jpg",
@@ -36,10 +36,10 @@ const mockImages: Image[] = [
     id: "3",
     board_id: "123e4567-e89b-12d3-a456-426614174000",
     storage_path: "boards/123/image3.jpg",
-    caption: "Third Image",
+    caption: "Wide Image",
     position: 3,
-    width: 1920,
-    height: 1080,
+    width: 3000,
+    height: 1500,
     mime_type: "image/jpeg",
     size_bytes: 1024000,
     original_filename: "image3.jpg",
@@ -48,31 +48,30 @@ const mockImages: Image[] = [
   }
 ];
 
-describe("ImageGrid", () => {
+describe("MasonryGrid", () => {
   it("renders all images in correct order", () => {
-    const { container } = render(<ImageGrid images={mockImages} />);
+    const { container } = render(<MasonryGrid images={mockImages} />);
 
-    // Find main images (excluding preview/blur images which have aria-hidden)
     const images = container.querySelectorAll("img:not([aria-hidden])");
     expect(images).toHaveLength(3);
     expect(images[0]).toHaveAttribute("alt", "First Image");
     expect(images[1]).toHaveAttribute("alt", "Second Image");
-    expect(images[2]).toHaveAttribute("alt", "Third Image");
+    expect(images[2]).toHaveAttribute("alt", "Wide Image");
   });
 
   it("sorts images by position", () => {
     // Pass images in wrong order
     const unsortedImages = [mockImages[2], mockImages[0], mockImages[1]];
-    const { container } = render(<ImageGrid images={unsortedImages} />);
+    const { container } = render(<MasonryGrid images={unsortedImages} />);
 
     const images = container.querySelectorAll("img:not([aria-hidden])");
     expect(images[0]).toHaveAttribute("alt", "First Image");
     expect(images[1]).toHaveAttribute("alt", "Second Image");
-    expect(images[2]).toHaveAttribute("alt", "Third Image");
+    expect(images[2]).toHaveAttribute("alt", "Wide Image");
   });
 
   it("shows empty state when no images", () => {
-    render(<ImageGrid images={[]} />);
+    render(<MasonryGrid images={[]} />);
 
     expect(screen.getByText("No images yet")).toBeInTheDocument();
     expect(screen.getByText("Upload images to get started")).toBeInTheDocument();
@@ -81,7 +80,7 @@ describe("ImageGrid", () => {
   it("calls onImageClick when image is clicked", () => {
     const onImageClick = vi.fn();
     const { container } = render(
-      <ImageGrid
+      <MasonryGrid
         images={mockImages}
         onImageClick={onImageClick}
       />
@@ -96,7 +95,7 @@ describe("ImageGrid", () => {
   it("calls onImageMenuClick when menu button is clicked", () => {
     const onImageMenuClick = vi.fn();
     const { container } = render(
-      <ImageGrid
+      <MasonryGrid
         images={mockImages}
         onImageMenuClick={onImageMenuClick}
       />
@@ -108,22 +107,19 @@ describe("ImageGrid", () => {
     expect(onImageMenuClick).toHaveBeenCalledWith(mockImages[0], expect.any(Object));
   });
 
-  it("renders grid layout (CSS columns or masonry depending on feature flag)", () => {
-    // Mock the environment variable to disable masonry for consistent testing
-    vi.stubEnv("VITE_ENABLE_MASONRY", "false");
+  it("renders CSS grid with masonry properties", () => {
+    const { container } = render(<MasonryGrid images={mockImages} />);
 
-    const { container } = render(<ImageGrid images={mockImages} />);
-
-    // Should use CSS columns layout when masonry is disabled
-    const grid = container.querySelector(".columns-1");
+    const grid = container.querySelector('[style*="grid-auto-flow"]');
     expect(grid).toBeInTheDocument();
-    expect(grid).toHaveClass("columns-1", "sm:columns-2", "lg:columns-3", "gap-4");
 
-    vi.unstubAllEnvs();
+    const gridElement = grid as HTMLElement;
+    expect(gridElement.style.display).toBe("grid");
+    expect(gridElement.style.gridAutoFlow).toBe("row dense");
   });
 
   it("renders images with lazy loading", () => {
-    const { container } = render(<ImageGrid images={mockImages} />);
+    const { container } = render(<MasonryGrid images={mockImages} />);
 
     const images = container.querySelectorAll("img:not([aria-hidden])");
     images.forEach((img) => {
@@ -131,21 +127,50 @@ describe("ImageGrid", () => {
     });
   });
 
-  it("renders masonry grid when feature flag is enabled", () => {
-    // Mock the environment variable to enable masonry
-    vi.stubEnv("VITE_ENABLE_MASONRY", "true");
+  it("handles selection mode", () => {
+    const onToggleSelection = vi.fn();
+    const { container } = render(
+      <MasonryGrid
+        images={mockImages}
+        selectionMode={true}
+        selectedIds={new Set(["1"])}
+        onToggleSelection={onToggleSelection}
+      />
+    );
 
-    const { container } = render(<ImageGrid images={mockImages} />);
+    const firstImage = container.querySelectorAll("img:not([aria-hidden])")[0];
+    firstImage.closest("div")?.click();
 
-    // Should use masonry layout when enabled
-    const masonryGrid = container.querySelector('[style*="grid-auto-flow"]');
-    expect(masonryGrid).toBeInTheDocument();
+    expect(onToggleSelection).toHaveBeenCalledWith("1");
+  });
 
-    // Should not have the old CSS columns layout
-    const oldGrid = container.querySelector(".columns-1");
-    expect(oldGrid).not.toBeInTheDocument();
+  it("applies custom configuration props", () => {
+    const { container } = render(
+      <MasonryGrid
+        images={mockImages}
+        minCardWidth={150}
+        gap={8}
+        wideAspectRatio={2.0}
+        wideSpan={3}
+      />
+    );
 
-    vi.unstubAllEnvs();
+    // The grid should be rendered (exact styling is tested via integration)
+    const grid = container.querySelector('[style*="grid-auto-flow"]');
+    expect(grid).toBeInTheDocument();
+  });
+
+  it("handles images without dimensions", () => {
+    const imageWithoutDimensions: Image = {
+      ...mockImages[0],
+      width: null,
+      height: null
+    };
+
+    const { container } = render(<MasonryGrid images={[imageWithoutDimensions]} />);
+
+    const image = container.querySelector("img:not([aria-hidden])");
+    expect(image).toBeInTheDocument();
   });
 
   it("handles empty captions correctly", () => {
@@ -154,9 +179,9 @@ describe("ImageGrid", () => {
       caption: null
     };
 
-    const { container } = render(<ImageGrid images={[imageWithoutCaption]} />);
+    const { container } = render(<MasonryGrid images={[imageWithoutCaption]} />);
 
-    const image = container.querySelector("img");
+    const image = container.querySelector("img:not([aria-hidden])");
     expect(image).toHaveAttribute("alt", "");
   });
 });
