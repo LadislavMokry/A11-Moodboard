@@ -119,8 +119,7 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: `${gap}px`,
-    overflow: "hidden"
+    gap: `${gap}px`
   };
 
   return (
@@ -141,8 +140,8 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
               ...columnStyle,
               flexDirection: isReversed ? "column-reverse" : "column"
             }}
-            className={cn("waterfall-column", isReversed && "flex-col-reverse", `showcase-column-${(columnIndex % 3) + 1}`)}          >
-            {[...columnImages, ...columnImages].map((image, index) => (
+            className={cn("waterfall-column", isReversed && "flex-col-reverse", isReversed ? "showcase-column-down" : "showcase-column-up")}          >
+            {[...columnImages, ...columnImages, ...columnImages, ...columnImages].map((image, index) => (
               <ImageGridItem
                 key={`${image.id}-${index}`}
                 image={image}

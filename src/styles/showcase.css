@@ -20,34 +20,27 @@
 }
 
 /* Column animations with stagger */
-.showcase-column-1 {
-  animation: scroll-up 60s linear infinite;
+.showcase-column-up {
+  animation: scroll-up 120s linear infinite;
 }
 
-.showcase-column-2 {
-  animation: scroll-down 60s linear infinite;
+.showcase-column-down {
+  animation: scroll-down 120s linear infinite;
   animation-delay: 1s;
-}
-
-.showcase-column-3 {
-  animation: scroll-up 60s linear infinite;
-  animation-delay: 2s;
 }
 
 /* Disable animations for reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  .showcase-column-1,
-  .showcase-column-2,
-  .showcase-column-3 {
+  .showcase-column-up,
+  .showcase-column-down {
     animation: none;
   }
 }
 
 /* Disable animations on mobile */
 @media (max-width: 768px) {
-  .showcase-column-1,
-  .showcase-column-2,
-  .showcase-column-3 {
+  .showcase-column-up,
+  .showcase-column-down {
     animation: none;
   }
 }
