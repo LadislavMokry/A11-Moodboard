@@ -353,6 +353,7 @@ as $$
 declare
   v_owner uuid;
   v_row public.images;
+  v_image_record record;
 begin
   -- Permission: only board owner may insert
   select owner_id into v_owner from public.boards where id = p_board_id;
@@ -363,8 +364,22 @@ begin
     raise exception 'Not authorized to add images to this board';
   end if;
 
-  -- shift existing positions
-  update public.images set position = position + 1 where board_id = p_board_id;
+  -- Use advisory lock to prevent race conditions when multiple images are uploaded simultaneously
+  perform pg_advisory_xact_lock(hashtext(p_board_id::text));
+
+  -- Shift existing positions in DESCENDING order to avoid conflicts
+  for v_image_record in (
+    select id, position
+    from public.images
+    where board_id = p_board_id
+    order by position desc
+    for update
+  )
+  loop
+    update public.images
+    set position = v_image_record.position + 1
+    where id = v_image_record.id;
+  end loop;
 
   insert into public.images(
     board_id, storage_path, position, mime_type, width, height, size_bytes,

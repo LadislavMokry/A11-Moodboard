@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Image schema - matches the images table structure from bootstrap.sql
@@ -13,9 +13,9 @@ export const imageSchema = z.object({
   height: z.number().int().min(0).nullable().optional(),
   size_bytes: z.number().int().min(0).nullable().optional(),
   original_filename: z.string().nullable().optional(),
-  source_url: z.string().url().nullable().optional(),
-  caption: z.string().max(140, 'Caption must be 140 characters or less').nullable().optional(),
-  created_at: z.string(),
+  source_url: z.union([z.string().url(), z.literal(""), z.null()]).optional(),
+  caption: z.string().max(140, "Caption must be 140 characters or less").nullable().optional(),
+  created_at: z.string()
 });
 
 /**
@@ -23,15 +23,17 @@ export const imageSchema = z.object({
  */
 export const imageCreateSchema = imageSchema.omit({
   id: true,
-  created_at: true,
+  created_at: true
 });
 
 /**
  * Image update schema - allows updating caption only
  */
-export const imageUpdateSchema = imageSchema.pick({
-  caption: true,
-}).partial();
+export const imageUpdateSchema = imageSchema
+  .pick({
+    caption: true
+  })
+  .partial();
 
 /**
  * TypeScript types derived from schemas

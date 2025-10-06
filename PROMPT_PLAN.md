@@ -2437,18 +2437,18 @@ Create comprehensive manual QA checklist and perform testing:
 
 1. Create QA checklist document:
    - Authentication:
-     - [ ] Sign in with Google works
+     - [x] Sign in with Google works
      - [ ] Profile creation works
-     - [ ] Sign out works
-     - [ ] Auth persists across page reload
+     - [x] Sign out works
+     - [x] Auth persists across page reload
    - Board Management:
-     - [ ] Create board works
-     - [ ] Rename board works
-     - [ ] Delete board works (with confirmation)
-     - [ ] Board list shows correct data
-     - [ ] Board covers rotate (when enabled)
+     - [x] Create board works
+     - [x] Rename board works
+     - [x] Delete board works (with confirmation)
+     - [x] Board list shows correct data
+     - [x] Board covers rotate (when enabled)
    - Image Upload:
-     - [ ] Upload via button works
+     - [x] Upload via button works
      - [ ] Drag-and-drop works
      - [ ] Paste works (Ctrl+V)
      - [ ] Multiple concurrent uploads work (4 max)

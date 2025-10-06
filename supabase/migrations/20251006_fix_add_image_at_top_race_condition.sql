@@ -1,5 +1,7 @@
--- Supabase SQL script: redefine add_image_at_top to prevent position conflicts.
+-- Fix race condition in add_image_at_top function
+-- This prevents "duplicate key value violates unique constraint" errors when uploading multiple images
 -- Updated: Fixed position update order to prevent conflicts during the shift operation
+
 create or replace function public.add_image_at_top(
   p_board_id uuid,
   p_storage_path text,
@@ -20,6 +22,7 @@ declare
   v_row public.images;
   v_image_record record;
 begin
+  -- Permission: only board owner may insert
   select owner_id into v_owner
   from public.boards
   where id = p_board_id;
@@ -51,6 +54,7 @@ begin
     where id = v_image_record.id;
   end loop;
 
+  -- Insert new image at position 1
   insert into public.images (
     board_id,
     storage_path,
@@ -79,3 +83,4 @@ begin
   return v_row;
 end;
 $$;
+
