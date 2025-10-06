@@ -134,7 +134,7 @@ export function BoardMasonryGrid({ images, onImageClick, onImageMenuClick, minCa
                   width: "100%",
                   height: "auto"
                 }}
-                className={cn(isDragging && "opacity-50")}
+                className={cn("p-1", isDragging && "opacity-50")}
                 dataTestId={`waterfall-item-${image.id}`}
                 selectionMode={selectionMode}
                 isSelected={selectedIds.has(image.id)}
