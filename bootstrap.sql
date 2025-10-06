@@ -260,7 +260,7 @@ security definer
 set search_path = public
 as $$
   with b as (
-    select id, owner_id, name, description, cover_rotation_enabled, is_showcase, created_at, updated_at
+    select id, owner_id, name, description, share_token, cover_rotation_enabled, is_showcase, og_image_id, og_image_path, created_at, updated_at
     from public.boards
     where is_showcase = true
     order by updated_at desc
