@@ -154,8 +154,28 @@ h1 {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+
+  /* Enhanced focus indicators for accessibility */
+  *:focus {
+    @apply outline-none;
+  }
+
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-violet-500 dark:outline-violet-400;
+  }
+
+  /* Ensure buttons and interactive elements have visible focus */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="button"]:focus-visible {
+    @apply outline-2 outline-offset-2 outline-violet-500 dark:outline-violet-400;
+  }
+
   body {
     @apply bg-background text-foreground;
   }

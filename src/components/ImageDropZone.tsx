@@ -102,7 +102,11 @@ export function ImageDropZone({ children, onDropFiles, disabled = false }: Image
     }
 
     return (
-      <div className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center bg-neutral-900/50 backdrop-blur-sm">
+      <div
+        className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center bg-neutral-900/50 backdrop-blur-sm"
+        role="status"
+        aria-live="polite"
+      >
         <div className="pointer-events-none flex min-w-[280px] max-w-[420px] flex-col items-center gap-2 rounded-3xl border border-dashed border-violet-400/70 bg-white/90 px-8 py-10 text-center shadow-xl dark:border-violet-300/40 dark:bg-neutral-900/90">
           <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-50">Drop images here</p>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">

@@ -12,7 +12,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
       <Header />
-      <main className="w-full px-4 py-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
+      <main id="main-content" className="w-full px-4 py-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         {children}
       </main>
     </div>

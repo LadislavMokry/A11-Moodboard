@@ -1,6 +1,7 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { NetworkStatusBanner } from "@/components/NetworkStatusBanner";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { SkipLink } from "@/components/SkipLink";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthCallback } from "@/pages/AuthCallback";
 import BoardPage from "@/pages/BoardPage";
@@ -16,6 +17,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
+        <SkipLink />
         <NetworkStatusBanner />
         <Toaster position="top-center" />
         <Routes>

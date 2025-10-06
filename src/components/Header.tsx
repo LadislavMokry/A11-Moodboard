@@ -64,13 +64,14 @@ export function Header() {
         <Link
           to="/"
           className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 hover:opacity-80 transition-opacity"
+          aria-label="Moodeight - Home"
         >
           moodeight
         </Link>
 
         {/* Right side navigation */}
         <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-2 sm:flex">
+          <nav className="hidden items-center gap-2 sm:flex" aria-label="Main navigation">
             {loading ? (
               <div className="h-9 w-20 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-800" />
             ) : user ? (
@@ -141,9 +142,9 @@ export function Header() {
                 <SignInButton />
               </>
             )}
-          </div>
+          </nav>
 
-          <div className="sm:hidden">
+          <nav className="sm:hidden" aria-label="Mobile navigation">
             {loading ? (
               <div className="h-9 w-9 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
             ) : (
@@ -159,7 +160,7 @@ export function Header() {
                 onNewBoard={() => setIsCreateModalOpen(true)}
               />
             )}
-          </div>
+          </nav>
         </div>
       </div>
 
