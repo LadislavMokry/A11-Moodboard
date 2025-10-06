@@ -29,7 +29,8 @@ export function ShowcaseBoard() {
       },
       {
         root: rootElement,
-        threshold: 0.1
+        threshold: 0.1,
+        rootMargin: "200px"
       }
     );
 
