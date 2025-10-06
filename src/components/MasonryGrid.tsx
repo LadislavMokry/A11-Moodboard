@@ -142,9 +142,9 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
               flexDirection: isReversed ? "column-reverse" : "column"
             }}
             className={cn("waterfall-column", isReversed && "flex-col-reverse", `showcase-column-${(columnIndex % 3) + 1}`)}          >
-            {columnImages.map((image) => (
+            {[...columnImages, ...columnImages].map((image, index) => (
               <ImageGridItem
-                key={image.id}
+                key={`${image.id}-${index}`}
                 image={image}
                 onClick={() => handleImageClick(image)}
                 onMenuClick={(e) => onImageMenuClick?.(image, e)}

@@ -38,7 +38,7 @@ export default function Home() {
   if (!user) {
     return (
       <Layout>
-        <section className="h-screen px-4 py-8 md:py-12">
+        <section className="h-[calc(100vh-4rem)] px-4 py-8 md:py-12">
           {/* Desktop: Two-column layout with waterfall on left | Mobile: Single column */}
           <div className="mx-auto flex h-full max-w-7xl gap-8 md:gap-12">
             {/* Showcase Board - Left side, takes most of the width */}
