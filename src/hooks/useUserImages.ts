@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { imageSchema, type Image } from '@/schemas/image';
 import { boardSchema } from '@/schemas/board'; // Import boardSchema
+import { ZodError } from 'zod'; // Import ZodError
 
 interface UseUserImagesProps {
   userId: string;
@@ -22,7 +23,16 @@ export function useUserImages({ userId, enabled = true }: UseUserImagesProps) {
         throw new Error(boardsError.message);
       }
 
-      const boardIds = boardsData?.map(board => boardSchema.parse(board).id) || [];
+      const boardIds = boardsData?.map(board => {
+        try {
+          return boardSchema.parse(board).id;
+        } catch (e) {
+          if (e instanceof ZodError) {
+            console.error("ZodError parsing board:", e.errors, "Data:", board);
+          }
+          throw e;
+        }
+      }) || [];
 
       if (boardIds.length === 0) {
         return []; // No boards, so no images
@@ -39,7 +49,16 @@ export function useUserImages({ userId, enabled = true }: UseUserImagesProps) {
         throw new Error(imagesError.message);
       }
 
-      const parsedImages = imagesData?.map((item) => imageSchema.parse(item)) || [];
+      const parsedImages = imagesData?.map((item) => {
+        try {
+          return imageSchema.parse(item);
+        } catch (e) {
+          if (e instanceof ZodError) {
+            console.error("ZodError parsing image:", e.errors, "Data:", item);
+          }
+          throw e;
+        }
+      }) || [];
       return parsedImages;
     },
     enabled: enabled && !!userId,
