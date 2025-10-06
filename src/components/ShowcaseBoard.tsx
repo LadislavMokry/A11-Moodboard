@@ -16,7 +16,8 @@ export function ShowcaseBoard() {
 
   // Intersection Observer to start animation only when visible
   useEffect(() => {
-    console.log("ShowcaseBoard: Setting up IntersectionObserver");
+    const rootElement = document.getElementById('main-content');
+    console.log("ShowcaseBoard: Setting up IntersectionObserver with root", rootElement);
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -26,7 +27,10 @@ export function ShowcaseBoard() {
           }
         });
       },
-      { threshold: 0.1 }
+      {
+        root: rootElement,
+        threshold: 0.1
+      }
     );
 
     if (containerRef.current) {

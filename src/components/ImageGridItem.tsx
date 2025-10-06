@@ -55,8 +55,10 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
 
   // Effect to handle image loading, including cached images
   useEffect(() => {
+    console.log(`ImageGridItem (${image.id}): Running loading effect`, { isGif, isFullLoaded });
     // Immediately mark GIFs as loaded
     if (isGif) {
+      console.log(`ImageGridItem (${image.id}): Is a GIF, marking as loaded`);
       setIsFullLoaded(true);
       setIsPreviewLoaded(true);
       return;
@@ -65,6 +67,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
     const img = imgRef.current;
     if (img?.complete) {
       // If image is already loaded from cache, mark as loaded
+      console.log(`ImageGridItem (${image.id}): Image is from cache, marking as loaded`);
       setIsFullLoaded(true);
       setIsPreviewLoaded(true);
     }
@@ -72,12 +75,16 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
     // Fallback timer to ensure visibility
     const timer = setTimeout(() => {
       if (!isFullLoaded) {
+        console.log(`ImageGridItem (${image.id}): Fallback timer fired, marking as loaded`);
         setIsFullLoaded(true);
         setIsPreviewLoaded(true);
       }
     }, 2000); // 2-second safety net
 
-    return () => clearTimeout(timer);
+    return () => {
+      console.log(`ImageGridItem (${image.id}): Cleaning up loading effect`);
+      clearTimeout(timer);
+    };
   }, [isGif, isFullLoaded, image.id]);
 
   // Check if caption text overflows and needs marquee
