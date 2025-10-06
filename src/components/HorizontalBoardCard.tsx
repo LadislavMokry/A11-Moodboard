@@ -1,3 +1,4 @@
+import { HorizontalImagePreview } from "./HorizontalImagePreview";
 import { useUpdateBoard } from "@/hooks/useBoardMutations";
 import { type BoardWithImages } from "@/schemas/boardWithImages";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -7,7 +8,6 @@ import { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { BoardCardMenu } from "./BoardCardMenu";
-import { RotatingBoardCover } from "./RotatingBoardCover";
 
 // Lazy load dialogs - they're only needed when user opens them
 const RenameBoardDialog = lazy(() => import("./RenameBoardDialog").then((m) => ({ default: m.RenameBoardDialog })));
@@ -26,9 +26,6 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
   const [menuOpen, setMenuOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState<DialogState>(null);
   const updateBoard = useUpdateBoard();
-
-  const imageCount = board.images.length;
-  const lastUpdated = useMemo(() => formatDistanceToNow(new Date(board.updated_at), { addSuffix: true }), [board.updated_at]);
 
   const handleToggleRotation = useCallback(async () => {
     try {
@@ -51,32 +48,19 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
         to={`/boards/${board.id}`}
         className="flex-1 flex items-center p-2 pr-0 overflow-hidden"
       >
-        {/* Rotating Board Cover - adapted for 4x1 horizontal layout */}
+        {/* Horizontal Image Preview */}
         <div className="w-32 h-20 flex-shrink-0 rounded-md overflow-hidden relative">
-          <RotatingBoardCover
-            images={board.images}
-            boardName={board.name}
-            rotationEnabled={board.cover_rotation_enabled}
-            // Adjusting cover for horizontal layout - will need custom styling or a new component
-            // For now, it will just show a cropped version of the existing cover logic
-          />
+          <HorizontalImagePreview images={board.images} />
         </div>
 
         {/* Card Info */}
         <div className="flex-1 p-2 overflow-hidden">
-          <h3 className="truncate text-base font-semibold text-neutral-900 dark:text-neutral-100">{board.name}</h3>
-          <div className="mt-1 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-            <span>
-              {imageCount} {imageCount === 1 ? "image" : "images"}
-            </span>
-            <span>•</span>
-            <span>{lastUpdated}</span>
-          </div>
+          <h3 className="truncate text-base font-semibold text-neutral-900 dark:text-neutral-100 opacity-0 group-hover:opacity-100 transition-opacity">{board.name}</h3>
         </div>
       </Link>
 
       {/* Three-dot Menu Button */}
-      <div className="flex-shrink-0 p-2">
+      <div className="flex-shrink-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <DropdownMenu.Root
           open={menuOpen}
           onOpenChange={setMenuOpen}
@@ -87,7 +71,7 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
               onClick={(e) => {
                 e.preventDefault();
               }}
-              className="rounded-full bg-white/90 p-1.5 text-neutral-700 opacity-0 shadow-sm backdrop-blur-sm transition-opacity hover:bg-white group-hover:opacity-100 dark:bg-neutral-900/90 dark:text-neutral-300 dark:hover:bg-neutral-900"
+              className="rounded-full bg-white/90 p-1.5 text-neutral-700 shadow-sm backdrop-blur-sm transition-opacity hover:bg-white dark:bg-neutral-900/90 dark:text-neutral-300 dark:hover:bg-neutral-900"
               aria-label="Board menu"
             >
               <MoreVertical className="h-4 w-4" />

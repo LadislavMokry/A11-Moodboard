@@ -40,7 +40,6 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) { // Add userId to
         images={displayImages}
         minCardWidth={180} // Smaller cards for denser layout
         gap={8} // Tight spacing
-        maxHeight="100%" // Fixed height, no scrolling
         alternatingDirection={true} // Enable waterfall alternating directions
       />
     </div>
