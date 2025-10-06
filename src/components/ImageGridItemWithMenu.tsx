@@ -1,9 +1,10 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Edit2, Trash2, MoreVertical } from 'lucide-react';
-import { ImageGridItem } from './ImageGridItem';
-import { type Image } from '@/schemas/image';
-import type { DraggableAttributes } from '@dnd-kit/core';
-import type { CSSProperties } from 'react';
+import { type Image } from "@/schemas/image";
+import type { DraggableAttributes } from "@dnd-kit/core";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { Edit2, MoreVertical, Trash2 } from "lucide-react";
+import type { CSSProperties } from "react";
+import { useState } from "react";
+import { ImageGridItem } from "./ImageGridItem";
 
 type SyntheticListenerMap = Record<string, Function> | undefined;
 
@@ -24,25 +25,16 @@ interface ImageGridItemWithMenuProps {
   onToggleSelection?: () => void;
 }
 
-export function ImageGridItemWithMenu({
-  image,
-  onClick,
-  onEditCaption,
-  onDelete,
-  setRef,
-  dragAttributes,
-  dragListeners,
-  style,
-  className,
-  isDragging = false,
-  dataTestId,
-  selectionMode = false,
-  isSelected = false,
-  onToggleSelection,
-}: ImageGridItemWithMenuProps) {
+export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection }: ImageGridItemWithMenuProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <DropdownMenu.Root>
-      <div style={{ position: 'relative' }}>
+      <div
+        style={{ position: "relative" }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <ImageGridItem
           image={image}
           onClick={onClick}
@@ -57,13 +49,14 @@ export function ImageGridItemWithMenu({
           selectionMode={selectionMode}
           isSelected={isSelected}
           onToggleSelection={onToggleSelection}
+          forceHover={isHovered}
         />
 
         {/* Render our own menu trigger button (hidden in selection mode) */}
         {!selectionMode && (
           <DropdownMenu.Trigger asChild>
             <button
-              className="absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 opacity-0 group-hover:opacity-100"
+              className={`absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 ${isHovered ? "opacity-100" : "opacity-0"}`}
               onClick={(e) => {
                 e.stopPropagation();
               }}

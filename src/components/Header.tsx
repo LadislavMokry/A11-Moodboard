@@ -1,35 +1,26 @@
-import { lazy, Suspense, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useProfile } from '@/hooks/useProfile';
-import { ThemeToggle, themeOptions } from '@/components/ThemeToggle';
-import { SignInButton } from '@/components/SignInButton';
-import { Avatar } from '@/components/Avatar';
-import { Skeleton } from '@/components/Skeleton';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-} from '@/components/ui/dropdown-menu';
-import { Monitor, Moon, Sun, Menu, Plus, User, LogOut, LogIn } from 'lucide-react';
-import { useTheme, type Theme } from '@/hooks/useTheme';
-import { cn } from '@/lib/utils';
+import { Avatar } from "@/components/Avatar";
+import { SignInButton } from "@/components/SignInButton";
+import { Skeleton } from "@/components/Skeleton";
+import { themeOptions, ThemeToggle } from "@/components/ThemeToggle";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { useTheme, type Theme } from "@/hooks/useTheme";
+import { cn } from "@/lib/utils";
+import { LogIn, LogOut, Menu, Monitor, Moon, Plus, Sun, User } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
+import { Link } from "react-router-dom";
 
 type ThemeIcon = typeof Monitor;
 
 const iconMap: Record<Theme, ThemeIcon> = {
   system: Monitor,
   light: Sun,
-  dark: Moon,
+  dark: Moon
 };
 
-const CreateBoardModalLazy = lazy(async () => ({ default: (await import('@/components/CreateBoardModal')).CreateBoardModal }));
+const CreateBoardModalLazy = lazy(async () => ({ default: (await import("@/components/CreateBoardModal")).CreateBoardModal }));
 
 export function Header() {
   const { user, loading, signOut, signInWithGoogle } = useAuth();
@@ -37,15 +28,13 @@ export function Header() {
   const { theme, effectiveTheme, setTheme } = useTheme();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const newBoardClasses = effectiveTheme === 'dark'
-    ? 'bg-neutral-900 text-neutral-100 hover:bg-neutral-800'
-    : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200';
+  const newBoardClasses = effectiveTheme === "dark" ? "bg-neutral-900 text-neutral-100 hover:bg-neutral-800" : "bg-neutral-100 text-neutral-900 hover:bg-neutral-200";
 
   const handleSignOut = async () => {
     try {
       await signOut();
     } catch (error) {
-      console.error('Failed to sign out', error);
+      console.error("Failed to sign out", error);
     }
   };
 
@@ -53,7 +42,7 @@ export function Header() {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error('Failed to sign in', error);
+      console.error("Failed to sign in", error);
     }
   };
 
@@ -71,14 +60,17 @@ export function Header() {
 
         {/* Right side navigation */}
         <div className="flex items-center gap-2">
-          <nav className="hidden items-center gap-2 sm:flex" aria-label="Main navigation">
+          <nav
+            className="hidden items-center gap-2 sm:flex"
+            aria-label="Main navigation"
+          >
             {loading ? (
               <div className="h-9 w-20 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-800" />
             ) : user ? (
               <>
                 <Button
                   size="sm"
-                  className={cn('hidden sm:inline-flex', newBoardClasses)}
+                  className={cn("hidden sm:inline-flex", newBoardClasses)}
                   onClick={() => setIsCreateModalOpen(true)}
                 >
                   <Plus className="mr-2 h-4 w-4" />
@@ -90,37 +82,39 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-950"
+                      className="rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-950"
                       aria-label="User menu"
                     >
                       <Avatar
                         src={profile?.avatar_url}
-                        alt={profile?.display_name || user.email || 'User avatar'}
-                        fallbackText={profile?.display_name || user.email || '?'}
+                        alt={profile?.display_name || user.email || "User avatar"}
+                        fallbackText={profile?.display_name || user.email || "?"}
                         size="md"
                       />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-56"
+                  >
                     <div className="flex items-center gap-2 px-2 py-1.5">
                       <Avatar
                         src={profile?.avatar_url}
-                        alt={profile?.display_name || user.email || 'User avatar'}
-                        fallbackText={profile?.display_name || user.email || '?'}
+                        alt={profile?.display_name || user.email || "User avatar"}
+                        fallbackText={profile?.display_name || user.email || "?"}
                         size="sm"
                       />
                       <div className="flex flex-col">
-                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                          {profile?.display_name || 'User'}
-                        </p>
-                        <p className="max-w-[180px] truncate text-xs text-neutral-500 dark:text-neutral-400">
-                          {user.email}
-                        </p>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{profile?.display_name || "User"}</p>
+                        <p className="max-w-[180px] truncate text-xs text-neutral-500 dark:text-neutral-400">{user.email}</p>
                       </div>
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link to="/profile" className="cursor-pointer">
+                      <Link
+                        to="/profile"
+                        className="cursor-pointer"
+                      >
                         <User className="mr-2 h-4 w-4" />
                         Profile
                       </Link>
@@ -144,7 +138,10 @@ export function Header() {
             )}
           </nav>
 
-          <nav className="sm:hidden" aria-label="Mobile navigation">
+          <nav
+            className="sm:hidden"
+            aria-label="Mobile navigation"
+          >
             {loading ? (
               <div className="h-9 w-9 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
             ) : (
@@ -165,14 +162,20 @@ export function Header() {
       </div>
 
       <Suspense
-        fallback={(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm" data-testid="create-board-modal-fallback">
+        fallback={
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
+            data-testid="create-board-modal-fallback"
+          >
             <Skeleton className="h-40 w-80" />
           </div>
-        )}
+        }
       >
         {isCreateModalOpen ? (
-          <CreateBoardModalLazy open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
+          <CreateBoardModalLazy
+            open={isCreateModalOpen}
+            onOpenChange={setIsCreateModalOpen}
+          />
         ) : null}
       </Suspense>
     </header>
@@ -191,46 +194,33 @@ interface MobileMenuProps {
   onNewBoard: () => void;
 }
 
-function MobileMenu({
-  isAuthenticated,
-  userEmail,
-  displayName,
-  avatarUrl,
-  theme,
-  onThemeChange,
-  onSignOut,
-  onSignIn,
-  onNewBoard,
-}: MobileMenuProps) {
+function MobileMenu({ isAuthenticated, userEmail, displayName, avatarUrl, theme, onThemeChange, onSignOut, onSignIn, onNewBoard }: MobileMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-neutral-100 text-neutral-900 transition-colors hover:bg-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700 dark:focus-visible:ring-offset-neutral-950"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-neutral-100 text-neutral-900 transition-colors hover:bg-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700 dark:focus-visible:ring-offset-neutral-950"
           aria-label="Open navigation menu"
         >
           <Menu className="h-4 w-4" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
+      <DropdownMenuContent
+        align="end"
+        className="w-64"
+      >
         {isAuthenticated ? (
           <>
             <div className="flex items-center gap-3 px-2 py-2">
               <Avatar
                 src={avatarUrl}
-                alt={displayName || userEmail || 'User avatar'}
-                fallbackText={displayName || userEmail || '?'}
+                alt={displayName || userEmail || "User avatar"}
+                fallbackText={displayName || userEmail || "?"}
                 size="sm"
               />
               <div className="flex min-w-0 flex-col">
-                <span className="truncate text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                  {displayName || 'User'}
-                </span>
-                {userEmail && (
-                  <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
-                    {userEmail}
-                  </span>
-                )}
+                <span className="truncate text-sm font-medium text-neutral-900 dark:text-neutral-100">{displayName || "User"}</span>
+                {userEmail && <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">{userEmail}</span>}
               </div>
             </div>
             <DropdownMenuSeparator />
@@ -245,7 +235,10 @@ function MobileMenu({
               Create board
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/profile" className="cursor-pointer">
+              <Link
+                to="/profile"
+                className="cursor-pointer"
+              >
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </Link>
@@ -259,7 +252,11 @@ function MobileMenu({
               {themeOptions.map(({ value, label }) => {
                 const Icon = iconMap[value];
                 return (
-                  <DropdownMenuRadioItem key={value} value={value} className="flex items-center gap-2">
+                  <DropdownMenuRadioItem
+                    key={value}
+                    value={value}
+                    className="flex items-center gap-2"
+                  >
                     <Icon className="h-4 w-4" />
                     <span>{label}</span>
                   </DropdownMenuRadioItem>
@@ -288,7 +285,11 @@ function MobileMenu({
               {themeOptions.map(({ value, label }) => {
                 const Icon = iconMap[value];
                 return (
-                  <DropdownMenuRadioItem key={value} value={value} className="flex items-center gap-2">
+                  <DropdownMenuRadioItem
+                    key={value}
+                    value={value}
+                    className="flex items-center gap-2"
+                  >
                     <Icon className="h-4 w-4" />
                     <span>{label}</span>
                   </DropdownMenuRadioItem>

@@ -167,7 +167,7 @@ export default function Staging() {
         <div
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
-          className={`flex-1 rounded-xl border-2 border-dashed transition-colors ${hasImages ? "border-neutral-200/80 bg-neutral-50/70 dark:border-neutral-800/70 dark:bg-neutral-900/40" : "border-neutral-300 bg-neutral-100/50 hover:border-violet-400 hover:bg-violet-50/50 dark:border-neutral-700 dark:bg-neutral-900/20 dark:hover:border-violet-600 dark:hover:bg-violet-950/20"}`}
+          className={`flex-1 rounded-xl border-2 border-dashed transition-colors ${hasImages ? "border-neutral-200/80 bg-neutral-50/70 dark:border-neutral-800/70 dark:bg-neutral-900/40" : "border-neutral-300 bg-neutral-100/50 hover:border-pink-400 hover:bg-pink-50/50 dark:border-neutral-700 dark:bg-neutral-900/20 dark:hover:border-pink-600 dark:hover:bg-pink-950/20"}`}
         >
           {hasImages ? (
             <div className="space-y-6 p-6">
@@ -203,7 +203,7 @@ export default function Staging() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 text-neutral-500 transition hover:border-violet-400 hover:bg-violet-50 hover:text-violet-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-violet-600 dark:hover:bg-violet-950/20 dark:hover:text-violet-400"
+                    className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 text-neutral-500 transition hover:border-pink-400 hover:bg-pink-50 hover:text-pink-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-pink-600 dark:hover:bg-pink-950/20 dark:hover:text-pink-400"
                   >
                     <ImagePlus className="h-8 w-8" />
                     <span className="mt-2 text-sm font-medium">Add more</span>
@@ -222,7 +222,7 @@ export default function Staging() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="font-medium text-violet-600 hover:underline dark:text-violet-400"
+                  className="font-medium text-pink-600 hover:underline dark:text-pink-400"
                 >
                   browse files
                 </button>
@@ -238,7 +238,7 @@ export default function Staging() {
             <button
               type="button"
               onClick={() => setShowSaveModal(true)}
-              className="rounded-md bg-violet-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-violet-700"
+              className="rounded-md bg-pink-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-pink-700"
             >
               Save to board
             </button>

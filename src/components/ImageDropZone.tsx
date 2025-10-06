@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { isAllowedMimeType, MAX_IMAGE_SIZE_BYTES } from '@/lib/imageValidation';
+import { isAllowedMimeType, MAX_IMAGE_SIZE_BYTES } from "@/lib/imageValidation";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 interface ImageDropZoneProps {
   children: ReactNode;
@@ -7,7 +7,7 @@ interface ImageDropZoneProps {
   disabled?: boolean;
 }
 
-const dragEventTarget = typeof window !== 'undefined' ? window : globalThis;
+const dragEventTarget = typeof window !== "undefined" ? window : globalThis;
 
 export function ImageDropZone({ children, onDropFiles, disabled = false }: ImageDropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -24,9 +24,9 @@ export function ImageDropZone({ children, onDropFiles, disabled = false }: Image
         return false;
       }
       const types = event.dataTransfer?.types;
-      return Boolean(types && Array.from(types).includes('Files'));
+      return Boolean(types && Array.from(types).includes("Files"));
     },
-    [disabled],
+    [disabled]
   );
 
   const extractFiles = useCallback((event: DragEvent | React.DragEvent): File[] => {
@@ -35,9 +35,7 @@ export function ImageDropZone({ children, onDropFiles, disabled = false }: Image
       return [];
     }
 
-    return Array.from(fileList).filter(
-      (file) => isAllowedMimeType(file.type) && file.size <= MAX_IMAGE_SIZE_BYTES,
-    );
+    return Array.from(fileList).filter((file) => isAllowedMimeType(file.type) && file.size <= MAX_IMAGE_SIZE_BYTES);
   }, []);
 
   useEffect(() => {
@@ -83,16 +81,16 @@ export function ImageDropZone({ children, onDropFiles, disabled = false }: Image
       resetDragState();
     };
 
-    dragEventTarget.addEventListener('dragenter', handleDragEnter);
-    dragEventTarget.addEventListener('dragover', handleDragOver);
-    dragEventTarget.addEventListener('dragleave', handleDragLeave);
-    dragEventTarget.addEventListener('drop', handleDrop);
+    dragEventTarget.addEventListener("dragenter", handleDragEnter);
+    dragEventTarget.addEventListener("dragover", handleDragOver);
+    dragEventTarget.addEventListener("dragleave", handleDragLeave);
+    dragEventTarget.addEventListener("drop", handleDrop);
 
     return () => {
-      dragEventTarget.removeEventListener('dragenter', handleDragEnter);
-      dragEventTarget.removeEventListener('dragover', handleDragOver);
-      dragEventTarget.removeEventListener('dragleave', handleDragLeave);
-      dragEventTarget.removeEventListener('drop', handleDrop);
+      dragEventTarget.removeEventListener("dragenter", handleDragEnter);
+      dragEventTarget.removeEventListener("dragover", handleDragOver);
+      dragEventTarget.removeEventListener("dragleave", handleDragLeave);
+      dragEventTarget.removeEventListener("drop", handleDrop);
     };
   }, [allowedForDrop, disabled, extractFiles, onDropFiles, resetDragState]);
 
@@ -107,11 +105,9 @@ export function ImageDropZone({ children, onDropFiles, disabled = false }: Image
         role="status"
         aria-live="polite"
       >
-        <div className="pointer-events-none flex min-w-[280px] max-w-[420px] flex-col items-center gap-2 rounded-3xl border border-dashed border-violet-400/70 bg-white/90 px-8 py-10 text-center shadow-xl dark:border-violet-300/40 dark:bg-neutral-900/90">
+        <div className="pointer-events-none flex min-w-[280px] max-w-[420px] flex-col items-center gap-2 rounded-3xl border border-dashed border-pink-400/70 bg-white/90 px-8 py-10 text-center shadow-xl dark:border-pink-300/40 dark:bg-neutral-900/90">
           <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-50">Drop images here</p>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            JPG, PNG, WebP, GIF up to 10MB
-          </p>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">JPG, PNG, WebP, GIF up to 10MB</p>
         </div>
       </div>
     );

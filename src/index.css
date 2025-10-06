@@ -163,7 +163,7 @@ h1 {
   }
 
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-violet-500 dark:outline-violet-400;
+    @apply outline-2 outline-offset-2 outline-pink-500 dark:outline-pink-400;
   }
 
   /* Ensure buttons and interactive elements have visible focus */
@@ -173,7 +173,7 @@ h1 {
   textarea:focus-visible,
   select:focus-visible,
   [role="button"]:focus-visible {
-    @apply outline-2 outline-offset-2 outline-violet-500 dark:outline-violet-400;
+    @apply outline-2 outline-offset-2 outline-pink-500 dark:outline-pink-400;
   }
 
   body {
