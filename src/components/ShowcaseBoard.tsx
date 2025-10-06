@@ -10,7 +10,7 @@ export function ShowcaseBoard() {
   console.log("ShowcaseBoard: Rendering");
   const { data: board, isLoading, error } = useShowcaseBoard();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   console.log("ShowcaseBoard: State", { isLoading, error: !!error, board: !!board, isVisible });
 
