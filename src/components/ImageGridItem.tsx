@@ -117,6 +117,16 @@ export const ImageGridItem = memo(function ImageGridItem({
   const sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
   const shouldUseOriginal = useOriginalSrc || isGif || fitStyle === "contain";
 
+  const [currentSrc, setCurrentSrc] = useState<string>(shouldUseOriginal ? srcFull : src720);
+  const [currentSrcSet, setCurrentSrcSet] = useState<string | undefined>(shouldUseOriginal ? undefined : srcSet);
+  const [retryStep, setRetryStep] = useState(0);
+
+  useEffect(() => {
+    setCurrentSrc(shouldUseOriginal ? srcFull : src720);
+    setCurrentSrcSet(shouldUseOriginal ? undefined : srcSet);
+    setRetryStep(0);
+  }, [shouldUseOriginal, srcFull, src720, srcSet, image.id]);
+
   const handleTouchStart = useCallback(
     (e: TouchEvent<HTMLDivElement>) => {
       if (!showOverlays) {
@@ -238,9 +248,9 @@ export const ImageGridItem = memo(function ImageGridItem({
     >
       <img
         ref={imgRef}
-        src={shouldUseOriginal ? srcFull : src720}
-        srcSet={shouldUseOriginal ? undefined : srcSet}
-        sizes={shouldUseOriginal ? undefined : sizes}
+        src={currentSrc}
+        srcSet={currentSrcSet}
+        sizes={currentSrcSet ? sizes : undefined}
         alt={image.caption || ""}
         loading="lazy"
         decoding="async"
@@ -251,8 +261,28 @@ export const ImageGridItem = memo(function ImageGridItem({
           setIsFullLoaded(true);
         }}
         onError={() => {
-          console.error(`ImageGridItem (${image.id}): Full image failed to load`);
+          console.error(`ImageGridItem (${image.id}): Failed to load ${currentSrc}`);
           setIsFullLoaded(true);
+
+          setRetryStep((prev) => {
+            const nextStep = prev + 1;
+
+            if (prev === 0) {
+              if (shouldUseOriginal) {
+                setCurrentSrc(src720);
+                setCurrentSrcSet(srcSet);
+              } else {
+                setCurrentSrc(src360);
+                setCurrentSrcSet(undefined);
+              }
+            } else if (prev === 1) {
+              const cacheBusted = `${srcFull}${srcFull.includes("?") ? "&" : "?"}retry=${Date.now()}`;
+              setCurrentSrc(cacheBusted);
+              setCurrentSrcSet(undefined);
+            }
+
+            return nextStep;
+          });
         }}
         draggable={false}
       />
