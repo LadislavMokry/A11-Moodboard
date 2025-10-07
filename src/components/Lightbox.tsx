@@ -70,24 +70,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
     setPanY(0);
   }, [currentIndex]);
 
-  // Handle background click to close lightbox
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        overlayRef.current &&
-        !overlayRef.current.contains(event.target as Node) &&
-        contentRef.current &&
-        !contentRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onClose, contentRef, overlayRef]);
 
   const handleZoomIn = useCallback(() => {
     setScale((prev) => Math.min(MAX_SCALE, prev + ZOOM_STEP));
@@ -195,6 +178,11 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
       role="dialog"
       aria-modal="true"
       aria-label="Image viewer"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && scale === MIN_SCALE) {
+          onClose();
+        }
+      }}
     >
       {/* Swipeable container for mobile */}
       <animated.div
