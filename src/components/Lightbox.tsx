@@ -203,7 +203,6 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
         }}
       >
         <LightboxImage
-          ref={imageRef}
           image={currentImage}
           scale={scale}
           onScaleChange={setScale}
