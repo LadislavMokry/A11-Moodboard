@@ -213,6 +213,11 @@ export const ImageGridItem = memo(function ImageGridItem({
     className,
   );
 
+  const imageClassName = cn(
+    "block",
+    fitStyle === "contain" ? "h-full w-full object-cover" : "h-auto w-full object-cover",
+  );
+
 const aspectRatioValue = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
 
   const containerStyle: CSSProperties = {
