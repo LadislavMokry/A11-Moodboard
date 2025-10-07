@@ -197,6 +197,19 @@ export const ImageGridItem = memo(function ImageGridItem({
     contain: "layout paint",
   };
 
+  const containerClassName = cn(
+    "group relative break-inside-avoid touch-manipulation transition-opacity duration-200",
+    !showOverlays ? "cursor-default" : "cursor-pointer",
+    fitStyle === "contain" && "flex items-center justify-center",
+    isDragging && "opacity-50",
+    className,
+  );
+
+  const imageClassName = cn(
+    "block",
+    fitStyle === "contain" ? "max-h-full w-full object-contain" : "h-auto w-full object-cover",
+  );
+
   return (
     <div
       ref={(node) => setRef?.(node)}
@@ -204,12 +217,7 @@ export const ImageGridItem = memo(function ImageGridItem({
       {...(dragAttributes ?? {})}
       {...(dragListeners ?? {})}
       style={combinedStyle}
-      className={cn(
-        "group relative break-inside-avoid touch-manipulation transition-opacity duration-200",
-        !showOverlays ? "cursor-default" : "cursor-pointer",
-        isDragging && "opacity-50",
-        className,
-      )}
+      className={containerClassName}
       onMouseEnter={() => showOverlays && setIsHovered(true)}
       onMouseLeave={() => showOverlays && setIsHovered(false)}
       onTouchStart={handleTouchStart}
@@ -225,7 +233,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         alt={image.caption || ""}
         loading="lazy"
         decoding="async"
-        className={cn("block h-auto w-full", fitStyle === "cover" ? "object-cover" : "object-contain")}
+        className={imageClassName}
         style={{ aspectRatio: image.width && image.height ? `${image.width} / ${image.height}` : undefined }}
         onLoad={() => {
           console.log(`ImageGridItem (${image.id}): Full image loaded`);

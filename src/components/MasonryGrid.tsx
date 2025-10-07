@@ -26,6 +26,7 @@ interface MasonryGridProps {
   readOnly?: boolean;
   fitStyle?: "cover" | "contain";
   minItemHeight?: number;
+  minHeightWideRatio?: number;
 }
 
 /**
@@ -51,6 +52,7 @@ export function MasonryGrid({
   readOnly = false,
   fitStyle = "cover",
   minItemHeight,
+  minHeightWideRatio = 2,
 }: MasonryGridProps) {
   console.log("MasonryGrid: Rendering", {
     imageCount: images.length,
@@ -168,7 +170,16 @@ export function MasonryGrid({
               isReversed ? "showcase-column-down" : "showcase-column-up",
             )}
           >
-            {[...columnImages, ...columnImages, ...columnImages, ...columnImages].map((image, index) => (
+            {[...columnImages, ...columnImages, ...columnImages, ...columnImages].map((image, index) => {
+              const isWideImage = Boolean(
+                minItemHeight &&
+                  fitStyle === "contain" &&
+                  image.width &&
+                  image.height &&
+                  image.width / image.height >= minHeightWideRatio
+              );
+
+              return (
               <ImageGridItem
                 key={`${image.id}-${index}`}
                 image={image}
@@ -182,7 +193,7 @@ export function MasonryGrid({
                   flexShrink: 0,
                   width: "100%",
                   height: "auto",
-                  minHeight: fitStyle === "contain" && minItemHeight ? `${minItemHeight}px` : undefined,
+                  minHeight: isWideImage ? `${minItemHeight}px` : undefined,
                 }}
                 className={cn(isDragging && "opacity-50")}
                 dataTestId={`waterfall-item-${image.id}`}
@@ -192,7 +203,8 @@ export function MasonryGrid({
                 showOverlays={!readOnly}
                 fitStyle={fitStyle}
               />
-            ))}
+            );
+            })}
           </div>
         );
       })}
