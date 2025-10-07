@@ -10,49 +10,65 @@ interface MasonryGridProps {
   images: Image[];
   onImageClick?: (image: Image) => void;
   onImageMenuClick?: (image: Image, event: React.MouseEvent) => void;
-  // Configuration props
-  minCardWidth?: number; // Minimum width for each card in pixels (default: 220)
-  gap?: number; // Gap between items in pixels (default: 12)
-  // Selection props (passed through to ImageGridItem)
+  minCardWidth?: number;
+  gap?: number;
   selectionMode?: boolean;
   selectedIds?: Set<string>;
   onToggleSelection?: (imageId: string) => void;
-  // Drag and drop props (passed through to ImageGridItem)
   setItemRef?: (imageId: string, node: HTMLDivElement | null) => void;
   dragAttributes?: DraggableAttributes;
   dragListeners?: SyntheticListenerMap;
   dragStyle?: CSSProperties;
   isDragging?: boolean;
   dataTestId?: string;
-  // Waterfall specific props
-  maxHeight?: string; // Maximum height for the container (default: 100vh)
-  alternatingDirection?: boolean; // Enable alternating column direction (default: true)
+  maxHeight?: string;
+  alternatingDirection?: boolean;
+  readOnly?: boolean;
 }
 
 /**
  * WaterfallMasonryGrid - Creates a Pinterest-style waterfall layout
- * Features:
- * - CSS Flexbox columns for true waterfall effect
- * - Alternating column directions (top-to-bottom, bottom-to-top)
- * - Fixed height container (no scrolling)
- * - Responsive column count
  */
-export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWidth = 220, gap = 12, selectionMode = false, selectedIds = new Set(), onToggleSelection, setItemRef, dragAttributes, dragListeners, dragStyle, isDragging = false, dataTestId, maxHeight = "100vh", alternatingDirection = true }: MasonryGridProps) {
-  console.log("MasonryGrid: Rendering", { imageCount: images.length, minCardWidth, gap, selectionMode, isDragging, maxHeight, alternatingDirection });
+export function MasonryGrid({
+  images,
+  onImageClick,
+  onImageMenuClick,
+  minCardWidth = 220,
+  gap = 12,
+  selectionMode = false,
+  selectedIds = new Set(),
+  onToggleSelection,
+  setItemRef,
+  dragAttributes,
+  dragListeners,
+  dragStyle,
+  isDragging = false,
+  dataTestId,
+  maxHeight = "100vh",
+  alternatingDirection = true,
+  readOnly = false,
+}: MasonryGridProps) {
+  console.log("MasonryGrid: Rendering", {
+    imageCount: images.length,
+    minCardWidth,
+    gap,
+    selectionMode,
+    isDragging,
+    maxHeight,
+    alternatingDirection,
+    readOnly,
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
-  // Calculate number of columns based on container width
   const columnCount = useMemo(() => {
-    if (!containerWidth) return 2; // Default fallback
-
+    if (!containerWidth) return 2;
     const columns = Math.max(1, Math.floor(containerWidth / minCardWidth));
-    const count = Math.min(columns, 6); // Max 6 columns
+    const count = Math.min(columns, 6);
     console.log("MasonryGrid: Calculated columnCount", { containerWidth, minCardWidth, count });
     return count;
   }, [containerWidth, minCardWidth]);
 
-  // ResizeObserver to track container width changes
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -71,19 +87,22 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
     return () => resizeObserver.disconnect();
   }, []);
 
-  // Handle image click with selection mode support
   const handleImageClick = useCallback(
     (image: Image) => {
+      if (readOnly) {
+        onImageClick?.(image);
+        return;
+      }
+
       if (selectionMode && onToggleSelection) {
         onToggleSelection(image.id);
       } else if (onImageClick) {
         onImageClick(image);
       }
     },
-    [selectionMode, onToggleSelection, onImageClick]
+    [readOnly, selectionMode, onToggleSelection, onImageClick],
   );
 
-  // Sort images by position (should already be sorted from API, but ensure it)
   const sortedImages = useMemo(() => {
     console.log("MasonryGrid: Sorting images");
     return [...images].sort((a, b) => a.position - b.position);
@@ -99,7 +118,6 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
     );
   }
 
-  // Distribute images across columns
   const columns: Image[][] = Array.from({ length: columnCount }, () => []);
 
   sortedImages.forEach((image, index) => {
@@ -112,14 +130,14 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
     height: maxHeight,
     overflow: "hidden",
     display: "flex",
-    gap: `${gap}px`
+    gap: `${gap}px`,
   };
 
   const columnStyle: CSSProperties = {
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: `${gap}px`
+    gap: `${gap}px`,
   };
 
   return (
@@ -130,7 +148,6 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
       data-testid={dataTestId}
     >
       {columns.map((columnImages, columnIndex) => {
-        // Alternate direction for each column
         const isReversed = alternatingDirection && columnIndex % 2 === 1;
 
         return (
@@ -138,30 +155,35 @@ export function MasonryGrid({ images, onImageClick, onImageMenuClick, minCardWid
             key={columnIndex}
             style={{
               ...columnStyle,
-              flexDirection: isReversed ? "column-reverse" : "column"
+              flexDirection: isReversed ? "column-reverse" : "column",
             }}
-            className={cn("waterfall-column", isReversed && "flex-col-reverse", isReversed ? "showcase-column-down" : "showcase-column-up")}          >
+            className={cn(
+              "waterfall-column",
+              isReversed && "flex-col-reverse",
+              isReversed ? "showcase-column-down" : "showcase-column-up",
+            )}
+          >
             {[...columnImages, ...columnImages, ...columnImages, ...columnImages].map((image, index) => (
               <ImageGridItem
                 key={`${image.id}-${index}`}
                 image={image}
                 onClick={() => handleImageClick(image)}
-                onMenuClick={(e) => onImageMenuClick?.(image, e)}
+                onMenuClick={readOnly ? undefined : (e) => onImageMenuClick?.(image, e)}
                 setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
                 dragAttributes={dragAttributes}
                 dragListeners={dragListeners}
                 style={{
                   ...(dragStyle ?? {}),
                   flexShrink: 0,
-                  // Let images maintain their aspect ratio
                   width: "100%",
-                  height: "auto"
+                  height: "auto",
                 }}
                 className={cn(isDragging && "opacity-50")}
                 dataTestId={`waterfall-item-${image.id}`}
-                selectionMode={selectionMode}
-                isSelected={selectedIds.has(image.id)}
-                onToggleSelection={() => onToggleSelection?.(image.id)}
+                selectionMode={!readOnly && selectionMode}
+                isSelected={!readOnly && selectedIds.has(image.id)}
+                onToggleSelection={readOnly ? undefined : () => onToggleSelection?.(image.id)}
+                showOverlays={!readOnly}
               />
             ))}
           </div>
