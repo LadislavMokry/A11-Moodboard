@@ -72,13 +72,7 @@ export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-500">
-        <span>
-          {imageCount} {imageCount === 1 ? 'image' : 'images'}
-        </span>
-        <span>•</span>
-        <span>Updated {lastUpdated}</span>
-      </div>
+
     </header>
   );
 }
