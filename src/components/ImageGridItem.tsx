@@ -200,14 +200,14 @@ export const ImageGridItem = memo(function ImageGridItem({
   const containerClassName = cn(
     "group relative break-inside-avoid touch-manipulation transition-opacity duration-200",
     !showOverlays ? "cursor-default" : "cursor-pointer",
-    fitStyle === "contain" && "flex items-center justify-center",
+    fitStyle === "contain" && "flex items-center justify-center overflow-hidden",
     isDragging && "opacity-50",
     className,
   );
 
   const imageClassName = cn(
     "block",
-    fitStyle === "contain" ? "max-h-full w-full object-contain" : "h-auto w-full object-cover",
+    fitStyle === "contain" ? "h-auto w-full object-contain" : "h-auto w-full object-cover",
   );
 
   return (

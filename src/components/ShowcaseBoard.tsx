@@ -50,7 +50,6 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
         alternatingDirection
         readOnly
         fitStyle="contain"
-        minItemHeight={200}
       />
     </div>
   );
