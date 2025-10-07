@@ -42,7 +42,7 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
   }
 
   return (
-    <div className="showcase-board h-full w-full">
+    <div className="showcase-board relative h-full w-full overflow-hidden">
       <MasonryGrid
         images={displayImages}
         minCardWidth={180}
