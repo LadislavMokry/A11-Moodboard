@@ -1,6 +1,5 @@
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { ImageGrid } from "@/components/ImageGrid";
-import { ImageGrid } from "@/components/ImageGrid";
 import { Layout } from "@/components/Layout";
 import { LightboxSkeleton } from "@/components/LightboxSkeleton";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
