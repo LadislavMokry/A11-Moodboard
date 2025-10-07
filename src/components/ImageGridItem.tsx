@@ -192,13 +192,21 @@ export const ImageGridItem = memo(function ImageGridItem({
     }
   }, [preventClick, selectionMode, showOverlays, onToggleSelection, onClick]);
 
-  const combinedStyle: CSSProperties = {
+  const aspectRatioValue = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
+
+  const containerStyle: CSSProperties = {
     ...(style ?? {}),
     contain: "layout paint",
+    ...(fitStyle === "contain"
+      ? {
+          width: "100%",
+          aspectRatio: aspectRatioValue
+        }
+      : {})
   };
 
   const containerClassName = cn(
-    "group relative break-inside-avoid touch-manipulation transition-opacity duration-200",
+    "group relative w-full max-w-full break-inside-avoid touch-manipulation transition-opacity duration-200",
     !showOverlays ? "cursor-default" : "cursor-pointer",
     fitStyle === "contain" && "flex items-center justify-center overflow-hidden",
     isDragging && "opacity-50",
@@ -207,7 +215,7 @@ export const ImageGridItem = memo(function ImageGridItem({
 
   const imageClassName = cn(
     "block",
-    fitStyle === "contain" ? "h-auto w-full object-contain" : "h-auto w-full object-cover",
+    fitStyle === "contain" ? "h-full w-full object-cover" : "h-auto w-full object-cover",
   );
 
   return (
@@ -216,7 +224,7 @@ export const ImageGridItem = memo(function ImageGridItem({
       data-testid={dataTestId}
       {...(dragAttributes ?? {})}
       {...(dragListeners ?? {})}
-      style={combinedStyle}
+      style={containerStyle}
       className={containerClassName}
       onMouseEnter={() => showOverlays && setIsHovered(true)}
       onMouseLeave={() => showOverlays && setIsHovered(false)}
@@ -234,7 +242,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         loading="lazy"
         decoding="async"
         className={imageClassName}
-        style={{ aspectRatio: image.width && image.height ? `${image.width} / ${image.height}` : undefined }}
+        style={fitStyle === "contain" ? undefined : aspectRatioValue ? { aspectRatio: aspectRatioValue } : undefined}
         onLoad={() => {
           console.log(`ImageGridItem (${image.id}): Full image loaded`);
           setIsFullLoaded(true);
