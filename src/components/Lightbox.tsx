@@ -33,7 +33,7 @@ const DISMISS_THRESHOLD = 100;
 export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, onNext, onPrev, onJumpTo, onEditCaption, onDelete, isOwner = false, hideThumbnails = false }: LightboxProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const [scale, setScale] = useState(1);
   const [panX, setPanX] = useState(0);
@@ -72,7 +72,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
 
   // Handle background click (only close if not zoomed/panned)
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current && !imageRef.current?.contains(e.target as Node)) {
+    if (e.target === overlayRef.current && !contentRef.current?.contains(e.target as Node)) {
       onClose();
     }
   };
@@ -187,6 +187,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
     >
       {/* Swipeable container for mobile */}
       <animated.div
+        ref={contentRef}
         {...(isMobile && scale === MIN_SCALE ? bindSwipe() : {})}
         className="w-full h-full"
         style={{
