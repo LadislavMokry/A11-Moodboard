@@ -39,7 +39,7 @@ export default function Home() {
   if (!user) {
     return (
       <Layout>
-        <section className="h-[calc(100vh-4rem)] px-4 py-8 md:py-12">
+        <section className="min-h-[calc(100vh-4rem)] px-4 py-[5vh]">
           {/* Desktop: Two-column layout with waterfall on left | Mobile: Single column */}
           <div className="mx-auto flex h-full max-w-7xl gap-8 md:gap-12">
             {/* Showcase Board - Left side, takes most of the width */}
@@ -89,8 +89,9 @@ export default function Home() {
   // Logged-in user homepage
   return (
     <Layout>
-              <section className="flex border-b border-neutral-200 dark:border-neutral-800">        {/* Left column: Horizontal Board Cards */}
-        <div className="w-1/3 p-4 overflow-y-auto">
+      <section className="flex min-h-[calc(100vh-4rem)] gap-6 border-b border-neutral-200 px-4 py-[5vh] dark:border-neutral-800 md:gap-10">
+        {/* Left column: Horizontal Board Cards */}
+        <div className="h-full w-1/3 overflow-y-auto p-4">
           <h2 className="text-2xl font-semibold mb-4">Your Boards</h2>
           {boardsLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
@@ -121,7 +122,7 @@ export default function Home() {
         </div>
 
         {/* Right column: Waterfall Showcase */}
-        <div className="w-2/3">
+        <div className="h-full w-2/3">
           <ShowcaseBoard userId={user.id} />
         </div>
       </section>

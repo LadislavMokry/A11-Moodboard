@@ -44,7 +44,7 @@ export function MasonryGrid({
   dragStyle,
   isDragging = false,
   dataTestId,
-  maxHeight = "100vh",
+  maxHeight = "100%",
   alternatingDirection = true,
   readOnly = false,
 }: MasonryGridProps) {
@@ -128,6 +128,7 @@ export function MasonryGrid({
 
   const containerStyle: CSSProperties = {
     height: maxHeight,
+    maxHeight,
     overflow: "hidden",
     display: "flex",
     gap: `${gap}px`,
