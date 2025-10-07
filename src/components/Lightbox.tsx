@@ -100,7 +100,9 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   const handlePanChange = useCallback((x: number, y: number) => {
     setPanX(x);
     setPanY(y);
+  }, []);
 
+  const currentImage = images[currentIndex];
 
   const handleEditCaption = useCallback(() => {
     if (onEditCaption) {
@@ -161,8 +163,6 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
       axis: undefined
     }
   );
-
-  const currentImage = images[currentIndex];
 
   const thumbnailStrip = !hideThumbnails ? (
     <LightboxThumbnailStrip
