@@ -235,9 +235,9 @@ export const ImageGridItem = memo(function ImageGridItem({
     >
       <img
         ref={imgRef}
-        src={isGif ? srcFull : src720}
-        srcSet={isGif ? undefined : srcSet}
-        sizes={isGif ? undefined : sizes}
+        src={isGif || fitStyle === "contain" ? srcFull : src720}
+        srcSet={isGif || fitStyle === "contain" ? undefined : srcSet}
+        sizes={isGif || fitStyle === "contain" ? undefined : sizes}
         alt={image.caption || ""}
         loading="lazy"
         decoding="async"

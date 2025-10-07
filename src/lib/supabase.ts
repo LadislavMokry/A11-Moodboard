@@ -3,11 +3,9 @@ import type { Database } from '../types/database';
 
 // Type-safe environment variable validation
 const getEnvVar = (key: string): string => {
-  const value = import.meta.env[key];
+  const value = import.meta.env[key as keyof ImportMetaEnv];
   if (!value) {
-    throw new Error(
-      `Missing environment variable: ${key}. Please check your .env file.`
-    );
+    throw new Error(`Missing environment variable: ${key}. Please check your .env file.`);
   }
   return value;
 };
