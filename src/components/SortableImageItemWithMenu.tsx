@@ -37,6 +37,7 @@ export function SortableImageItemWithMenu({
       willChange: transform ? 'transform' : undefined,
       touchAction: 'none' as const,
       cursor: isDragging ? 'grabbing' : 'grab',
+      marginBottom: '1.25rem'
     };
   }, [isDragging, transform, transition]);
 

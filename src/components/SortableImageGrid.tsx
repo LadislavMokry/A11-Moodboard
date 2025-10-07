@@ -138,10 +138,10 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     >
       <SortableContext items={orderedImages.map((image) => image.id)}>
         <div
-          className="gap-4"
+          className="gap-5 pt-5"
           style={{
-            columnWidth: "280px",
-            columnGap: "1rem" // 16px to match gap-4
+            columnWidth: "240px",
+            columnGap: "1.25rem"
           }}
         >
           {orderedImages.map((image) => (

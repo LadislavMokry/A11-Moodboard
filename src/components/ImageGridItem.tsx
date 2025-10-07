@@ -205,7 +205,15 @@ export const ImageGridItem = memo(function ImageGridItem({
     }
   }, [preventClick, selectionMode, showOverlays, onToggleSelection, onClick]);
 
-  const aspectRatioValue = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
+  const containerClassName = cn(
+    "group relative w-full max-w-full break-inside-avoid touch-manipulation transition-opacity duration-200",
+    !showOverlays ? "cursor-default" : "cursor-pointer",
+    fitStyle === "contain" && "flex items-center justify-center overflow-hidden",
+    isDragging && "opacity-50",
+    className,
+  );
+
+const aspectRatioValue = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
 
   const containerStyle: CSSProperties = {
     ...(style ?? {}),
@@ -217,19 +225,6 @@ export const ImageGridItem = memo(function ImageGridItem({
         }
       : {})
   };
-
-  const containerClassName = cn(
-    "group relative w-full max-w-full break-inside-avoid touch-manipulation transition-opacity duration-200",
-    !showOverlays ? "cursor-default" : "cursor-pointer",
-    fitStyle === "contain" && "flex items-center justify-center overflow-hidden",
-    isDragging && "opacity-50",
-    className,
-  );
-
-  const imageClassName = cn(
-    "block",
-    fitStyle === "contain" ? "h-full w-full object-cover" : "h-auto w-full object-cover",
-  );
 
   return (
     <div
