@@ -11,9 +11,10 @@ import { Link } from "react-router-dom";
 interface BoardPageHeaderProps {
   board: BoardWithImages;
   actions?: ReactNode;
+  hideImageInfo?: boolean;
 }
 
-export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
+export function BoardPageHeader({ board, actions, hideImageInfo }: BoardPageHeaderProps) {
   const nameEditorRef = useRef<EditableTextHandle>(null);
   const { mutateAsync: updateBoard } = useUpdateBoard();
   const [showOgImageDialog, setShowOgImageDialog] = useState(false);
