@@ -188,42 +188,38 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
       <animated.div
         {...(isMobile && scale === MIN_SCALE ? bindSwipe() : {})}
         className="w-full h-full"
-        style={
-          isMobile && scale === MIN_SCALE
+        style={{
+          paddingTop: '10vh',
+          paddingBottom: '10vh',
+          ...(isMobile && scale === MIN_SCALE
             ? {
                 x: swipeX,
                 y: swipeY,
                 touchAction: "none"
               }
-            : undefined
-        }
+            : {}),
+        }}
       >
-      <div className="w-full h-full" style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
         <LightboxImage
           image={currentImage}
           scale={scale}
           onScaleChange={setScale}
           onPanChange={handlePanChange}
         />
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0" style={{ paddingBottom: '10vh' }}>
-        <LightboxControls
-          currentIndex={currentIndex}
-          totalImages={images.length}
-          scale={scale}
-          onClose={onClose}
-          onNext={onNext}
-          onPrev={onPrev}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onZoomReset={handleZoomReset}
-        />
-      </div>
-
-
-
-      {/* Action buttons (download, copy URL, share, delete) */}
+        <div className="absolute bottom-0 left-0 right-0" style={{ paddingBottom: '10vh' }}>
+          <LightboxControls
+            currentIndex={currentIndex}
+            totalImages={images.length}
+            scale={scale}
+            onClose={onClose}
+            onNext={onNext}
+            onPrev={onPrev}
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            onZoomReset={handleZoomReset}
+          />
+        </div>
+      </animated.div>
       <LightboxActions
         imageUrl={getSupabasePublicUrl(currentImage.storage_path)}
         filename={currentImage.original_filename || ""}
