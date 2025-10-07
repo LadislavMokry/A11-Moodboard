@@ -49,6 +49,8 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
         gap={8}
         alternatingDirection
         readOnly
+        fitStyle="contain"
+        minItemHeight={200}
       />
     </div>
   );

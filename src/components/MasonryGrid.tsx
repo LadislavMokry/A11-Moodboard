@@ -24,6 +24,8 @@ interface MasonryGridProps {
   maxHeight?: string;
   alternatingDirection?: boolean;
   readOnly?: boolean;
+  fitStyle?: "cover" | "contain";
+  minItemHeight?: number;
 }
 
 /**
@@ -47,6 +49,8 @@ export function MasonryGrid({
   maxHeight = "100%",
   alternatingDirection = true,
   readOnly = false,
+  fitStyle = "cover",
+  minItemHeight,
 }: MasonryGridProps) {
   console.log("MasonryGrid: Rendering", {
     imageCount: images.length,
@@ -178,6 +182,7 @@ export function MasonryGrid({
                   flexShrink: 0,
                   width: "100%",
                   height: "auto",
+                  minHeight: fitStyle === "contain" && minItemHeight ? `${minItemHeight}px` : undefined,
                 }}
                 className={cn(isDragging && "opacity-50")}
                 dataTestId={`waterfall-item-${image.id}`}
@@ -185,6 +190,7 @@ export function MasonryGrid({
                 isSelected={!readOnly && selectedIds.has(image.id)}
                 onToggleSelection={readOnly ? undefined : () => onToggleSelection?.(image.id)}
                 showOverlays={!readOnly}
+                fitStyle={fitStyle}
               />
             ))}
           </div>
