@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 
 interface LightboxControlsProps {
@@ -24,45 +23,12 @@ export function LightboxControls({
   onZoomOut,
   onZoomReset,
 }: LightboxControlsProps) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-
-  const resetInactivityTimer = () => {
-    setIsVisible(true);
-
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    const newTimeoutId = setTimeout(() => {
-      setIsVisible(false);
-    }, 3000);
-
-    setTimeoutId(newTimeoutId);
-  };
-
-  useEffect(() => {
-    resetInactivityTimer();
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <div
-      className="absolute inset-0 pointer-events-none"
-      onMouseMove={resetInactivityTimer}
-      onTouchStart={resetInactivityTimer}
-    >
+    <>
       {/* Close button - top right */}
       <button
         onClick={onClose}
-        className={`absolute top-4 right-4 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto ${
-          isVisible ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute top-4 right-4 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
         aria-label="Close lightbox"
       >
         <X className="w-6 h-6 text-white" />
@@ -70,9 +36,7 @@ export function LightboxControls({
 
       {/* Image counter - top left */}
       <div
-        className={`absolute top-4 left-4 px-3 py-2 bg-black/60 rounded-sm backdrop-blur-sm transition-opacity duration-300 ${
-          isVisible ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute top-4 left-4 px-3 py-2 bg-black/60 rounded-sm backdrop-blur-sm transition-opacity duration-300"
       >
         <span className="text-sm text-white font-medium">
           {currentIndex + 1} / {totalImages}
@@ -83,9 +47,7 @@ export function LightboxControls({
       {totalImages > 1 && scale === 1 && (
         <button
           onClick={onPrev}
-          className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto ${
-            isVisible ? 'opacity-100' : 'opacity-0'
-          }`}
+          className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
           aria-label="Previous image"
         >
           <ChevronLeft className="w-6 h-6 text-white" />
@@ -96,9 +58,7 @@ export function LightboxControls({
       {totalImages > 1 && scale === 1 && (
         <button
           onClick={onNext}
-          className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto ${
-            isVisible ? 'opacity-100' : 'opacity-0'
-          }`}
+          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
           aria-label="Next image"
         >
           <ChevronRight className="w-6 h-6 text-white" />
@@ -107,9 +67,7 @@ export function LightboxControls({
 
       {/* Zoom controls - bottom center */}
       <div
-        className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/60 rounded-full backdrop-blur-sm p-1 transition-opacity duration-300 ${
-          isVisible ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/60 rounded-full backdrop-blur-sm p-1 transition-opacity duration-300"
         style={{ zIndex: 20 }}
       >
         <button
@@ -144,6 +102,6 @@ export function LightboxControls({
           </button>
         )}
       </div>
-    </div>
+    </>
   );
 }

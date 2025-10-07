@@ -198,25 +198,28 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
             : undefined
         }
       >
+      <div className="w-full h-full" style={{ paddingTop: '10vh', paddingBottom: '10vh' }}>
         <LightboxImage
           image={currentImage}
           scale={scale}
           onScaleChange={setScale}
           onPanChange={handlePanChange}
         />
-      </animated.div>
+      </div>
 
-      <LightboxControls
-        currentIndex={currentIndex}
-        totalImages={images.length}
-        scale={scale}
-        onClose={onClose}
-        onNext={onNext}
-        onPrev={onPrev}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onZoomReset={handleZoomReset}
-      />
+      <div className="absolute bottom-0 left-0 right-0" style={{ paddingBottom: '10vh' }}>
+        <LightboxControls
+          currentIndex={currentIndex}
+          totalImages={images.length}
+          scale={scale}
+          onClose={onClose}
+          onNext={onNext}
+          onPrev={onPrev}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onZoomReset={handleZoomReset}
+        />
+      </div>
 
 
 

@@ -20,17 +20,14 @@ export function LightboxThumbnailStrip({
   if (images.length === 0) return null;
 
   return (
-    <div className="h-full w-full overflow-y-auto">
-      <div
-        className="grid grid-cols-3 gap-2 p-1"
-      >
+    <div className="h-full w-full overflow-y-auto py-2">
+      <div className="flex flex-col gap-2 px-2">
         {visibleImages.map(({ image, originalIndex }) => (
           <MagnifiableThumbnail
             key={image.id}
             image={image}
             isActive={originalIndex === currentIndex}
             onClick={() => onThumbnailClick(originalIndex)}
-            // Disable magnification on vertical strip for now
             magnification={1}
             onMouseEnter={() => {}}
             onMouseLeave={() => {}}

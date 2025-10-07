@@ -21,11 +21,11 @@ export function LightboxCaptionPanel({ caption, onEditClick, isOwner = false, th
       style={{ width: '320px' }}
     >
       {/* Main content area */}
-      <div className="flex-1 overflow-y-auto p-6 flex flex-col">
-        {/* Caption section */}
-        <div className="flex-shrink-0">
+      <div className="flex-1 p-6 flex flex-col h-full">
+        {/* Caption section (20% height, centered) */}
+        <div className="flex-shrink-0 flex items-center justify-center" style={{ height: '20%' }}>
           {caption ? (
-            <p className="text-white text-lg leading-relaxed">
+            <p className="text-white text-lg leading-relaxed text-center">
               "{caption}"
             </p>
           ) : (
@@ -35,9 +35,9 @@ export function LightboxCaptionPanel({ caption, onEditClick, isOwner = false, th
           )}
         </div>
 
-        {/* Thumbnails section */}
+        {/* Thumbnails section (70% height, scrollable) */}
         {isOpen && thumbnails && (
-          <div className="flex-1 mt-6 pt-6 border-t border-neutral-700 min-h-0">
+          <div className="flex-1 border-t border-neutral-700 min-h-0" style={{ height: '70%' }}>
             {thumbnails}
           </div>
         )}

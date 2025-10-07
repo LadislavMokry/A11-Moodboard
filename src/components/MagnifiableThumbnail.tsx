@@ -31,18 +31,16 @@ export function MagnifiableThumbnail({
   );
 
   return (
-    <div className="relative flex-shrink-0" style={{ width: '80px', height: '80px' }}>
+    <div className="relative w-full h-auto">
       <animated.button
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        className={`absolute inset-0 transition-all duration-200 ${
+        className={`w-full h-full transition-all duration-200 ${
           isActive ? 'ring-2 ring-white ring-offset-2 ring-offset-black/95' : ''
         }`}
         style={{
-          width: '80px',
-          height: '80px',
-          transformOrigin: 'bottom center',
+          transformOrigin: 'center center',
           scale: spring.scale,
           zIndex: magnification > 1 ? 10 : 1,
         }}
@@ -51,7 +49,7 @@ export function MagnifiableThumbnail({
         <img
           src={src}
           alt={image.caption || ''}
-          className="w-full h-full object-cover rounded-sm pointer-events-none"
+          className="w-full h-full object-contain rounded-sm pointer-events-none"
         />
       </animated.button>
     </div>
