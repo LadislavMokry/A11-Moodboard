@@ -71,6 +71,7 @@ export function LightboxActions({ imageUrl, filename, onCopyUrl, onDelete, isOwn
     <div
       className="absolute top-4 right-4 flex gap-2"
       style={{ zIndex: 30 }}
+      onClick={(event) => event.stopPropagation()}
     >
       {/* Caption panel toggle button (desktop only) */}
       {!isMobile && onToggleCaptionPanel && (

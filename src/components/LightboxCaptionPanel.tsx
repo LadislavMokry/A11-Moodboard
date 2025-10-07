@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { forwardRef, type ReactNode } from 'react';
 import { Pencil } from 'lucide-react';
 
 interface LightboxCaptionPanelProps {
@@ -9,16 +9,18 @@ interface LightboxCaptionPanelProps {
   isOpen?: boolean;
 }
 
-export function LightboxCaptionPanel({ caption, onEditClick, isOwner = false, thumbnails, isOpen = true }: LightboxCaptionPanelProps) {
+export const LightboxCaptionPanel = forwardRef<HTMLDivElement, LightboxCaptionPanelProps>(function LightboxCaptionPanel({ caption, onEditClick, isOwner = false, thumbnails, isOpen = true }: LightboxCaptionPanelProps, ref) {
   const hasContent = caption || isOwner || thumbnails;
   if (!hasContent) return null;
 
   return (
     <div
+      ref={ref}
       className={`absolute top-0 right-0 h-full bg-black/80 backdrop-blur-sm transition-transform duration-300 ease-in-out hidden md:flex flex-col ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}
       style={{ width: '320px' }}
+      onClick={(event) => event.stopPropagation()}
     >
       {/* Main content area */}
       <div className="flex-1 p-6 flex flex-col h-full">
@@ -44,4 +46,4 @@ export function LightboxCaptionPanel({ caption, onEditClick, isOwner = false, th
       </div>
     </div>
   );
-}
+});

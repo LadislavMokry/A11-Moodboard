@@ -28,6 +28,7 @@ export function LightboxControls({
       {/* Image counter - top left */}
       <div
         className="absolute top-4 left-4 px-3 py-2 bg-black/60 rounded-sm backdrop-blur-sm transition-opacity duration-300"
+        onClick={(event) => event.stopPropagation()}
       >
         <span className="text-sm text-white font-medium">
           {currentIndex + 1} / {totalImages}
@@ -36,7 +37,10 @@ export function LightboxControls({
 
       {/* Close button - top right */}
       <button
-        onClick={onClose}
+        onClick={(event) => {
+          event.stopPropagation();
+          onClose();
+        }}
         className="absolute top-4 right-4 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
         aria-label="Close lightbox"
       >
@@ -46,7 +50,10 @@ export function LightboxControls({
       {/* Previous button - left center (disabled when zoomed) */}
       {totalImages > 1 && scale === 1 && (
         <button
-          onClick={onPrev}
+          onClick={(event) => {
+            event.stopPropagation();
+            onPrev();
+          }}
           className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
           aria-label="Previous image"
         >
@@ -57,7 +64,10 @@ export function LightboxControls({
       {/* Next button - right center (disabled when zoomed) */}
       {totalImages > 1 && scale === 1 && (
         <button
-          onClick={onNext}
+          onClick={(event) => {
+            event.stopPropagation();
+            onNext();
+          }}
           className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
           aria-label="Next image"
         >
@@ -69,9 +79,13 @@ export function LightboxControls({
       <div
         className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/60 rounded-full backdrop-blur-sm p-1 transition-opacity duration-300"
         style={{ zIndex: 20 }}
+        onClick={(event) => event.stopPropagation()}
       >
         <button
-          onClick={onZoomOut}
+          onClick={(event) => {
+            event.stopPropagation();
+            onZoomOut();
+          }}
           disabled={scale <= 1}
           className="p-2 hover:bg-white/10 rounded-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed pointer-events-auto"
           aria-label="Zoom out"
@@ -84,7 +98,10 @@ export function LightboxControls({
         </div>
 
         <button
-          onClick={onZoomIn}
+          onClick={(event) => {
+            event.stopPropagation();
+            onZoomIn();
+          }}
           disabled={scale >= 5}
           className="p-2 hover:bg-white/10 rounded-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed pointer-events-auto"
           aria-label="Zoom in"
@@ -94,7 +111,10 @@ export function LightboxControls({
 
         {scale > 1 && (
           <button
-            onClick={onZoomReset}
+            onClick={(event) => {
+              event.stopPropagation();
+              onZoomReset();
+            }}
             className="p-2 hover:bg-white/10 rounded-full transition-colors pointer-events-auto"
             aria-label="Reset zoom"
           >

@@ -8,6 +8,7 @@ import { type Image } from "@/schemas/image";
 import { animated, useSpring } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
 interface LightboxProps {
   images: Image[];
@@ -34,6 +35,8 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const captionPanelRef = useRef<HTMLDivElement>(null);
 
   const [scale, setScale] = useState(1);
   const [panX, setPanX] = useState(0);
@@ -171,6 +174,30 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
     return null;
   }
 
+  const handleOverlayClick = useCallback(
+    (event: ReactMouseEvent<HTMLDivElement>) => {
+      if (scale > MIN_SCALE) {
+        return;
+      }
+
+      const target = event.target as Node;
+
+      if (imageContainerRef.current) {
+        const mainImage = imageContainerRef.current.querySelector<HTMLImageElement>("img.relative");
+        if (mainImage && mainImage.contains(target)) {
+          return;
+        }
+      }
+
+      if (captionPanelRef.current?.contains(target)) {
+        return;
+      }
+
+      onClose();
+    },
+    [onClose, scale]
+  );
+
   return (
     <div
       ref={overlayRef}
@@ -178,11 +205,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
       role="dialog"
       aria-modal="true"
       aria-label="Image viewer"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && scale === MIN_SCALE) {
-          onClose();
-        }
-      }}
+      onClick={handleOverlayClick}
     >
       {/* Swipeable container for mobile */}
       <animated.div
@@ -202,6 +225,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
         }}
       >
         <LightboxImage
+          ref={imageContainerRef}
           image={currentImage}
           scale={scale}
           onScaleChange={setScale}
@@ -231,6 +255,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
 
       {/* Caption panel (desktop only, right side) */}
       <LightboxCaptionPanel
+        ref={captionPanelRef}
         caption={currentImage.caption || null}
         isOwner={isOwner}
         thumbnails={thumbnailStrip}
@@ -241,7 +266,10 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
       <button
         ref={closeButtonRef}
         className="sr-only"
-        onClick={onClose}
+        onClick={(event) => {
+          event.stopPropagation();
+          onClose();
+        }}
         aria-label="Close lightbox (focused for keyboard navigation)"
       />
     </div>

@@ -167,6 +167,7 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
           transform: x.to((xVal) => `translate3d(${xVal}px, ${y.get()}px, 0) scale(${scale})`),
           cursor: scale > MIN_SCALE ? 'grab' : 'zoom-in',
         }}
+        onClick={(event) => event.stopPropagation()}
         onLoad={handleImageLoad}
         onError={handleImageError}
         draggable={false}
