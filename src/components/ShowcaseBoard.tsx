@@ -48,7 +48,6 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
         minCardWidth={180}
         gap={8}
         alternatingDirection
-        maxHeight="100%"
       />
     </div>
   );
