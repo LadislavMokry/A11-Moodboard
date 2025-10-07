@@ -115,7 +115,6 @@ export function BoardMasonryGrid({
 
   const containerStyle: CSSProperties = {
     display: "flex",
-    gap,
     columnGap: gap,
     alignItems: "flex-start"
   };
@@ -123,9 +122,7 @@ export function BoardMasonryGrid({
   const columnStyle: CSSProperties = {
     flex: 1,
     display: "flex",
-    flexDirection: "column",
-    gap,
-    rowGap: gap
+    flexDirection: "column"
   };
 
   return (
@@ -142,27 +139,34 @@ export function BoardMasonryGrid({
             style={columnStyle}
             className="board-masonry-column"
           >
-            {columnImages.map((image) => (
-              <ImageGridItem
-                key={image.id}
-                image={image}
-                onClick={() => handleImageClick(image)}
-                onMenuClick={(e) => onImageMenuClick?.(image, e)}
-                setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
-                dragAttributes={dragAttributes}
-                dragListeners={dragListeners}
-                style={{
-                  ...(dragStyle ?? {}),
-                  flexShrink: 0,
-                  width: "100%"
-                }}
-                className={cn(isDragging && "opacity-50")}
-                dataTestId={`waterfall-item-${image.id}`}
-                selectionMode={selectionMode}
-                isSelected={selectedIds.has(image.id)}
-                onToggleSelection={() => onToggleSelection?.(image.id)}
-              />
-            ))}
+            {columnImages.map((image, imageIndex) => {
+              const isLastItem = imageIndex === columnImages.length - 1;
+              return (
+                <div
+                  key={image.id}
+                  style={{ marginBottom: isLastItem ? 0 : gap }}
+                >
+                  <ImageGridItem
+                    image={image}
+                    onClick={() => handleImageClick(image)}
+                    onMenuClick={(e) => onImageMenuClick?.(image, e)}
+                    setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
+                    dragAttributes={dragAttributes}
+                    dragListeners={dragListeners}
+                    style={{
+                      ...(dragStyle ?? {}),
+                      flexShrink: 0,
+                      width: "100%"
+                    }}
+                    className={cn(isDragging && "opacity-50")}
+                    dataTestId={`waterfall-item-${image.id}`}
+                    selectionMode={selectionMode}
+                    isSelected={selectedIds.has(image.id)}
+                    onToggleSelection={() => onToggleSelection?.(image.id)}
+                  />
+                </div>
+              );
+            })}
           </div>
         );
       })}

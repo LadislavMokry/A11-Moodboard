@@ -198,10 +198,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       onClick={handleClick}
     >
       {/* Image */}
-      <div
-        className="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800"
-        style={{ contain: "layout paint" }}
-      >
+      <div className="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800">
         <Skeleton className={cn("absolute inset-0 h-full w-full transition-opacity duration-500", (isPreviewLoaded || isFullLoaded) && "opacity-0")} />
 
         {!isGif && previewSrc && (
