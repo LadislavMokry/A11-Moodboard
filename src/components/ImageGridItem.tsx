@@ -245,6 +245,11 @@ const aspectRatioValue = image.width && image.height ? `${image.width} / ${image
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onClick={handleClick}
+      onLoadCapture={(event) => {
+        if (event.target instanceof HTMLImageElement && fitStyle === "contain" && containerRef.current) {
+          containerRef.current.scrollTop = 0;
+        }
+      }}
     >
       <img
         ref={imgRef}
