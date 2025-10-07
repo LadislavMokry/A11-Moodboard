@@ -33,12 +33,13 @@ const DISMISS_THRESHOLD = 100;
 export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, onNext, onPrev, onJumpTo, onEditCaption, onDelete, isOwner = false, hideThumbnails = false }: LightboxProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
 
   const [scale, setScale] = useState(1);
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [isCaptionPanelOpen, setIsCaptionPanelOpen] = useState(true);
+  const [isCaptionPanelOpen, setIsCaptionPanelOpen] = useState(false);
 
   const toggleCaptionPanel = () => setIsCaptionPanelOpen((prev) => !prev);
 
@@ -71,7 +72,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
 
   // Handle background click (only close if not zoomed/panned)
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current) {
+    if (e.target === overlayRef.current && !imageRef.current?.contains(e.target as Node)) {
       onClose();
     }
   };
@@ -201,6 +202,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
         }}
       >
         <LightboxImage
+          ref={imageRef}
           image={currentImage}
           scale={scale}
           onScaleChange={setScale}

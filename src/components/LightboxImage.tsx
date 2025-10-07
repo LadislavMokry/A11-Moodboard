@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { useSpring, animated } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
@@ -16,7 +16,7 @@ interface LightboxImageProps {
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
 
-export function LightboxImage({ image, scale, onScaleChange, onPanChange }: LightboxImageProps) {
+export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(function LightboxImage({ image, scale, onScaleChange, onPanChange }, ref) {
   const [isLoading, setIsLoading] = useState(true);
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
@@ -131,7 +131,7 @@ export function LightboxImage({ image, scale, onScaleChange, onPanChange }: Ligh
 
   return (
     <div
-      ref={containerRef}
+      ref={ref}
       className="relative flex h-full w-full items-center justify-center p-4 touch-none"
       style={{ contain: 'layout paint' }}
       {...bind()}
@@ -173,4 +173,4 @@ export function LightboxImage({ image, scale, onScaleChange, onPanChange }: Ligh
       />
     </div>
   );
-}
+});
