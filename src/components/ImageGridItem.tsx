@@ -22,9 +22,10 @@ interface ImageGridItemProps {
   isSelected?: boolean;
   onToggleSelection?: () => void;
   forceHover?: boolean;
+  fitStyle?: "cover" | "contain";
 }
 
-export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMenuClick, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, forceHover }: ImageGridItemProps) {
+export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMenuClick, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, forceHover, fitStyle = "cover" }: ImageGridItemProps) {
   console.log(`ImageGridItem (${image.id}): Rendering`, { isSelected, isDragging, selectionMode });
   const isGif = image.mime_type?.toLowerCase() === "image/gif";
   const [isHovered, setIsHovered] = useState(false);
@@ -197,7 +198,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
         alt={image.caption || ""}
         loading="lazy"
         decoding="async"
-        className="block h-auto w-full"
+        className={cn("block h-auto w-full", fitStyle === "cover" ? "object-cover" : "object-contain")}
         style={{ aspectRatio: image.width && image.height ? `${image.width} / ${image.height}` : undefined }}
         onLoad={() => {
           console.log(`ImageGridItem (${image.id}): Full image loaded`);

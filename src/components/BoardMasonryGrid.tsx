@@ -10,14 +10,11 @@ interface BoardMasonryGridProps {
   images: Image[];
   onImageClick?: (image: Image) => void;
   onImageMenuClick?: (image: Image, event: React.MouseEvent) => void;
-  // Configuration props
-  minCardWidth?: number; // Minimum width for each card in pixels (default: 220)
-  gap?: number; // Gap between items in pixels (default: 12)
-  // Selection props (passed through to ImageGridItem)
+  minCardWidth?: number;
+  gap?: number;
   selectionMode?: boolean;
   selectedIds?: Set<string>;
   onToggleSelection?: (imageId: string) => void;
-  // Drag and drop props (passed through to ImageGridItem)
   setItemRef?: (imageId: string, node: HTMLDivElement | null) => void;
   dragAttributes?: DraggableAttributes;
   dragListeners?: SyntheticListenerMap;
@@ -26,12 +23,15 @@ interface BoardMasonryGridProps {
   dataTestId?: string;
 }
 
+interface LayoutItem {
+  image: Image;
+  rowSpan: number;
+  columnSpan: number;
+}
+
 /**
- * BoardMasonryGrid - Creates a Pinterest-style masonry layout for the board page
- * Features:
- * - CSS Flexbox columns for true masonry effect
- * - Responsive column count
- * - Savee-like styling (no borders, images fit without cropping)
+ * BoardMasonryGrid - CSS grid based masonry layout for board pages (Savee-style)
+ * Renders images uncropped by sizing each cell using the incoming aspect ratio.
  */
 export function BoardMasonryGrid({
   images,
@@ -52,19 +52,11 @@ export function BoardMasonryGrid({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
-  // Calculate number of columns based on container width
-  const columnCount = useMemo(() => {
-    if (!containerWidth) return 2; // Default fallback
-
-    const columns = Math.max(1, Math.floor(containerWidth / minCardWidth));
-    const count = Math.min(columns, 6); // Max 6 columns
-    return count;
-  }, [containerWidth, minCardWidth]);
-
-  // ResizeObserver to track container width changes
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -78,7 +70,30 @@ export function BoardMasonryGrid({
     return () => resizeObserver.disconnect();
   }, []);
 
-  // Handle image click with selection mode support
+  const columnCount = useMemo(() => {
+    if (!containerWidth) {
+      return 1;
+    }
+
+    const columns = Math.max(1, Math.floor(containerWidth / minCardWidth));
+    return Math.min(columns, 6);
+  }, [containerWidth, minCardWidth]);
+
+  const columnWidth = useMemo(() => {
+    if (!containerWidth || columnCount === 0) {
+      return minCardWidth;
+    }
+
+    const totalGap = gap * Math.max(0, columnCount - 1);
+    const usableWidth = containerWidth - totalGap;
+    return usableWidth / columnCount;
+  }, [containerWidth, columnCount, gap, minCardWidth]);
+
+  const baseRowHeight = useMemo(() => {
+    const referenceWidth = columnWidth || minCardWidth;
+    return Math.max(8, Math.round(referenceWidth / 6));
+  }, [columnWidth, minCardWidth]);
+
   const handleImageClick = useCallback(
     (image: Image) => {
       if (selectionMode && onToggleSelection) {
@@ -90,21 +105,35 @@ export function BoardMasonryGrid({
     [selectionMode, onToggleSelection, onImageClick]
   );
 
-  // Sort images by position (should already be sorted from API, but ensure it)
-  const sortedImages = useMemo(() => [...images].sort((a, b) => a.position - b.position), [images]);
+  const sortedImages = useMemo(
+    () => [...images].sort((a, b) => a.position - b.position),
+    [images]
+  );
 
-  const columns = useMemo(() => {
-    const buckets: Image[][] = Array.from({ length: columnCount }, () => []);
+  const layoutItems: LayoutItem[] = useMemo(() => {
+    if (sortedImages.length === 0) {
+      return [];
+    }
 
-    sortedImages.forEach((image, index) => {
-      const columnIndex = columnCount > 0 ? index % columnCount : 0;
-      buckets[columnIndex].push(image);
+    return sortedImages.map((image) => {
+      const hasDimensions = Boolean(image.width && image.height);
+      const aspectRatio = hasDimensions && image.width && image.height ? image.height / image.width : 1;
+      const isWide = hasDimensions && image.width && image.height ? image.width / image.height >= 1.4 : false;
+      const columnSpan = isWide && columnCount > 1 ? 2 : 1;
+      const widthForMath = columnWidth || minCardWidth;
+      const effectiveWidth = columnSpan > 1 ? widthForMath * columnSpan + gap * (columnSpan - 1) : widthForMath;
+      const targetHeight = effectiveWidth * aspectRatio;
+      const rowSpan = Math.max(1, Math.round((targetHeight + gap) / (baseRowHeight + gap)));
+
+      return {
+        image,
+        rowSpan,
+        columnSpan
+      };
     });
+  }, [sortedImages, columnCount, columnWidth, minCardWidth, gap, baseRowHeight]);
 
-    return buckets;
-  }, [sortedImages, columnCount]);
-
-  if (sortedImages.length === 0) {
+  if (layoutItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <p className="text-lg text-neutral-600 dark:text-neutral-400">No images yet</p>
@@ -114,15 +143,11 @@ export function BoardMasonryGrid({
   }
 
   const containerStyle: CSSProperties = {
-    display: "flex",
-    columnGap: gap,
-    alignItems: "flex-start"
-  };
-
-  const columnStyle: CSSProperties = {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column"
+    display: "grid",
+    gridTemplateColumns: columnCount ? `repeat(${columnCount}, minmax(0, 1fr))` : `repeat(auto-fill, minmax(${minCardWidth}px, 1fr))`,
+    gridAutoRows: `${baseRowHeight}px`,
+    gridAutoFlow: "row dense",
+    gap: `${gap}px`
   };
 
   return (
@@ -132,44 +157,29 @@ export function BoardMasonryGrid({
       className="w-full"
       data-testid={dataTestId}
     >
-      {columns.map((columnImages, columnIndex) => {
-        return (
-          <div
-            key={columnIndex}
-            style={columnStyle}
-            className="board-masonry-column"
-          >
-            {columnImages.map((image, imageIndex) => {
-              const isLastItem = imageIndex === columnImages.length - 1;
-              return (
-                <div
-                  key={image.id}
-                  style={{ marginBottom: isLastItem ? 0 : gap }}
-                >
-                  <ImageGridItem
-                    image={image}
-                    onClick={() => handleImageClick(image)}
-                    onMenuClick={(e) => onImageMenuClick?.(image, e)}
-                    setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
-                    dragAttributes={dragAttributes}
-                    dragListeners={dragListeners}
-                    style={{
-                      ...(dragStyle ?? {}),
-                      flexShrink: 0,
-                      width: "100%"
-                    }}
-                    className={cn(isDragging && "opacity-50")}
-                    dataTestId={`waterfall-item-${image.id}`}
-                    selectionMode={selectionMode}
-                    isSelected={selectedIds.has(image.id)}
-                    onToggleSelection={() => onToggleSelection?.(image.id)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
+      {layoutItems.map(({ image, rowSpan, columnSpan }) => (
+        <ImageGridItem
+          key={image.id}
+          image={image}
+          onClick={() => handleImageClick(image)}
+          onMenuClick={(event) => onImageMenuClick?.(image, event)}
+          setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
+          dragAttributes={dragAttributes}
+          dragListeners={dragListeners}
+          style={{
+            ...(dragStyle ?? {}),
+            gridRowEnd: `span ${rowSpan}`,
+            gridColumnEnd: columnSpan > 1 ? `span ${columnSpan}` : undefined,
+            width: "100%"
+          }}
+          className={cn(isDragging && "opacity-50")}
+          dataTestId={`board-masonry-item-${image.id}`}
+          selectionMode={selectionMode}
+          isSelected={selectedIds.has(image.id)}
+          onToggleSelection={() => onToggleSelection?.(image.id)}
+          fitStyle="contain"
+        />
+      ))}
     </div>
   );
 }
