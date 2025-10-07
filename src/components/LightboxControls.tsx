@@ -25,15 +25,6 @@ export function LightboxControls({
 }: LightboxControlsProps) {
   return (
     <>
-      {/* Close button - top right */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
-        aria-label="Close lightbox"
-      >
-        <X className="w-6 h-6 text-white" />
-      </button>
-
       {/* Image counter - top left */}
       <div
         className="absolute top-4 left-4 px-3 py-2 bg-black/60 rounded-sm backdrop-blur-sm transition-opacity duration-300"
@@ -42,6 +33,15 @@ export function LightboxControls({
           {currentIndex + 1} / {totalImages}
         </span>
       </div>
+
+      {/* Close button - top right */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 p-2 bg-black/60 hover:bg-black/80 rounded-full backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
+        aria-label="Close lightbox"
+      >
+        <X className="w-6 h-6 text-white" />
+      </button>
 
       {/* Previous button - left center (disabled when zoomed) */}
       {totalImages > 1 && scale === 1 && (

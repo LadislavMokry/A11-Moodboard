@@ -71,7 +71,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
 
   // Handle background click (only close if not zoomed/panned)
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current && scale === 1 && panX === 0 && panY === 0) {
+    if (e.target === overlayRef.current) {
       onClose();
     }
   };
@@ -206,19 +206,17 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
           onScaleChange={setScale}
           onPanChange={handlePanChange}
         />
-        <div className="absolute bottom-0 left-0 right-0" style={{ paddingBottom: '10vh' }}>
-          <LightboxControls
-            currentIndex={currentIndex}
-            totalImages={images.length}
-            scale={scale}
-            onClose={onClose}
-            onNext={onNext}
-            onPrev={onPrev}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onZoomReset={handleZoomReset}
-          />
-        </div>
+        <LightboxControls
+          currentIndex={currentIndex}
+          totalImages={images.length}
+          scale={scale}
+          onClose={onClose}
+          onNext={onNext}
+          onPrev={onPrev}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onZoomReset={handleZoomReset}
+        />
       </animated.div>
       <LightboxActions
         imageUrl={getSupabasePublicUrl(currentImage.storage_path)}
