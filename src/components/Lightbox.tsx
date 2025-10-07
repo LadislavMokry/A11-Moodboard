@@ -70,12 +70,24 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
     setPanY(0);
   }, [currentIndex]);
 
-  // Handle background click (only close if not zoomed/panned)
-  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current && !contentRef.current?.contains(e.target as Node)) {
-      onClose();
-    }
-  };
+  // Handle background click to close lightbox
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        overlayRef.current &&
+        !overlayRef.current.contains(event.target as Node) &&
+        contentRef.current &&
+        !contentRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose, contentRef, overlayRef]);
 
   const handleZoomIn = useCallback(() => {
     setScale((prev) => Math.min(MAX_SCALE, prev + ZOOM_STEP));
@@ -179,7 +191,6 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   return (
     <div
       ref={overlayRef}
-      onClick={handleBackgroundClick}
       className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
       role="dialog"
       aria-modal="true"

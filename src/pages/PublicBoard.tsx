@@ -1,13 +1,14 @@
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { ImageGrid } from "@/components/ImageGrid";
+import { ImageGrid } from "@/components/ImageGrid";
 import { Layout } from "@/components/Layout";
 import { LightboxSkeleton } from "@/components/LightboxSkeleton";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { PublicBoardHeader } from "@/components/PublicBoardHeader";
-import { SortableImageGrid } from "@/components/SortableImageGrid";
 import { useLightbox } from "@/hooks/useLightbox";
 import { usePublicBoard } from "@/hooks/usePublicBoard";
 import { type Image } from "@/schemas/image";
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 
@@ -27,8 +28,6 @@ export default function PublicBoard() {
   const sortedImages = useMemo(() => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []), [board?.images]);
 
   const lightbox = useLightbox(sortedImages.length);
-  const [_editCaptionImage, _setEditCaptionImage] = useState<Image | null>(null);
-  const [_deleteImageData, _setDeleteImageData] = useState<Image | null>(null);
 
   const handleImageClick = (image: Image) => {
     const index = sortedImages.findIndex((img) => img.id === image.id);
@@ -127,16 +126,9 @@ export default function PublicBoard() {
               owner={owner}
             />
 
-            <SortableImageGrid
-              boardId={board.id}
+            <ImageGrid
               images={board.images}
               onImageClick={handleImageClick}
-              onEditCaption={undefined}
-              onDelete={undefined}
-              selectionMode={false}
-              selectedIds={new Set()}
-              onToggleSelection={undefined}
-              readOnly={true}
             />
 
             {/* Lightbox */}
