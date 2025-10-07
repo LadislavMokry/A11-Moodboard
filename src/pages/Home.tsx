@@ -39,9 +39,9 @@ export default function Home() {
   if (!user) {
     return (
       <Layout>
-        <section className="min-h-[calc(100vh-4rem)] px-4 py-[5vh]">
+        <section className="h-[calc(100vh-4rem)] overflow-hidden px-4 py-[5vh]">
           {/* Desktop: Two-column layout with waterfall on left | Mobile: Single column */}
-          <div className="mx-auto flex min-h-full max-w-7xl gap-8 md:gap-12">
+          <div className="mx-auto flex h-full max-w-7xl gap-8 md:gap-12">
             {/* Showcase Board - Left side, takes most of the width */}
             <div className="flex-1 md:w-3/5 lg:w-4/6">
               <ShowcaseBoard />
@@ -89,7 +89,7 @@ export default function Home() {
   // Logged-in user homepage
   return (
     <Layout>
-      <section className="flex min-h-[calc(100vh-4rem)] gap-6 overflow-hidden border-b border-neutral-200 px-4 py-[5vh] dark:border-neutral-800 md:gap-10">
+      <section className="flex h-[calc(100vh-4rem)] gap-6 overflow-hidden border-b border-neutral-200 px-4 py-[5vh] dark:border-neutral-800 md:gap-10">
         {/* Left column: Horizontal Board Cards */}
         <div className="h-full w-1/3 max-h-full overflow-y-auto p-4">
           <h2 className="text-2xl font-semibold mb-4">Your Boards</h2>

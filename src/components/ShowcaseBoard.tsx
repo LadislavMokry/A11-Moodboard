@@ -27,7 +27,10 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
-    return shuffled;
+    return shuffled.map((image, index) => ({
+      ...image,
+      position: index + 1,
+    }));
   }, [userId, userImages, publicBoard]);
 
   const isLoading = userId ? isLoadingUser : isLoadingPublic;
