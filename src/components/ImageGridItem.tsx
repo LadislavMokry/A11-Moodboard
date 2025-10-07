@@ -182,13 +182,6 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
     contain: "layout paint"
   };
 
-  const imageAspectRatio = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
-
-  const imageContainerStyle: CSSProperties = {
-    contain: "layout paint",
-    aspectRatio: imageAspectRatio
-  };
-
   return (
     <div
       ref={(node) => setRef?.(node)}
@@ -207,7 +200,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       {/* Image */}
       <div
         className="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800"
-        style={imageContainerStyle}
+        style={{ contain: "layout paint" }}
       >
         <Skeleton className={cn("absolute inset-0 h-full w-full transition-opacity duration-500", (isPreviewLoaded || isFullLoaded) && "opacity-0")} />
 

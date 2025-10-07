@@ -1,5 +1,4 @@
-import { BoardMasonryGrid } from "@/components/BoardMasonryGrid";
-import { MasonryGrid } from "@/components/MasonryGrid";
+import { ImageGrid } from "@/components/ImageGrid";
 import { useShowcaseBoard } from "@/hooks/useShowcaseBoard";
 import { useUserImages } from "@/hooks/useUserImages"; // Import the new hook
 
@@ -35,24 +34,9 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) { // Add userId to
     );
   }
 
-  const enableMasonry = import.meta.env.VITE_ENABLE_MASONRY === "true";
-
   return (
     <div className="showcase-board h-full w-full">
-      {enableMasonry ? (
-        <BoardMasonryGrid
-          images={displayImages}
-          minCardWidth={180}
-          gap={8}
-        />
-      ) : (
-        <MasonryGrid
-          images={displayImages}
-          minCardWidth={180}
-          gap={8}
-          alternatingDirection={true}
-        />
-      )}
+      <ImageGrid images={displayImages} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { CustomDragOverlay } from "@/components/CustomDragOverlay";
+import { ImageGrid } from "@/components/ImageGrid";
 import { SortableImageItemWithMenu } from "@/components/SortableImageItemWithMenu";
 import { useImageReorder } from "@/hooks/useImageReorder";
 import { type Image } from "@/schemas/image";
@@ -114,29 +115,13 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     );
   }
 
-  // Read-only mode: render legacy CSS columns layout to avoid impacting drag-and-drop behaviour elsewhere
+  // Read-only mode: delegate to ImageGrid so the feature flag controls layout consistently
   if (readOnly) {
     return (
-      <div
-        className="gap-4"
-        style={{
-          columnWidth: "280px",
-          columnGap: "1rem" // 16px to match gap-4
-        }}
-      >
-        {orderedImages.map((image) => (
-          <SortableImageItemWithMenu
-            key={image.id}
-            image={image}
-            onClick={onImageClick}
-            onEditCaption={onEditCaption}
-            onDelete={onDelete}
-            selectionMode={selectionMode}
-            isSelected={selectedIds.has(image.id)}
-            onToggleSelection={() => onToggleSelection?.(image.id)}
-          />
-        ))}
-      </div>
+      <ImageGrid
+        images={orderedImages}
+        onImageClick={onImageClick}
+      />
     );
   }
 
