@@ -16,10 +16,18 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
   const { data: userImages, isLoading: isLoadingUser, error: errorUser } = useUserImages({ userId: userId || "", enabled: !!userId });
 
   const displayImages = useMemo(() => {
-    if (userId && userImages && userImages.length >= 10) {
-      return userImages;
+    const sourceImages = userId && userImages && userImages.length >= 10 ? userImages : publicBoard?.images ?? [];
+    if (sourceImages.length === 0) {
+      return [];
     }
-    return publicBoard?.images ?? [];
+
+    const shuffled = [...sourceImages];
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
   }, [userId, userImages, publicBoard]);
 
   const isLoading = userId ? isLoadingUser : isLoadingPublic;
