@@ -1,7 +1,6 @@
 import { type Image } from "@/schemas/image";
 import { BoardMasonryGrid } from "./BoardMasonryGrid";
 import { ImageGridItem } from "./ImageGridItem";
-import { MasonryGrid } from "./MasonryGrid";
 
 interface ImageGridProps {
   images: Image[];

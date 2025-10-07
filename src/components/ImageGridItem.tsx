@@ -41,7 +41,6 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
   console.log(`ImageGridItem (${image.id}): State`, { isPreviewLoaded, isFullLoaded, isGif });
 
   // Touch handling for mobile
-  const [touchStartTime, setTouchStartTime] = useState<number>(0);
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [isLongPress, setIsLongPress] = useState(false);
   const [preventClick, setPreventClick] = useState(false);
@@ -108,7 +107,6 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
   const handleTouchStart = useCallback(
     (e: TouchEvent<HTMLDivElement>) => {
       const touch = e.touches[0];
-      setTouchStartTime(Date.now());
       setTouchStartPos({ x: touch.clientX, y: touch.clientY });
       setIsLongPress(false);
       setPreventClick(false);
@@ -184,9 +182,11 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
     contain: "layout paint"
   };
 
+  const imageAspectRatio = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
+
   const imageContainerStyle: CSSProperties = {
     contain: "layout paint",
-    display: "block"
+    aspectRatio: imageAspectRatio
   };
 
   return (
@@ -207,10 +207,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       {/* Image */}
       <div
         className="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800"
-        style={{
-          paddingBottom: image.width && image.height ? `${(image.height / image.width) * 100}%` : "100%",
-          ...imageContainerStyle
-        }}
+        style={imageContainerStyle}
       >
         <Skeleton className={cn("absolute inset-0 h-full w-full transition-opacity duration-500", (isPreviewLoaded || isFullLoaded) && "opacity-0")} />
 
@@ -219,11 +216,13 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
             src={previewSrc}
             alt=""
             aria-hidden="true"
-            className={cn("absolute inset-0 scale-105 transform-gpu blur-lg transition-opacity duration-500 will-change-opacity", isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0")}
-            style={{ width: "auto", height: "auto" }}
+            className={cn(
+              "absolute inset-0 h-full w-full scale-105 transform-gpu blur-lg transition-opacity duration-500 will-change-opacity",
+              isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0"
+            )}
             onLoad={() => {
               console.log(`ImageGridItem (${image.id}): Preview loaded`);
-              setIsPreviewLoaded(true)
+              setIsPreviewLoaded(true);
             }}
             loading="lazy"
             decoding="async"
@@ -238,8 +237,9 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
           alt={image.caption || ""}
           loading="lazy"
           decoding="async"
-          className={cn("absolute inset-0 h-full w-full object-contain")}
-          style={{ width: "auto", height: "auto" }}
+          className="relative z-10 block h-auto w-full"
+          width={image.width ?? undefined}
+          height={image.height ?? undefined}
           onLoad={() => {
             console.log(`ImageGridItem (${image.id}): Full image loaded`);
             setIsFullLoaded(true);

@@ -33,7 +33,22 @@ interface BoardMasonryGridProps {
  * - Responsive column count
  * - Savee-like styling (no borders, images fit without cropping)
  */
-export function BoardMasonryGrid({ images, onImageClick, onImageMenuClick, minCardWidth = 220, selectionMode = false, selectedIds = new Set(), onToggleSelection, setItemRef, dragAttributes, dragListeners, dragStyle, isDragging = false, dataTestId }: BoardMasonryGridProps) {
+export function BoardMasonryGrid({
+  images,
+  onImageClick,
+  onImageMenuClick,
+  minCardWidth = 220,
+  gap = 12,
+  selectionMode = false,
+  selectedIds = new Set(),
+  onToggleSelection,
+  setItemRef,
+  dragAttributes,
+  dragListeners,
+  dragStyle,
+  isDragging = false,
+  dataTestId
+}: BoardMasonryGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -78,6 +93,17 @@ export function BoardMasonryGrid({ images, onImageClick, onImageMenuClick, minCa
   // Sort images by position (should already be sorted from API, but ensure it)
   const sortedImages = useMemo(() => [...images].sort((a, b) => a.position - b.position), [images]);
 
+  const columns = useMemo(() => {
+    const buckets: Image[][] = Array.from({ length: columnCount }, () => []);
+
+    sortedImages.forEach((image, index) => {
+      const columnIndex = columnCount > 0 ? index % columnCount : 0;
+      buckets[columnIndex].push(image);
+    });
+
+    return buckets;
+  }, [sortedImages, columnCount]);
+
   if (sortedImages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -87,22 +113,19 @@ export function BoardMasonryGrid({ images, onImageClick, onImageMenuClick, minCa
     );
   }
 
-  // Distribute images across columns
-  const columns: Image[][] = Array.from({ length: columnCount }, () => []);
-
-  sortedImages.forEach((image, index) => {
-    const columnIndex = index % columnCount;
-    columns[columnIndex].push(image);
-  });
-
   const containerStyle: CSSProperties = {
-    display: "flex"
+    display: "flex",
+    gap,
+    columnGap: gap,
+    alignItems: "flex-start"
   };
 
   const columnStyle: CSSProperties = {
     flex: 1,
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
+    gap,
+    rowGap: gap
   };
 
   return (
@@ -131,10 +154,9 @@ export function BoardMasonryGrid({ images, onImageClick, onImageMenuClick, minCa
                 style={{
                   ...(dragStyle ?? {}),
                   flexShrink: 0,
-                  width: "100%",
-                  height: "auto"
+                  width: "100%"
                 }}
-                className={cn("p-1", isDragging && "opacity-50")}
+                className={cn(isDragging && "opacity-50")}
                 dataTestId={`waterfall-item-${image.id}`}
                 selectionMode={selectionMode}
                 isSelected={selectedIds.has(image.id)}

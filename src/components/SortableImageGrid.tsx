@@ -1,5 +1,4 @@
 import { CustomDragOverlay } from "@/components/CustomDragOverlay";
-import { MasonryGrid } from "@/components/MasonryGrid";
 import { SortableImageItemWithMenu } from "@/components/SortableImageItemWithMenu";
 import { useImageReorder } from "@/hooks/useImageReorder";
 import { type Image } from "@/schemas/image";
@@ -115,27 +114,8 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     );
   }
 
-  // Read-only mode: render masonry-style layout without drag-and-drop
+  // Read-only mode: render legacy CSS columns layout to avoid impacting drag-and-drop behaviour elsewhere
   if (readOnly) {
-    // Feature flag to enable/disable masonry layout
-    const enableMasonry = import.meta.env.VITE_ENABLE_MASONRY === "true";
-
-    if (enableMasonry) {
-      return (
-        <MasonryGrid
-          images={orderedImages}
-          onImageClick={onImageClick}
-          onImageMenuClick={(image, event) => onEditCaption?.(image)} // Map to edit caption for menu
-          minCardWidth={200} // Smaller cards like Savee
-          gap={12} // Tighter gutters
-          selectionMode={selectionMode}
-          selectedIds={selectedIds}
-          onToggleSelection={onToggleSelection}
-        />
-      );
-    }
-
-    // Fallback to original CSS columns layout
     return (
       <div
         className="gap-4"

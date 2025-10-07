@@ -1,3 +1,4 @@
+import { BoardMasonryGrid } from "@/components/BoardMasonryGrid";
 import { MasonryGrid } from "@/components/MasonryGrid";
 import { useShowcaseBoard } from "@/hooks/useShowcaseBoard";
 import { useUserImages } from "@/hooks/useUserImages"; // Import the new hook
@@ -34,14 +35,24 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) { // Add userId to
     );
   }
 
+  const enableMasonry = import.meta.env.VITE_ENABLE_MASONRY === "true";
+
   return (
     <div className="showcase-board h-full w-full">
-      <MasonryGrid
-        images={displayImages}
-        minCardWidth={180} // Smaller cards for denser layout
-        gap={8} // Tight spacing
-        alternatingDirection={true} // Enable waterfall alternating directions
-      />
+      {enableMasonry ? (
+        <BoardMasonryGrid
+          images={displayImages}
+          minCardWidth={180}
+          gap={8}
+        />
+      ) : (
+        <MasonryGrid
+          images={displayImages}
+          minCardWidth={180}
+          gap={8}
+          alternatingDirection={true}
+        />
+      )}
     </div>
   );
 }
