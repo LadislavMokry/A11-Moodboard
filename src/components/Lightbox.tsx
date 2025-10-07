@@ -100,7 +100,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   const handlePanChange = useCallback((x: number, y: number) => {
     setPanX(x);
     setPanY(y);
-  }, []);
+
 
   const handleEditCaption = useCallback(() => {
     if (onEditCaption) {
