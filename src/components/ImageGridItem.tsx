@@ -224,7 +224,7 @@ export const ImageGridItem = memo(function ImageGridItem({
 
   const imageClassName = cn(
     "block",
-    fitStyle === "contain" ? "h-full w-full object-cover" : "h-auto w-full object-cover",
+    fitStyle === "contain" ? "h-full w-full object-contain" : "h-auto w-full object-cover",
   );
 
   const aspectRatioValue = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
@@ -239,10 +239,6 @@ export const ImageGridItem = memo(function ImageGridItem({
         }
       : {})
   };
-
-  if (style && ("gridRowEnd" in style || "gridColumnEnd" in style)) {
-    containerStyle.height = "100%";
-  }
 
   return (
     <div

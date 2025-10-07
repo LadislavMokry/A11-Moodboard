@@ -15,6 +15,7 @@ interface SortableImageItemWithMenuProps {
   style?: CSSProperties;
   hoverVariant?: "default" | "download";
   onDownload?: (image: Image) => void;
+  fitStyle?: "cover" | "contain";
 }
 
 export function SortableImageItemWithMenu({
@@ -28,6 +29,7 @@ export function SortableImageItemWithMenu({
   style: layoutStyle,
   hoverVariant = "default",
   onDownload,
+  fitStyle = "cover",
 }: SortableImageItemWithMenuProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: image.id,
@@ -69,6 +71,7 @@ export function SortableImageItemWithMenu({
       useOriginalSrc
       hoverVariant={hoverVariant}
       onDownload={hoverVariant === "download" && onDownload ? () => onDownload(image) : undefined}
+      fitStyle={fitStyle}
     />
   );
 }

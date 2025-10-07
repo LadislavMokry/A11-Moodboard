@@ -132,7 +132,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
   }, []);
 
   const minCardWidth = 220;
-  const gap = 20;
+  const gap = 12;
 
   const columnCount = useMemo(() => {
     if (!containerWidth) {
@@ -220,8 +220,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
             const layoutStyle = {
               gridRowEnd: `span ${layout.rowSpan}`,
               gridColumnEnd: layout.columnSpan > 1 ? `span ${layout.columnSpan}` : undefined,
-              width: "100%",
-              height: "100%"
+              width: "100%"
             } as const;
 
             return (
@@ -235,6 +234,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
                 isSelected={selectedIds.has(image.id)}
                 onToggleSelection={() => onToggleSelection?.(image.id)}
                 style={layoutStyle}
+                fitStyle="contain"
               />
             );
           })}
