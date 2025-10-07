@@ -54,7 +54,7 @@ export const ImageGridItem = memo(function ImageGridItem({
   const [isFullLoaded, setIsFullLoaded] = useState(false);
   const captionRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   console.log(`ImageGridItem (${image.id}): State`, { isFullLoaded, isGif });
 
