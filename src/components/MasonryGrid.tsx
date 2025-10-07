@@ -51,7 +51,6 @@ export function MasonryGrid({
   readOnly = false,
   fitStyle = "cover",
   minItemHeight,
-  minHeightWideRatio = 2,
 }: MasonryGridProps) {
   console.log("MasonryGrid: Rendering", {
     imageCount: images.length,
