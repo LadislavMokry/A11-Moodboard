@@ -24,9 +24,11 @@ interface ImageGridItemWithMenuProps {
   isSelected?: boolean;
   onToggleSelection?: () => void;
   useOriginalSrc?: boolean;
+  hoverVariant?: "default" | "download";
+  onDownload?: () => void;
 }
 
-export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, useOriginalSrc = false }: ImageGridItemWithMenuProps) {
+export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, useOriginalSrc = false, hoverVariant = "default", onDownload }: ImageGridItemWithMenuProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -52,6 +54,8 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
           onToggleSelection={onToggleSelection}
           forceHover={isHovered}
           useOriginalSrc={useOriginalSrc}
+          hoverVariant={hoverVariant}
+          onDownload={hoverVariant === "download" ? onDownload : undefined}
         />
 
         {/* Render our own menu trigger button (hidden in selection mode) */}

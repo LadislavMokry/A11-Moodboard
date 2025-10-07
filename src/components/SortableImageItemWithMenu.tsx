@@ -13,6 +13,8 @@ interface SortableImageItemWithMenuProps {
   isSelected?: boolean;
   onToggleSelection?: () => void;
   style?: CSSProperties;
+  hoverVariant?: "default" | "download";
+  onDownload?: (image: Image) => void;
 }
 
 export function SortableImageItemWithMenu({
@@ -24,6 +26,8 @@ export function SortableImageItemWithMenu({
   isSelected = false,
   onToggleSelection,
   style: layoutStyle,
+  hoverVariant = "default",
+  onDownload,
 }: SortableImageItemWithMenuProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: image.id,
@@ -63,6 +67,8 @@ export function SortableImageItemWithMenu({
       isSelected={isSelected}
       onToggleSelection={onToggleSelection}
       useOriginalSrc
+      hoverVariant={hoverVariant}
+      onDownload={hoverVariant === "download" && onDownload ? () => onDownload(image) : undefined}
     />
   );
 }

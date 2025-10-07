@@ -240,6 +240,10 @@ export const ImageGridItem = memo(function ImageGridItem({
       : {})
   };
 
+  if (style && ("gridRowEnd" in style || "gridColumnEnd" in style)) {
+    containerStyle.height = "100%";
+  }
+
   return (
     <div
       ref={(node) => {

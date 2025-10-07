@@ -220,7 +220,8 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
             const layoutStyle = {
               gridRowEnd: `span ${layout.rowSpan}`,
               gridColumnEnd: layout.columnSpan > 1 ? `span ${layout.columnSpan}` : undefined,
-              width: "100%"
+              width: "100%",
+              height: "100%"
             } as const;
 
             return (
