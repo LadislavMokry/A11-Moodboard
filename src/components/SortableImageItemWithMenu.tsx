@@ -55,6 +55,7 @@ export function SortableImageItemWithMenu({
       selectionMode={selectionMode}
       isSelected={isSelected}
       onToggleSelection={onToggleSelection}
+      useOriginalSrc
     />
   );
 }

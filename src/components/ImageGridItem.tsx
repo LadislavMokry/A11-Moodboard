@@ -24,6 +24,7 @@ interface ImageGridItemProps {
   forceHover?: boolean;
   fitStyle?: "cover" | "contain";
   showOverlays?: boolean;
+  useOriginalSrc?: boolean;
 }
 
 export const ImageGridItem = memo(function ImageGridItem({
@@ -43,6 +44,7 @@ export const ImageGridItem = memo(function ImageGridItem({
   forceHover,
   fitStyle = "cover",
   showOverlays = true,
+  useOriginalSrc = false,
 }: ImageGridItemProps) {
   console.log(`ImageGridItem (${image.id}): Rendering`, { isSelected, isDragging, selectionMode, showOverlays });
   const isGif = image.mime_type?.toLowerCase() === "image/gif";
@@ -113,6 +115,7 @@ export const ImageGridItem = memo(function ImageGridItem({
 
   const srcSet = `${src360} 360w, ${src720} 720w, ${src1080} 1080w`;
   const sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
+  const shouldUseOriginal = useOriginalSrc || isGif || fitStyle === "contain";
 
   const handleTouchStart = useCallback(
     (e: TouchEvent<HTMLDivElement>) => {
@@ -235,9 +238,9 @@ export const ImageGridItem = memo(function ImageGridItem({
     >
       <img
         ref={imgRef}
-        src={isGif || fitStyle === "contain" ? srcFull : src720}
-        srcSet={isGif || fitStyle === "contain" ? undefined : srcSet}
-        sizes={isGif || fitStyle === "contain" ? undefined : sizes}
+        src={shouldUseOriginal ? srcFull : src720}
+        srcSet={shouldUseOriginal ? undefined : srcSet}
+        sizes={shouldUseOriginal ? undefined : sizes}
         alt={image.caption || ""}
         loading="lazy"
         decoding="async"

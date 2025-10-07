@@ -23,9 +23,10 @@ interface ImageGridItemWithMenuProps {
   selectionMode?: boolean;
   isSelected?: boolean;
   onToggleSelection?: () => void;
+  useOriginalSrc?: boolean;
 }
 
-export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection }: ImageGridItemWithMenuProps) {
+export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, useOriginalSrc = false }: ImageGridItemWithMenuProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -50,6 +51,7 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
           isSelected={isSelected}
           onToggleSelection={onToggleSelection}
           forceHover={isHovered}
+          useOriginalSrc={useOriginalSrc}
         />
 
         {/* Render our own menu trigger button (hidden in selection mode) */}
