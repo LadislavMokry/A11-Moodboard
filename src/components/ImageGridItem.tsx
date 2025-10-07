@@ -54,6 +54,7 @@ export const ImageGridItem = memo(function ImageGridItem({
   const [isFullLoaded, setIsFullLoaded] = useState(false);
   const captionRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   console.log(`ImageGridItem (${image.id}): State`, { isFullLoaded, isGif });
 
@@ -218,7 +219,7 @@ export const ImageGridItem = memo(function ImageGridItem({
     fitStyle === "contain" ? "h-full w-full object-cover" : "h-auto w-full object-cover",
   );
 
-const aspectRatioValue = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
+  const aspectRatioValue = image.width && image.height ? `${image.width} / ${image.height}` : undefined;
 
   const containerStyle: CSSProperties = {
     ...(style ?? {}),
@@ -233,7 +234,10 @@ const aspectRatioValue = image.width && image.height ? `${image.width} / ${image
 
   return (
     <div
-      ref={(node) => setRef?.(node)}
+      ref={(node) => {
+        setRef?.(node);
+        containerRef.current = node;
+      }}
       data-testid={dataTestId}
       {...(dragAttributes ?? {})}
       {...(dragListeners ?? {})}
@@ -245,11 +249,6 @@ const aspectRatioValue = image.width && image.height ? `${image.width} / ${image
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onClick={handleClick}
-      onLoadCapture={(event) => {
-        if (event.target instanceof HTMLImageElement && fitStyle === "contain" && containerRef.current) {
-          containerRef.current.scrollTop = 0;
-        }
-      }}
     >
       <img
         ref={imgRef}
@@ -264,6 +263,10 @@ const aspectRatioValue = image.width && image.height ? `${image.width} / ${image
         onLoad={() => {
           console.log(`ImageGridItem (${image.id}): Full image loaded`);
           setIsFullLoaded(true);
+          if (fitStyle === "contain" && containerRef.current) {
+            containerRef.current.scrollTop = 0;
+            containerRef.current.scrollLeft = 0;
+          }
         }}
         onError={() => {
           console.error(`ImageGridItem (${image.id}): Failed to load ${currentSrc}`);

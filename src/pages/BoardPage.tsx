@@ -9,7 +9,6 @@ import { LightboxSkeleton } from "@/components/LightboxSkeleton";
 import { SelectionToolbar } from "@/components/SelectionToolbar";
 import { Skeleton } from "@/components/Skeleton";
 import { SortableImageGrid } from "@/components/SortableImageGrid";
-import { TransferTarget } from "@/components/TransferTarget";
 import { Button } from "@/components/ui/button";
 import { SelectionProvider, useSelection } from "@/contexts/SelectionContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -283,12 +282,6 @@ function BoardPageContent() {
                   onTransfer={handleTransfer}
                 />
               )}
-
-              {/* Transfer Target (drag-to-transfer) */}
-              <TransferTarget
-                show={selectionMode && selectedIds.size > 0}
-                onDrop={handleTransfer}
-              />
 
               {/* Lightbox */}
               {lightbox.isOpen && sortedImages.length > 0 && (

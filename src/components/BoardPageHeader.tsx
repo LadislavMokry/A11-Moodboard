@@ -5,31 +5,19 @@ import { useUpdateBoard } from "@/hooks/useBoardMutations";
 import { getPublicBoardUrl } from "@/lib/shareUtils";
 import { type BoardWithImages } from "@/schemas/boardWithImages";
 import { ArrowLeft } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 interface BoardPageHeaderProps {
   board: BoardWithImages;
   actions?: ReactNode;
-  hideImageInfo?: boolean;
 }
 
-export function BoardPageHeader({ board, actions, hideImageInfo }: BoardPageHeaderProps) {
+export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
   const nameEditorRef = useRef<EditableTextHandle>(null);
   const { mutateAsync: updateBoard } = useUpdateBoard();
   const [showOgImageDialog, setShowOgImageDialog] = useState(false);
 
-  const lastUpdated = useMemo(
-    () =>
-      new Date(board.updated_at).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-      }),
-    [board.updated_at]
-  );
-
-  const imageCount = board.images.length;
   const shareUrl = getPublicBoardUrl(board.share_token);
 
   const handleNameSave = useCallback(
@@ -121,27 +109,17 @@ export function BoardPageHeader({ board, actions, hideImageInfo }: BoardPageHead
         </div>
       </div>
 
-      <div className="space-y-1">
-        <EditableText
-          value={board.description}
-          onSave={handleDescriptionSave}
-          maxLength={160}
-          multiline
-          allowEmpty
-          placeholder="Add a description..."
-          label="Board description"
-          className="text-base text-neutral-700 dark:text-neutral-300"
-          editClassName="text-base"
-        />
-
-        <div className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-500">
-          <span>
-            {imageCount} {imageCount === 1 ? "image" : "images"}
-          </span>
-          <span>�</span>
-          <span>Updated {lastUpdated}</span>
-        </div>
-      </div>
+      <EditableText
+        value={board.description}
+        onSave={handleDescriptionSave}
+        maxLength={160}
+        multiline
+        allowEmpty
+        placeholder="Add a description..."
+        label="Board description"
+        className="text-base text-neutral-700 dark:text-neutral-300"
+        editClassName="text-base"
+      />
 
       <SetOgImageDialog
         open={showOgImageDialog}

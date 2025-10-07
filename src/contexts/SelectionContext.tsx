@@ -29,6 +29,11 @@ export function SelectionProvider({ children }: SelectionProviderProps) {
       } else {
         next.add(id);
       }
+
+      if (next.size === 0) {
+        setSelectionMode(false);
+      }
+
       return next;
     });
   }, []);
@@ -39,6 +44,7 @@ export function SelectionProvider({ children }: SelectionProviderProps) {
 
   const deselectAll = useCallback(() => {
     setSelectedIds(new Set());
+    setSelectionMode(false);
   }, []);
 
   const enterSelectionMode = useCallback(() => {
