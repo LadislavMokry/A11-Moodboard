@@ -7,6 +7,8 @@ import { PublicBoardHeader } from "@/components/PublicBoardHeader";
 import { useLightbox } from "@/hooks/useLightbox";
 import { usePublicBoard } from "@/hooks/usePublicBoard";
 import { type Image } from "@/schemas/image";
+import { downloadImage } from "@/lib/download";
+import { getSupabasePublicUrl } from "@/lib/imageUtils";
 import { lazy, Suspense, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
@@ -33,6 +35,12 @@ export default function PublicBoard() {
     if (index !== -1) {
       lightbox.open(index);
     }
+  };
+
+  const handleDownloadImage = (image: Image) => {
+    const url = getSupabasePublicUrl(image.storage_path);
+    const filename = image.original_filename || `${image.id}.jpg`;
+    void downloadImage(url, filename);
   };
 
   // 404 - Board not found
@@ -106,7 +114,7 @@ export default function PublicBoard() {
         </Helmet>
       )}
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="mx-auto w-full px-3 md:px-6 lg:px-10 py-8 max-w-[1600px]">
         {/* Loading state */}
         {isLoading && (
           <div className="flex items-center justify-center min-h-[50vh]">
@@ -128,6 +136,8 @@ export default function PublicBoard() {
             <ImageGrid
               images={board.images}
               onImageClick={handleImageClick}
+              hoverVariant="download"
+              onDownload={handleDownloadImage}
             />
 
             {/* Lightbox */}

@@ -106,6 +106,74 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     [queueReorder]
   );
 
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const node = gridRef.current;
+    if (!node) {
+      return;
+    }
+
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    observer.observe(node);
+    setContainerWidth(node.offsetWidth);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const minCardWidth = 220;
+  const gap = 20;
+
+  const columnCount = useMemo(() => {
+    if (!containerWidth) {
+      return 1;
+    }
+    const columns = Math.max(1, Math.floor(containerWidth / minCardWidth));
+    return Math.min(columns, 6);
+  }, [containerWidth]);
+
+  const columnWidth = useMemo(() => {
+    if (!containerWidth || columnCount === 0) {
+      return minCardWidth;
+    }
+    const totalGap = gap * Math.max(0, columnCount - 1);
+    const usableWidth = containerWidth - totalGap;
+    return usableWidth / columnCount;
+  }, [containerWidth, columnCount]);
+
+  const baseRowHeight = useMemo(() => {
+    const referenceWidth = columnWidth || minCardWidth;
+    return Math.max(8, Math.round(referenceWidth / 6));
+  }, [columnWidth]);
+
+  const layoutMap = useMemo(() => {
+    return orderedImages.map((image) => {
+      const hasDimensions = Boolean(image.width && image.height);
+      const aspectRatio = hasDimensions && image.width && image.height ? image.height / image.width : 1;
+      const isWide = hasDimensions && image.width && image.height ? image.width / image.height >= 1.4 : false;
+      const spanColumns = isWide && columnCount > 1 ? 2 : 1;
+      const widthForMath = columnWidth || minCardWidth;
+      const effectiveWidth = spanColumns > 1 ? widthForMath * spanColumns + gap * (spanColumns - 1) : widthForMath;
+      const targetHeight = effectiveWidth * aspectRatio;
+      const spanRows = Math.max(1, Math.round((targetHeight + gap) / (baseRowHeight + gap)));
+
+      return {
+        rowSpan: spanRows,
+        columnSpan: spanColumns
+      };
+    });
+  }, [orderedImages, columnCount, columnWidth, baseRowHeight]);
+
   if (orderedImages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -125,9 +193,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     );
   }
 
-  // Editable mode: full drag-and-drop functionality
-  // Note: Masonry layout is not yet compatible with drag-and-drop reordering
-  // TODO: Implement masonry-compatible drag-and-drop in future iteration
+  // Editable mode: full drag-and-drop functionality with responsive masonry layout
   return (
     <DndContext
       sensors={sensors}
@@ -138,24 +204,39 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     >
       <SortableContext items={orderedImages.map((image) => image.id)}>
         <div
-          className="gap-5 pt-5"
+          ref={gridRef}
+          className="w-full"
           style={{
-            columnWidth: "240px",
-            columnGap: "1.25rem"
+            display: "grid",
+            gap: `${gap}px`,
+            gridTemplateColumns: columnCount ? `repeat(${columnCount}, minmax(0, 1fr))` : "repeat(1, minmax(0, 1fr))",
+            gridAutoRows: `${baseRowHeight}px`,
+            gridAutoFlow: "row dense",
+            paddingTop: `${gap}px`
           }}
         >
-          {orderedImages.map((image) => (
-            <SortableImageItemWithMenu
-              key={image.id}
-              image={image}
-              onClick={onImageClick}
-              onEditCaption={onEditCaption}
-              onDelete={onDelete}
-              selectionMode={selectionMode}
-              isSelected={selectedIds.has(image.id)}
-              onToggleSelection={() => onToggleSelection?.(image.id)}
-            />
-          ))}
+          {orderedImages.map((image, index) => {
+            const layout = layoutMap[index];
+            const layoutStyle = {
+              gridRowEnd: `span ${layout.rowSpan}`,
+              gridColumnEnd: layout.columnSpan > 1 ? `span ${layout.columnSpan}` : undefined,
+              width: "100%"
+            } as const;
+
+            return (
+              <SortableImageItemWithMenu
+                key={image.id}
+                image={image}
+                onClick={onImageClick}
+                onEditCaption={onEditCaption}
+                onDelete={onDelete}
+                selectionMode={selectionMode}
+                isSelected={selectedIds.has(image.id)}
+                onToggleSelection={() => onToggleSelection?.(image.id)}
+                style={layoutStyle}
+              />
+            );
+          })}
         </div>
       </SortableContext>
 

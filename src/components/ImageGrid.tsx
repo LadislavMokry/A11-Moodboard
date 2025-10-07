@@ -6,9 +6,11 @@ interface ImageGridProps {
   images: Image[];
   onImageClick?: (image: Image) => void;
   onImageMenuClick?: (image: Image, event: React.MouseEvent) => void;
+  hoverVariant?: "default" | "download";
+  onDownload?: (image: Image) => void;
 }
 
-export function ImageGrid({ images, onImageClick, onImageMenuClick }: ImageGridProps) {
+export function ImageGrid({ images, onImageClick, onImageMenuClick, hoverVariant = "default", onDownload }: ImageGridProps) {
   // Feature flag to enable/disable masonry layout (can be toggled via environment variable)
   const enableMasonry = import.meta.env.VITE_ENABLE_MASONRY === "true";
 
@@ -20,6 +22,8 @@ export function ImageGrid({ images, onImageClick, onImageMenuClick }: ImageGridP
         onImageMenuClick={onImageMenuClick}
         minCardWidth={200} // Smaller cards like Savee
         gap={12} // Tighter gutters
+        hoverVariant={hoverVariant}
+        onDownload={onDownload}
       />
     );
   }
@@ -44,6 +48,8 @@ export function ImageGrid({ images, onImageClick, onImageMenuClick }: ImageGridP
           image={image}
           onClick={() => onImageClick?.(image)}
           onMenuClick={(e) => onImageMenuClick?.(image, e)}
+          hoverVariant={hoverVariant}
+          onDownload={hoverVariant === "download" ? () => onDownload?.(image) : undefined}
         />
       ))}
     </div>

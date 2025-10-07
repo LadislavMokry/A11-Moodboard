@@ -12,6 +12,7 @@ interface SortableImageItemWithMenuProps {
   selectionMode?: boolean;
   isSelected?: boolean;
   onToggleSelection?: () => void;
+  style?: CSSProperties;
 }
 
 export function SortableImageItemWithMenu({
@@ -22,12 +23,13 @@ export function SortableImageItemWithMenu({
   selectionMode = false,
   isSelected = false,
   onToggleSelection,
+  style: layoutStyle,
 }: SortableImageItemWithMenuProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: image.id,
   });
 
-  const style = useMemo<CSSProperties>(() => {
+  const baseStyle = useMemo<CSSProperties>(() => {
     const transformValue = transform ? CSS.Transform.toString(transform) : undefined;
     return {
       transform: transformValue,
@@ -36,10 +38,14 @@ export function SortableImageItemWithMenu({
       zIndex: isDragging ? 30 : undefined,
       willChange: transform ? 'transform' : undefined,
       touchAction: 'none' as const,
-      cursor: isDragging ? 'grabbing' : 'grab',
-      marginBottom: '1.25rem'
+      cursor: isDragging ? 'grabbing' : 'grab'
     };
   }, [isDragging, transform, transition]);
+
+  const combinedStyle = useMemo<CSSProperties>(() => ({
+    ...(layoutStyle ?? {}),
+    ...baseStyle
+  }), [layoutStyle, baseStyle]);
 
   return (
     <ImageGridItemWithMenu
@@ -50,7 +56,7 @@ export function SortableImageItemWithMenu({
       setRef={setNodeRef}
       dragAttributes={attributes}
       dragListeners={listeners}
-      style={style}
+      style={combinedStyle}
       isDragging={isDragging}
       dataTestId={`sortable-image-card-${image.id}`}
       selectionMode={selectionMode}

@@ -21,6 +21,8 @@ interface BoardMasonryGridProps {
   dragStyle?: CSSProperties;
   isDragging?: boolean;
   dataTestId?: string;
+  hoverVariant?: "default" | "download";
+  onDownload?: (image: Image) => void;
 }
 
 interface LayoutItem {
@@ -47,7 +49,9 @@ export function BoardMasonryGrid({
   dragListeners,
   dragStyle,
   isDragging = false,
-  dataTestId
+  dataTestId,
+  hoverVariant = "default",
+  onDownload,
 }: BoardMasonryGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -178,6 +182,8 @@ export function BoardMasonryGrid({
           isSelected={selectedIds.has(image.id)}
           onToggleSelection={() => onToggleSelection?.(image.id)}
           fitStyle="contain"
+          hoverVariant={hoverVariant}
+          onDownload={hoverVariant === "download" ? () => onDownload?.(image) : undefined}
         />
       ))}
     </div>

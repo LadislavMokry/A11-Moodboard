@@ -2,7 +2,7 @@ import { getSupabasePublicUrl, getSupabaseThumbnail } from "@/lib/imageUtils";
 import { cn } from "@/lib/utils";
 import { type Image } from "@/schemas/image";
 import type { DraggableAttributes } from "@dnd-kit/core";
-import { Check, MoreVertical } from "lucide-react";
+import { Check, MoreVertical, Download } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type TouchEvent } from "react";
 
 type SyntheticListenerMap = Record<string, Function> | undefined;
@@ -25,6 +25,8 @@ interface ImageGridItemProps {
   fitStyle?: "cover" | "contain";
   showOverlays?: boolean;
   useOriginalSrc?: boolean;
+  hoverVariant?: "default" | "download";
+  onDownload?: () => void;
 }
 
 export const ImageGridItem = memo(function ImageGridItem({
@@ -45,6 +47,8 @@ export const ImageGridItem = memo(function ImageGridItem({
   fitStyle = "cover",
   showOverlays = true,
   useOriginalSrc = false,
+  hoverVariant = "default",
+  onDownload,
 }: ImageGridItemProps) {
   console.log(`ImageGridItem (${image.id}): Rendering`, { isSelected, isDragging, selectionMode, showOverlays });
   const isGif = image.mime_type?.toLowerCase() === "image/gif";
@@ -55,6 +59,10 @@ export const ImageGridItem = memo(function ImageGridItem({
   const captionRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const isDownloadVariant = hoverVariant === "download";
+  const allowSelection = hoverVariant === "default" && selectionMode;
+  const allowStandardOverlays = hoverVariant === "default" && showOverlays;
 
   console.log(`ImageGridItem (${image.id}): State`, { isFullLoaded, isGif });
 
@@ -199,16 +207,16 @@ export const ImageGridItem = memo(function ImageGridItem({
   const handleClick = useCallback(() => {
     if (preventClick) return;
 
-    if (selectionMode && showOverlays) {
+    if (allowSelection && showOverlays) {
       onToggleSelection?.();
     } else {
       onClick?.();
     }
-  }, [preventClick, selectionMode, showOverlays, onToggleSelection, onClick]);
+  }, [preventClick, allowSelection, showOverlays, onToggleSelection, onClick]);
 
   const containerClassName = cn(
     "group relative w-full max-w-full break-inside-avoid touch-manipulation transition-opacity duration-200",
-    !showOverlays ? "cursor-default" : "cursor-pointer",
+    !allowStandardOverlays && !isDownloadVariant ? "cursor-default" : "cursor-pointer",
     fitStyle === "contain" && "flex items-center justify-center overflow-hidden",
     isDragging && "opacity-50",
     className,
@@ -243,8 +251,8 @@ export const ImageGridItem = memo(function ImageGridItem({
       {...(dragListeners ?? {})}
       style={containerStyle}
       className={containerClassName}
-      onMouseEnter={() => showOverlays && setIsHovered(true)}
-      onMouseLeave={() => showOverlays && setIsHovered(false)}
+      onMouseEnter={() => (allowStandardOverlays || isDownloadVariant) && setIsHovered(true)}
+      onMouseLeave={() => (allowStandardOverlays || isDownloadVariant) && setIsHovered(false)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -295,11 +303,11 @@ export const ImageGridItem = memo(function ImageGridItem({
         draggable={false}
       />
 
-      {showOverlays && isSelected && (
+      {allowStandardOverlays && isSelected && (
         <div className="pointer-events-none absolute inset-0 border-2 border-pink-500 bg-pink-500/20" aria-hidden="true" />
       )}
 
-      {showOverlays && !selectionMode && (
+      {allowStandardOverlays && !selectionMode && (
         <div
           className={cn(
             "pointer-events-none absolute inset-0 transition-opacity duration-150",
@@ -309,7 +317,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         />
       )}
 
-      {showOverlays && (selectionMode || effectiveIsHovered) && (
+      {allowStandardOverlays && (allowSelection || effectiveIsHovered) && (
         <button
           className={cn(
             "absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm border-2 transition-all duration-150",
@@ -327,7 +335,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         </button>
       )}
 
-      {showOverlays && image.caption && (
+      {allowStandardOverlays && image.caption && (
         <div
           className={cn(
             "absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent px-3 py-2 transition-opacity duration-200",
@@ -346,7 +354,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         </div>
       )}
 
-      {showOverlays && !selectionMode && (
+      {allowStandardOverlays && !selectionMode && (
         <button
           className={cn(
             "absolute right-2 top-2 rounded-sm bg-black/60 p-1.5 backdrop-blur-sm transition-opacity duration-150 hover:bg-black/80",
@@ -359,6 +367,23 @@ export const ImageGridItem = memo(function ImageGridItem({
           aria-label="Image options"
         >
           <MoreVertical className="h-4 w-4 text-white" />
+        </button>
+      )}
+
+      {isDownloadVariant && onDownload && (
+        <button
+          className={cn(
+            "absolute right-2 top-2 rounded-full bg-black/65 p-2 backdrop-blur-sm transition-opacity duration-150",
+            effectiveIsHovered ? "opacity-100" : "opacity-0",
+          )}
+          onClick={(event) => {
+            event.stopPropagation();
+            onDownload();
+          }}
+          aria-label="Download image"
+          type="button"
+        >
+          <Download className="h-4 w-4 text-white" />
         </button>
       )}
     </div>
