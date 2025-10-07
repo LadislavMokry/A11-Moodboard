@@ -1,4 +1,3 @@
-﻿import { Skeleton } from "@/components/Skeleton";
 import { getSupabasePublicUrl, getSupabaseThumbnail } from "@/lib/imageUtils";
 import { cn } from "@/lib/utils";
 import { type Image } from "@/schemas/image";
@@ -25,20 +24,17 @@ interface ImageGridItemProps {
   forceHover?: boolean;
 }
 
-const LOW_RES_WIDTH = 40;
-
 export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMenuClick, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, forceHover }: ImageGridItemProps) {
   console.log(`ImageGridItem (${image.id}): Rendering`, { isSelected, isDragging, selectionMode });
   const isGif = image.mime_type?.toLowerCase() === "image/gif";
   const [isHovered, setIsHovered] = useState(false);
   const effectiveIsHovered = forceHover !== undefined ? forceHover : isHovered;
   const [shouldMarquee, setShouldMarquee] = useState(false);
-  const [isPreviewLoaded, setIsPreviewLoaded] = useState(isGif);
   const [isFullLoaded, setIsFullLoaded] = useState(false);
   const captionRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  console.log(`ImageGridItem (${image.id}): State`, { isPreviewLoaded, isFullLoaded, isGif });
+  console.log(`ImageGridItem (${image.id}): State`, { isFullLoaded, isGif });
 
   // Touch handling for mobile
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
@@ -48,8 +44,7 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
 
   // Reset loading state when image ID changes
   useEffect(() => {
-    setIsFullLoaded(false);
-    setIsPreviewLoaded(isGif);
+    setIsFullLoaded(isGif);
   }, [image.id, isGif]);
 
   // Effect to handle image loading, including cached images
@@ -59,7 +54,6 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
     if (isGif) {
       console.log(`ImageGridItem (${image.id}): Is a GIF, marking as loaded`);
       setIsFullLoaded(true);
-      setIsPreviewLoaded(true);
       return;
     }
 
@@ -68,7 +62,6 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       // If image is already loaded from cache, mark as loaded
       console.log(`ImageGridItem (${image.id}): Image is from cache, marking as loaded`);
       setIsFullLoaded(true);
-      setIsPreviewLoaded(true);
     }
 
     // Fallback timer to ensure visibility
@@ -76,7 +69,6 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       if (!isFullLoaded) {
         console.log(`ImageGridItem (${image.id}): Fallback timer fired, marking as loaded`);
         setIsFullLoaded(true);
-        setIsPreviewLoaded(true);
       }
     }, 2000); // 2-second safety net
 
@@ -98,7 +90,6 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
   const src360 = getSupabaseThumbnail(image.storage_path, 360);
   const src720 = getSupabaseThumbnail(image.storage_path, 720);
   const src1080 = getSupabaseThumbnail(image.storage_path, 1080);
-  const previewSrc = isGif ? undefined : getSupabaseThumbnail(image.storage_path, LOW_RES_WIDTH);
   const srcFull = getSupabasePublicUrl(image.storage_path);
 
   const srcSet = `${src360} 360w, ${src720} 720w, ${src1080} 1080w`;
@@ -197,111 +188,78 @@ export const ImageGridItem = memo(function ImageGridItem({ image, onClick, onMen
       onTouchEnd={handleTouchEnd}
       onClick={handleClick}
     >
-      {/* Image */}
-      <div className="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-        <Skeleton className={cn("absolute inset-0 h-full w-full transition-opacity duration-500", (isPreviewLoaded || isFullLoaded) && "opacity-0")} />
+      {/* Main image defines layout to prevent cropping */}
+      <img
+        ref={imgRef}
+        src={isGif ? srcFull : src720}
+        srcSet={isGif ? undefined : srcSet}
+        sizes={isGif ? undefined : sizes}
+        alt={image.caption || ""}
+        loading="lazy"
+        decoding="async"
+        className="block h-auto w-full"
+        style={{ aspectRatio: image.width && image.height ? `${image.width} / ${image.height}` : undefined }}
+        onLoad={() => {
+          console.log(`ImageGridItem (${image.id}): Full image loaded`);
+          setIsFullLoaded(true);
+        }}
+        onError={() => {
+          console.error(`ImageGridItem (${image.id}): Full image failed to load`);
+          setIsFullLoaded(true);
+        }}
+        draggable={false}
+      />
 
-        {!isGif && previewSrc && (
-          <img
-            src={previewSrc}
-            alt=""
-            aria-hidden="true"
-            className={cn(
-              "absolute inset-0 h-full w-full scale-105 transform-gpu blur-lg transition-opacity duration-500 will-change-opacity",
-              isFullLoaded ? "opacity-0" : isPreviewLoaded ? "opacity-100" : "opacity-0"
-            )}
-            onLoad={() => {
-              console.log(`ImageGridItem (${image.id}): Preview loaded`);
-              setIsPreviewLoaded(true);
-            }}
-            loading="lazy"
-            decoding="async"
-          />
-        )}
+      {/* Selection overlay when selected */}
+      {isSelected && (
+        <div className="pointer-events-none absolute inset-0 border-2 border-pink-500 bg-pink-500/20" aria-hidden="true" />
+      )}
 
-        <img
-          ref={imgRef}
-          src={isGif ? srcFull : src720}
-          srcSet={isGif ? undefined : srcSet}
-          sizes={isGif ? undefined : sizes}
-          alt={image.caption || ""}
-          loading="lazy"
-          decoding="async"
-          className="relative z-10 block h-auto w-full"
-          width={image.width ?? undefined}
-          height={image.height ?? undefined}
-          onLoad={() => {
-            console.log(`ImageGridItem (${image.id}): Full image loaded`);
-            setIsFullLoaded(true);
-            if (!isGif) {
-              setIsPreviewLoaded(true);
-            }
+      {/* 2px white outline on hover (only when not in selection mode) */}
+      {!selectionMode && (
+        <div className={cn("pointer-events-none absolute inset-0 transition-opacity duration-150", effectiveIsHovered ? "opacity-100" : "opacity-0")} style={{ boxShadow: "inset 0 0 0 2px white" }} />
+      )}
+
+      {/* Checkbox (top-left) - shown in selection mode or on hover */}
+      {(selectionMode || effectiveIsHovered) && (
+        <button
+          className={cn("absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm border-2 transition-all duration-150", "bg-black/60 backdrop-blur-sm hover:bg-black/80", isSelected ? "border-pink-500 bg-pink-500" : "border-white")}
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleSelection?.();
           }}
-          onError={() => {
-            console.error(`ImageGridItem (${image.id}): Full image failed to load`);
-            setIsFullLoaded(true);
-            setIsPreviewLoaded(true);
-          }}
-          draggable={false}
-        />
+          aria-label={isSelected ? "Deselect image" : "Select image"}
+          type="button"
+        >
+          {isSelected && <Check className="h-4 w-4 text-white" />}
+        </button>
+      )}
 
-        {/* Selection overlay when selected */}
-        {isSelected && (
+      {/* Bottom-third caption overlay (visible on hover if caption exists) */}
+      {image.caption && (
+        <div className={cn("absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent px-3 py-2 transition-opacity duration-200", effectiveIsHovered ? "opacity-100" : "opacity-0")}>
           <div
-            className="pointer-events-none absolute inset-0 border-2 border-pink-500 bg-pink-500/20"
-            aria-hidden="true"
-          />
-        )}
-
-        {/* 2px white outline on hover (only when not in selection mode) */}
-        {!selectionMode && (
-          <div
-            className={cn("pointer-events-none absolute inset-0 transition-opacity duration-150", effectiveIsHovered ? "opacity-100" : "opacity-0")}
-            style={{ boxShadow: "inset 0 0 0 2px white" }}
-          />
-        )}
-
-        {/* Checkbox (top-left) - shown in selection mode or on hover */}
-        {(selectionMode || effectiveIsHovered) && (
-          <button
-            className={cn("absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm border-2 transition-all duration-150", "bg-black/60 backdrop-blur-sm hover:bg-black/80", isSelected ? "border-pink-500 bg-pink-500" : "border-white")}
-            onClick={(event) => {
-              event.stopPropagation();
-              onToggleSelection?.();
-            }}
-            aria-label={isSelected ? "Deselect image" : "Select image"}
-            type="button"
+            ref={captionRef}
+            className={cn("whitespace-nowrap overflow-hidden text-sm text-white", shouldMarquee && effectiveIsHovered ? "animate-marquee" : "")}
           >
-            {isSelected && <Check className="h-4 w-4 text-white" />}
-          </button>
-        )}
-
-        {/* Bottom-third caption overlay (visible on hover if caption exists) */}
-        {image.caption && (
-          <div className={cn("absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent px-3 py-2 transition-opacity duration-200", effectiveIsHovered ? "opacity-100" : "opacity-0")}>
-            <div
-              ref={captionRef}
-              className={cn("whitespace-nowrap overflow-hidden text-sm text-white", shouldMarquee && effectiveIsHovered ? "animate-marquee" : "")}
-            >
-              {image.caption}
-            </div>
+            {image.caption}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Three-dot menu button (top-right, visible on hover, hidden in selection mode) */}
-        {!selectionMode && (
-          <button
-            className={cn("absolute right-2 top-2 rounded-sm bg-black/60 p-1.5 backdrop-blur-sm transition-opacity duration-150 hover:bg-black/80", effectiveIsHovered ? "opacity-100" : "opacity-0")}
-            onClick={(event) => {
-              event.stopPropagation();
-              onMenuClick?.(event);
-            }}
-            aria-label="Image options"
-          >
-            <MoreVertical className="h-4 w-4 text-white" />
-          </button>
-        )}
-      </div>
+      {/* Three-dot menu button (top-right, visible on hover, hidden in selection mode) */}
+      {!selectionMode && (
+        <button
+          className={cn("absolute right-2 top-2 rounded-sm bg-black/60 p-1.5 backdrop-blur-sm transition-opacity duration-150 hover:bg-black/80", effectiveIsHovered ? "opacity-100" : "opacity-0")}
+          onClick={(event) => {
+            event.stopPropagation();
+            onMenuClick?.(event);
+          }}
+          aria-label="Image options"
+        >
+          <MoreVertical className="h-4 w-4 text-white" />
+        </button>
+      )}
     </div>
   );
 });
