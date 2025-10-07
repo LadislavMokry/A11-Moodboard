@@ -38,6 +38,9 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isCaptionPanelOpen, setIsCaptionPanelOpen] = useState(true);
+
+  const toggleCaptionPanel = () => setIsCaptionPanelOpen((prev) => !prev);
 
   // Detect mobile
   useEffect(() => {
@@ -99,6 +102,13 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
     setPanY(y);
   }, []);
 
+  const handleEditCaption = useCallback(() => {
+    if (onEditCaption) {
+      setIsCaptionPanelOpen(true);
+      onEditCaption(currentImage);
+    }
+  }, [onEditCaption, currentImage]);
+
   const handleThumbnailClick = useCallback(
     (index: number) => {
       if (onJumpTo) {
@@ -154,6 +164,13 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
 
   const currentImage = images[currentIndex];
 
+  const thumbnailStrip = !hideThumbnails ? (
+    <LightboxThumbnailStrip
+      images={images}
+      currentIndex={currentIndex}
+      onThumbnailClick={handleThumbnailClick}
+    />
+  ) : null;
   if (!currentImage) {
     return null;
   }
@@ -201,29 +218,26 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
         onZoomReset={handleZoomReset}
       />
 
+
+
       {/* Action buttons (download, copy URL, share, delete) */}
       <LightboxActions
         imageUrl={getSupabasePublicUrl(currentImage.storage_path)}
         filename={currentImage.original_filename || ""}
         isOwner={isOwner}
         onDelete={onDelete ? () => onDelete(currentImage) : undefined}
+        isCaptionPanelOpen={isCaptionPanelOpen}
+        onToggleCaptionPanel={toggleCaptionPanel}
+        onEditCaption={handleEditCaption}
       />
 
       {/* Caption panel (desktop only, right side) */}
       <LightboxCaptionPanel
         caption={currentImage.caption || null}
         isOwner={isOwner}
-        onEditClick={onEditCaption ? () => onEditCaption(currentImage) : undefined}
+        thumbnails={thumbnailStrip}
+        isOpen={isCaptionPanelOpen}
       />
-
-      {/* Desktop thumbnail strip */}
-      {!isMobile && !hideThumbnails && (
-        <LightboxThumbnailStrip
-          images={images}
-          currentIndex={currentIndex}
-          onThumbnailClick={handleThumbnailClick}
-        />
-      )}
 
       {/* Hidden button for focus trap reference */}
       <button

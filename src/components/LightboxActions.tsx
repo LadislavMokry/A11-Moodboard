@@ -1,6 +1,6 @@
 import { copyToClipboard } from "@/lib/clipboard";
 import { downloadImage } from "@/lib/download";
-import { Download, Link2, Share2, Trash2 } from "lucide-react";
+import { Download, Link2, Share2, Trash2, PanelRightOpen, PanelRightClose, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 interface LightboxActionsProps {
@@ -9,9 +9,12 @@ interface LightboxActionsProps {
   onCopyUrl?: () => void;
   onDelete?: () => void;
   isOwner?: boolean;
+  isCaptionPanelOpen?: boolean;
+  onToggleCaptionPanel?: () => void;
+  onEditCaption?: () => void;
 }
 
-export function LightboxActions({ imageUrl, filename, onCopyUrl, onDelete, isOwner = false }: LightboxActionsProps) {
+export function LightboxActions({ imageUrl, filename, onCopyUrl, onDelete, isOwner = false, isCaptionPanelOpen, onToggleCaptionPanel, onEditCaption }: LightboxActionsProps) {
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const canShare = typeof navigator !== "undefined" && "share" in navigator;
 
@@ -69,6 +72,34 @@ export function LightboxActions({ imageUrl, filename, onCopyUrl, onDelete, isOwn
       className="absolute top-4 right-4 flex gap-2"
       style={{ zIndex: 30 }}
     >
+      {/* Caption panel toggle button (desktop only) */}
+      {!isMobile && onToggleCaptionPanel && (
+        <button
+          onClick={onToggleCaptionPanel}
+          className="p-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm rounded-lg transition-colors"
+          aria-label={isCaptionPanelOpen ? "Hide caption panel" : "Show caption panel"}
+          title={isCaptionPanelOpen ? "Hide caption panel" : "Show caption panel"}
+        >
+          {isCaptionPanelOpen ? (
+            <PanelRightClose className="w-5 h-5 text-white" />
+          ) : (
+            <PanelRightOpen className="w-5 h-5 text-white" />
+          )}
+        </button>
+      )}
+
+      {/* Edit caption button (owner only, desktop) */}
+      {isOwner && !isMobile && onEditCaption && (
+        <button
+          onClick={onEditCaption}
+          className="p-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm rounded-lg transition-colors"
+          aria-label="Edit caption"
+          title="Edit caption"
+        >
+          <Pencil className="w-5 h-5 text-white" />
+        </button>
+      )}
+
       {/* Download button */}
       <button
         onClick={handleDownload}
