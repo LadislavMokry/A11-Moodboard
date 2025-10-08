@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface UseCoverRotationOptions {
   /**
@@ -22,33 +22,29 @@ interface UseCoverRotationOptions {
  *
  * Rotation pattern:
  * - Each tile rotates individually every ~2s
- * - Tiles rotate in sequence: 0, 1, 2, 3, 0, 1, 2, 3...
- * - Full cycle takes ~8s (4 tiles × 2s each)
+ * - Tiles rotate in sequence 0 → 1 → 2 → 3 while each tile swaps to a random image
+ *   that isn't currently visible in another tile, keeping the grid varied.
  */
 export function useCoverRotation({
   totalImages,
   paused,
   tileInterval = 2000,
 }: UseCoverRotationOptions): number[] {
-  // Track rotation count for each tile [tile0, tile1, tile2, tile3]
-  const [tileRotations, setTileRotations] = useState([0, 0, 0, 0]);
+  const tileCount = 4;
+  const [currentIndices, setCurrentIndices] = useState<number[]>(() => getInitialIndices(totalImages, tileCount));
   const intervalRef = useRef<number | null>(null);
   const rotationCountRef = useRef(0);
 
-  // Calculate current 4 indices based on tile rotations
-  const currentIndices = [0, 1, 2, 3].map((tileIndex) => {
-    if (totalImages <= 4) {
-      // Static display for ≤4 images
-      return tileIndex < totalImages ? tileIndex : tileIndex % Math.max(totalImages, 1);
-    }
+  useEffect(() => {
+    rotationCountRef.current = 0;
+    setCurrentIndices(getInitialIndices(totalImages, tileCount));
+  }, [totalImages]);
 
-    // Start with base position, then add rotation offset
-    return (tileIndex + tileRotations[tileIndex]) % totalImages;
-  });
+  const supportsRotation = totalImages > tileCount;
 
   useEffect(() => {
-    // Don't rotate if paused or ≤4 images
-    if (paused || totalImages <= 4) {
+    // Don't rotate if paused or not enough images
+    if (paused || !supportsRotation) {
       if (intervalRef.current !== null) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -56,15 +52,34 @@ export function useCoverRotation({
       return;
     }
 
+    if (totalImages === 0) {
+      return;
+    }
+
     // Start rotation interval - rotates ONE tile at a time
     intervalRef.current = window.setInterval(() => {
-      setTileRotations((prev) => {
+      setCurrentIndices((prev) => {
         const next = [...prev];
-        // Determine which tile to rotate (cycles 0, 1, 2, 3, 0, 1, 2, 3...)
-        const tileToRotate = rotationCountRef.current % 4;
-        // Increment that tile's rotation count
-        next[tileToRotate] = prev[tileToRotate] + 1;
+        const tileToRotate = rotationCountRef.current % tileCount;
         rotationCountRef.current += 1;
+
+        const otherIndices = new Set(next.filter((_, index) => index !== tileToRotate));
+        const availableIndices: number[] = [];
+
+        for (let i = 0; i < totalImages; i += 1) {
+          if (!otherIndices.has(i) && i !== next[tileToRotate]) {
+            availableIndices.push(i);
+          }
+        }
+
+        if (availableIndices.length === 0) {
+          // Fallback: sequential advance
+          next[tileToRotate] = (next[tileToRotate] + 1) % totalImages;
+          return next;
+        }
+
+        const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+        next[tileToRotate] = randomIndex;
         return next;
       });
     }, tileInterval);
@@ -75,7 +90,25 @@ export function useCoverRotation({
         intervalRef.current = null;
       }
     };
-  }, [paused, totalImages, tileInterval]);
+  }, [paused, supportsRotation, tileInterval, totalImages]);
 
   return currentIndices;
+}
+
+function getInitialIndices(totalImages: number, tileCount: number): number[] {
+  if (totalImages <= 0) {
+    return Array.from({ length: tileCount }, (_, index) => index);
+  }
+
+  if (totalImages <= tileCount) {
+    return Array.from({ length: tileCount }, (_, index) => index % totalImages);
+  }
+
+  const indices = Array.from({ length: totalImages }, (_, index) => index);
+  for (let i = indices.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+
+  return indices.slice(0, tileCount);
 }
