@@ -23,8 +23,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: #ff01eb;
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -42,8 +42,8 @@
   --chart-5: oklch(0.769 0.188 270);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: #ff01eb;
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
@@ -52,11 +52,11 @@
 
 a {
   font-weight: 500;
-  color: #ec4899;
+  color: #ff01eb;
   text-decoration: inherit;
 }
 a:hover {
-  color: #ec4899;
+  color: #d000c5;
 }
 
 body {
@@ -125,8 +125,8 @@ h1 {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: #ff01eb;
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -144,8 +144,8 @@ h1 {
   --chart-5: oklch(0.769 0.188 270);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.646 0.222 350);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: #ff01eb;
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
@@ -163,7 +163,7 @@ h1 {
   }
 
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-pink-500 dark:outline-pink-400;
+    @apply outline-2 outline-offset-2 outline-[#ff01eb] dark:outline-[#ff01eb];
   }
 
   /* Ensure buttons and interactive elements have visible focus */
@@ -173,7 +173,7 @@ h1 {
   textarea:focus-visible,
   select:focus-visible,
   [role="button"]:focus-visible {
-    @apply outline-2 outline-offset-2 outline-pink-500 dark:outline-pink-400;
+    @apply outline-2 outline-offset-2 outline-[#ff01eb] dark:outline-[#ff01eb];
   }
 
   body {
@@ -192,32 +192,26 @@ h1 {
 
   /* Force pink color for all discover links (logo and navigation) */
   a[data-discover="true"] {
-    color: #ec4899 !important;
+    color: #ff01eb !important;
   }
-  a[data-discover="true"]:hover {
-    color: #ec4899 !important;
-  }
-  a[data-discover="true"]:focus {
-    color: #ec4899 !important;
-  }
-  a[data-discover="true"]:active {
-    color: #ec4899 !important;
-  }
+  a[data-discover="true"]:hover,
+  a[data-discover="true"]:focus,
+  a[data-discover="true"]:active,
   a[data-discover="true"]:visited {
-    color: #ec4899 !important;
+    color: #d000c5 !important;
   }
 
-  /* Force all links to be pink */
+  /* Force all links to use the brand color */
   a {
-    color: #ec4899 !important;
+    color: #ff01eb !important;
   }
   a:hover {
-    color: #ec4899 !important;
+    color: #d000c5 !important;
   }
 
   /* Override any violet colors with maximum specificity */
-  a[class*="text-"]:not([class*="text-pink"]) {
-    color: #ec4899 !important;
+  a[class*="text-"]:not([class*="text-[#ff01eb]"]) {
+    color: #ff01eb !important;
   }
 
   /* Reduce motion for users who prefer it */
