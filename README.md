@@ -42,8 +42,8 @@ Solving these required iterating through different grid systems and fine-tuning 
 
 🚀 Live Demo
 
-👉 Cloudflare Pages Deployment Link
+👉 Cloudflare Pages Deployment link: https://a11-moodboard.pages.dev/
 
 📂 Repository
 
-👉 GitHub Repo
+👉 GitHub Repo: https://github.com/LadislavMokry/A11-Moodboard
