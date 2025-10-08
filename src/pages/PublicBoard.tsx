@@ -5,6 +5,7 @@ import { LightboxSkeleton } from "@/components/LightboxSkeleton";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { PublicBoardHeader } from "@/components/PublicBoardHeader";
 import { useLightbox } from "@/hooks/useLightbox";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { usePublicBoard } from "@/hooks/usePublicBoard";
 import { type Image } from "@/schemas/image";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -24,6 +25,7 @@ type PublicBoardParams = {
 export default function PublicBoard() {
   const { shareToken } = useParams<PublicBoardParams>();
   const { data: publicBoardData, isLoading, error } = usePublicBoard(shareToken);
+  const isMobile = useIsMobile();
 
   const board = publicBoardData?.board;
   const owner = publicBoardData?.owner;
@@ -167,9 +169,9 @@ export default function PublicBoard() {
               images={board.images}
               onImageClick={handleImageClick}
               hoverVariant="default"
-              onDownload={handleDownloadImage}
-              onShare={handleShareImage}
-              useMenu
+              onDownload={!isMobile ? handleDownloadImage : undefined}
+              onShare={!isMobile ? handleShareImage : undefined}
+              useMenu={!isMobile}
             />
 
             {/* Lightbox */}
