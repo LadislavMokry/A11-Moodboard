@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, forwardRef } from 'react';
+import { useState, useEffect, useRef, forwardRef, useMemo } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { useSpring, animated } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
@@ -20,11 +20,24 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
   const [isLoading, setIsLoading] = useState(true);
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const src = getSupabasePublicUrl(image.storage_path);
+  const fullSrc = getSupabasePublicUrl(image.storage_path);
   const previewSrc = getSupabaseThumbnail(image.storage_path, 600);
+  const src1080 = getSupabaseThumbnail(image.storage_path, 1080);
+  const src720 = getSupabaseThumbnail(image.storage_path, 720);
+  const src360 = getSupabaseThumbnail(image.storage_path, 360);
+
+  const fallbackSources = useMemo(() => {
+    const candidates = [src1080, src720, src360, previewSrc].filter((srcOption): srcOption is string => Boolean(srcOption));
+    const unique = candidates.filter((srcOption, index, array) => array.indexOf(srcOption) === index);
+    return unique;
+  }, [src1080, src720, src360, previewSrc]);
+
+  const [currentSrc, setCurrentSrc] = useState(fullSrc);
+  const fallbackIndexRef = useRef(0);
 
   const [{ x, y }, api] = useSpring(() => ({
     x: 0,
@@ -38,7 +51,10 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
     api.start({ x: 0, y: 0, immediate: true });
     setIsLoading(true);
     setIsPreviewLoaded(false);
-  }, [image.id, onScaleChange, api]);
+    setHasError(false);
+    fallbackIndexRef.current = 0;
+    setCurrentSrc(fullSrc);
+  }, [image.id, fullSrc, onScaleChange, api]);
 
   // Calculate max pan bounds based on image size and scale
   const getMaxPan = () => {
@@ -123,9 +139,19 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
     const img = event.currentTarget;
     setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
     setIsLoading(false);
+    setHasError(false);
   };
 
   const handleImageError = () => {
+    if (fallbackIndexRef.current < fallbackSources.length) {
+      const nextSrc = fallbackSources[fallbackIndexRef.current];
+      fallbackIndexRef.current += 1;
+      setIsLoading(true);
+      setCurrentSrc(nextSrc);
+      return;
+    }
+
+    setHasError(true);
     setIsLoading(false);
   };
 
@@ -158,7 +184,7 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
 
       <animated.img
         ref={imgRef}
-        src={src}
+        src={currentSrc}
         alt={image.caption || ''}
         className="relative z-10 max-h-full max-w-full select-none object-contain"
         style={{
@@ -172,6 +198,12 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
         onError={handleImageError}
         draggable={false}
       />
+
+      {hasError && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-neutral-950/80 px-6 text-center">
+          <p className="text-sm text-neutral-200">We couldn&apos;t load this image. Please try again later.</p>
+        </div>
+      )}
     </div>
   );
 });
