@@ -3,10 +3,14 @@ import { ImageGrid } from "@/components/ImageGrid";
 import { SortableImageItemWithMenu } from "@/components/SortableImageItemWithMenu";
 import { useImageReorder } from "@/hooks/useImageReorder";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { copyToClipboard } from "@/lib/clipboard";
+import { downloadImage } from "@/lib/download";
+import { getSupabasePublicUrl } from "@/lib/imageUtils";
 import { type Image } from "@/schemas/image";
 import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragCancelEvent, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface SortableImageGridProps {
   boardId: string | undefined;
@@ -30,6 +34,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
   const { queueReorder } = useImageReorder(boardId);
   const imagesKeyRef = useRef<string | null>(null);
   const isMobile = useIsMobile();
+  const isTouchDevice = typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 
   useEffect(() => {
     const sorted = sortImages(images);

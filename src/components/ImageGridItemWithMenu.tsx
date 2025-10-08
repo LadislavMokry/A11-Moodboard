@@ -4,6 +4,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Edit2, MoreVertical, Trash2 } from "lucide-react";
 import { useMemo, useState, type CSSProperties } from "react";
 import { ImageGridItem } from "./ImageGridItem";
+import { Download, Share2 } from "lucide-react";
 
 type SyntheticListenerMap = Record<string, Function> | undefined;
 
@@ -26,9 +27,10 @@ interface ImageGridItemWithMenuProps {
   hoverVariant?: "default" | "download";
   onDownload?: () => void;
   fitStyle?: "cover" | "contain";
+  onShare?: () => void;
 }
 
-export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, useOriginalSrc = false, hoverVariant = "default", onDownload, fitStyle = "cover" }: ImageGridItemWithMenuProps) {
+export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, useOriginalSrc = false, hoverVariant = "default", onDownload, onShare, fitStyle = "cover" }: ImageGridItemWithMenuProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const wrapperStyle = useMemo(() => {
@@ -120,6 +122,34 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
               <DropdownMenu.Separator className="my-1 h-px bg-neutral-200 dark:bg-neutral-800" />
             </>
           )}
+
+          {onShare && (
+            <DropdownMenu.Item
+              className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+              onClick={(e) => {
+                e.preventDefault();
+                onShare();
+              }}
+            >
+              <Share2 className="h-4 w-4" />
+              <span>Share</span>
+            </DropdownMenu.Item>
+          )}
+
+          {onDownload && (
+            <DropdownMenu.Item
+              className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+              onClick={(e) => {
+                e.preventDefault();
+                onDownload();
+              }}
+            >
+              <Download className="h-4 w-4" />
+              <span>Download</span>
+            </DropdownMenu.Item>
+          )}
+
+          {(onDownload || onShare) && onDelete && <DropdownMenu.Separator className="my-1 h-px bg-neutral-200 dark:bg-neutral-800" />}
 
           {onDelete && (
             <DropdownMenu.Item
