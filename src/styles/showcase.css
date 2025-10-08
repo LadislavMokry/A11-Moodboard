@@ -22,11 +22,13 @@
 /* Column animations with stagger */
 .showcase-column-up {
   animation: scroll-up 120s linear infinite;
+  will-change: transform;
 }
 
 .showcase-column-down {
   animation: scroll-down 120s linear infinite;
   animation-delay: 1s;
+  will-change: transform;
 }
 
 /* Disable animations for reduced motion preference */
@@ -37,10 +39,14 @@
   }
 }
 
-/* Disable animations on mobile */
+/* Adjust animation speed on mobile for visibility */
 @media (max-width: 768px) {
-  .showcase-column-up,
+  .showcase-column-up {
+    animation-duration: 60s;
+  }
+
   .showcase-column-down {
-    animation: none;
+    animation-duration: 60s;
+    animation-delay: 1s;
   }
 }
