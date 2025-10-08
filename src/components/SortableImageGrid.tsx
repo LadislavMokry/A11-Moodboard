@@ -51,7 +51,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 300,
+        delay: 2000,
         tolerance: 8
       }
     }),
