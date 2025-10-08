@@ -37,46 +37,32 @@ export default function Home() {
   if (!user) {
     return (
       <Layout>
-        <section className="h-[calc(100vh-4rem)] overflow-hidden px-4 py-[5vh]">
-          {/* Desktop: Two-column layout with waterfall on left | Mobile: Single column */}
-          <div className="mx-auto flex h-full max-w-7xl gap-8 md:gap-12">
-            {/* Showcase Board - Left side, takes most of the width */}
-            <div className="flex-1 md:w-3/5 lg:w-4/6">
+        <section className="flex min-h-[calc(100vh-4rem)] flex-col gap-8 px-4 py-6 md:h-[calc(100vh-4rem)] md:py-[5vh]">
+          <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 md:flex-row md:items-center md:gap-12">
+            {/* Hero Content */}
+            <div className="flex flex-col items-center gap-6 text-center md:order-2 md:w-2/5 md:items-start md:gap-8 md:text-left lg:w-2/6">
+              <div className="space-y-4 md:space-y-6">
+                <h1 className="text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-5xl">
+                  Capture your vibe.
+                </h1>
+                <p className="text-base text-neutral-600 dark:text-neutral-300 md:text-lg">
+                  Drop images and arrange them into living moodboards. Share instantly with a single link.
+                </p>
+              </div>
+              <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
+                <button
+                  onClick={() => navigate("/staging")}
+                  className="rounded-lg bg-pink-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-pink-700"
+                >
+                  Create a board
+                </button>
+                <SignInButton />
+              </div>
+            </div>
+
+            {/* Showcase Board */}
+            <div className="h-[60vh] w-full overflow-hidden rounded-2xl md:order-1 md:h-full md:flex-1 md:w-3/5 md:rounded-3xl lg:w-4/6">
               <ShowcaseBoard />
-            </div>
-
-            {/* Hero Content - Right side, narrower */}
-            <div className="hidden md:flex flex-col justify-center gap-8 text-center md:w-2/5 lg:w-2/6">
-              <div className="space-y-6">
-                <h1 className="text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-5xl">Capture your vibe.</h1>
-                <p className="text-base text-neutral-600 dark:text-neutral-300 md:text-lg">Drop images and arrange them into living moodboards. Share instantly with a single link.</p>
-              </div>
-              <div className="flex flex-col gap-4">
-                <button
-                  onClick={() => navigate("/staging")}
-                  className="rounded-lg bg-pink-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-pink-700"
-                >
-                  Create a board
-                </button>
-                <SignInButton />
-              </div>
-            </div>
-
-            {/* Mobile: Hero content below waterfall */}
-            <div className="md:hidden flex flex-col items-center justify-center gap-8 text-center mt-8">
-              <div className="space-y-6">
-                <h1 className="text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">Capture your vibe.</h1>
-                <p className="text-base text-neutral-600 dark:text-neutral-300">Drop images and arrange them into living moodboards. Share instantly with a single link.</p>
-              </div>
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <button
-                  onClick={() => navigate("/staging")}
-                  className="rounded-lg bg-pink-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-pink-700"
-                >
-                  Create a board
-                </button>
-                <SignInButton />
-              </div>
             </div>
           </div>
         </section>
