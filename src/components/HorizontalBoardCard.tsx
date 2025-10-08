@@ -1,13 +1,12 @@
-import { HorizontalImagePreview } from "./HorizontalImagePreview";
 import { useUpdateBoard } from "@/hooks/useBoardMutations";
 import { type BoardWithImages } from "@/schemas/boardWithImages";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { formatDistanceToNow } from "date-fns";
 import { MoreVertical } from "lucide-react";
-import { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { BoardCardMenu } from "./BoardCardMenu";
+import { RotatingBoardCover } from "./RotatingBoardCover";
 
 // Lazy load dialogs - they're only needed when user opens them
 const RenameBoardDialog = lazy(() => import("./RenameBoardDialog").then((m) => ({ default: m.RenameBoardDialog })));
@@ -43,19 +42,27 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
   }, [board.id, board.cover_rotation_enabled, updateBoard]);
 
   return (
-    <div className="group relative flex items-center rounded-lg border border-neutral-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 mb-4">
+    <div className="group relative mb-4 flex items-center border border-neutral-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
       <Link
         to={`/boards/${board.id}`}
-        className="flex-1 flex items-center p-2 pr-0 overflow-hidden"
+        className="flex flex-1 items-center gap-4 overflow-hidden p-4"
       >
-        {/* Horizontal Image Preview */}
-        <div className="w-40 h-32 flex-shrink-0 rounded-md overflow-hidden relative">
-          <HorizontalImagePreview images={board.images} />
+        <div className="flex-shrink-0">
+          <RotatingBoardCover
+            images={board.images}
+            boardName={board.name}
+            rotationEnabled={board.cover_rotation_enabled}
+            className="h-32 w-32 bg-neutral-200 dark:bg-neutral-800"
+            tileClassName="rounded-none"
+            roundedTiles={false}
+            padded={false}
+          />
         </div>
 
-        {/* Card Info */}
-        <div className="flex-1 p-2 overflow-hidden text-right">
-          <h3 className="truncate text-lg font-semibold text-neutral-900 dark:text-neutral-100">{board.name}</h3>
+        <div className="flex-1 overflow-hidden">
+          <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            <span className="block whitespace-normal break-words leading-snug">{board.name}</span>
+          </h3>
         </div>
       </Link>
 
