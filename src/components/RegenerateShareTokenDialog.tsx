@@ -82,7 +82,7 @@ export function RegenerateShareTokenDialog({ open, onOpenChange, boardId, curren
             <Dialog.Close asChild>
               <button
                 type="button"
-                className="rounded-full p-1 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-500 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                className="rounded-full p-1 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -118,8 +118,8 @@ export function RegenerateShareTokenDialog({ open, onOpenChange, boardId, curren
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200">New share link</label>
                   <div className="flex gap-2">
-                    <div className="flex-1 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 dark:border-pink-800 dark:bg-pink-950/20">
-                      <p className="truncate text-sm text-pink-900 dark:text-pink-300">{newUrl}</p>
+                    <div className="flex-1 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 dark:border-primary/30 dark:bg-primary/20">
+                      <p className="truncate text-sm text-primary dark:text-primary/80">{newUrl}</p>
                     </div>
                     <Button
                       onClick={handleCopyNewLink}
@@ -176,7 +176,7 @@ export function RegenerateShareTokenDialog({ open, onOpenChange, boardId, curren
                 <Button
                   type="button"
                   onClick={handleDone}
-                  className="bg-pink-500 text-white hover:bg-pink-600 focus-visible:outline-pink-600"
+                  className="bg-primary text-white hover:bg-primary/90 focus-visible:outline-primary"
                 >
                   Done
                 </Button>

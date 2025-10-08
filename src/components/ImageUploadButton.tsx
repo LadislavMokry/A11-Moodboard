@@ -44,7 +44,7 @@ export function ImageUploadButton({ onSelectFiles, uploading, accept, inProgress
       >
         <Upload className="h-4 w-4" />
         Upload
-        {uploading && inProgressCount > 0 ? <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-semibold text-pink-600 dark:bg-pink-500/20 dark:text-pink-200">{inProgressCount}</span> : null}
+        {uploading && inProgressCount > 0 ? <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20 dark:text-primary/80">{inProgressCount}</span> : null}
       </Button>
     </div>
   );

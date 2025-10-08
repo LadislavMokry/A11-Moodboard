@@ -304,7 +304,7 @@ export const ImageGridItem = memo(function ImageGridItem({
       />
 
       {allowStandardOverlays && isSelected && (
-        <div className="pointer-events-none absolute inset-0 border-2 border-pink-500 bg-pink-500/20" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0 border-2 border-primary bg-primary/20" aria-hidden="true" />
       )}
 
       {allowStandardOverlays && !selectionMode && (
@@ -322,7 +322,7 @@ export const ImageGridItem = memo(function ImageGridItem({
           className={cn(
             "absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm border-2 transition-all duration-150",
             "bg-black/60 backdrop-blur-sm hover:bg-black/80",
-            isSelected ? "border-pink-500 bg-pink-500" : "border-white",
+            isSelected ? "border-primary bg-primary" : "border-white",
           )}
           onClick={(event) => {
             event.stopPropagation();

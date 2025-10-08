@@ -9,6 +9,22 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
+      colors: {
+        primary: "#ff01eb",
+        "primary-foreground": "#ffffff",
+        pink: {
+          50: "#ffe0fb",
+          100: "#ffc2f6",
+          200: "#ff99f0",
+          300: "#ff70ea",
+          400: "#ff47e4",
+          500: "#ff01eb",
+          600: "#ff01eb",
+          700: "#d000c5",
+          800: "#9f0093",
+          900: "#6e0063"
+        }
+      },
       keyframes: {
         marquee: {
           '0%': { transform: 'translateX(0)' },

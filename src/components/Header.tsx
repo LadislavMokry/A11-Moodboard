@@ -55,7 +55,7 @@ export function Header() {
         {/* Logo */}
         <Link
           to="/"
-          className="text-xl font-semibold tracking-tight hover:opacity-80 transition-opacity"
+          className="text-xl font-semibold tracking-tight text-primary hover:opacity-80 transition-opacity"
           aria-label="Moodeight - Home"
           data-logo="true"
         >
@@ -86,7 +86,7 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-950"
+                      className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-neutral-950"
                       aria-label="User menu"
                     >
                       <Avatar

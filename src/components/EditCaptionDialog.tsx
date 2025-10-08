@@ -80,7 +80,7 @@ export function EditCaptionDialog({ open, onOpenChange, boardId, imageId, curren
             <Dialog.Close asChild>
               <button
                 type="button"
-                className="rounded-full p-1 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-500 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                className="rounded-full p-1 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -111,7 +111,7 @@ export function EditCaptionDialog({ open, onOpenChange, boardId, imageId, curren
                   autoFocus
                   placeholder="Add a caption..."
                   {...register("caption")}
-                  className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
                   aria-invalid={errors.caption ? "true" : "false"}
                   maxLength={MAX_CAPTION_LENGTH + 10} // Allow typing a bit over for better UX
                 />

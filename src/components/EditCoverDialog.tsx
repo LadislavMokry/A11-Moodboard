@@ -121,8 +121,8 @@ export function EditCoverDialog({ open, onOpenChange, board }: EditCoverDialogPr
                         className="h-full w-full object-cover"
                       />
                       {isSelected && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-pink-500/20">
-                          <div className="rounded-full bg-pink-500 p-1">
+                        <div className="absolute inset-0 flex items-center justify-center bg-primary/20">
+                          <div className="rounded-full bg-primary p-1">
                             <Check className="h-4 w-4 text-white" />
                           </div>
                         </div>
@@ -151,7 +151,7 @@ export function EditCoverDialog({ open, onOpenChange, board }: EditCoverDialogPr
               type="button"
               onClick={handleSave}
               disabled={saving || board.images.length === 0}
-              className="flex-1 rounded-lg bg-pink-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-600 disabled:opacity-50"
+              className="flex-1 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save"}
             </button>

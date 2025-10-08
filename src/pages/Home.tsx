@@ -52,7 +52,7 @@ export default function Home() {
               <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
                 <button
                   onClick={() => navigate("/staging")}
-                  className="rounded-lg bg-pink-500 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-pink-600"
+                  className="rounded-lg bg-primary px-8 py-3 text-base font-medium text-white transition-colors hover:bg-primary/90"
                 >
                   Create a board
                 </button>

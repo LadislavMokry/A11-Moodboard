@@ -147,7 +147,7 @@ export const EditableText = forwardRef<EditableTextHandle, EditableTextProps>(({
         <button
           type="button"
           onClick={startEditing}
-          className={cn("w-full text-left font-medium text-neutral-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 dark:text-neutral-100", showPlaceholder && "font-normal text-neutral-400 dark:text-neutral-500", className)}
+        className={cn("w-full text-left font-medium text-neutral-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-neutral-100", showPlaceholder && "font-normal text-neutral-400 dark:text-neutral-500", className)}
           aria-label={label ?? placeholder ?? "Editable text"}
         >
           {displayText}
@@ -167,7 +167,7 @@ export const EditableText = forwardRef<EditableTextHandle, EditableTextProps>(({
               aria-invalid={error ? "true" : "false"}
               aria-describedby={error ? "editable-text-error" : undefined}
               aria-required={!allowEmpty}
-              className={cn("w-full resize-none rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100", editClassName)}
+              className={cn("w-full resize-none rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100", editClassName)}
               rows={3}
               disabled={isSaving}
             />
@@ -185,7 +185,7 @@ export const EditableText = forwardRef<EditableTextHandle, EditableTextProps>(({
               aria-invalid={error ? "true" : "false"}
               aria-describedby={error ? "editable-text-error" : undefined}
               aria-required={!allowEmpty}
-              className={cn("w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-3xl font-semibold text-neutral-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100", editClassName)}
+              className={cn("w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-3xl font-semibold text-neutral-900 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100", editClassName)}
               disabled={isSaving}
             />
           )}
