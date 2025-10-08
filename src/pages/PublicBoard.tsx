@@ -114,7 +114,7 @@ export default function PublicBoard() {
         </Helmet>
       )}
 
-      <div className="mx-auto w-full px-3 md:px-6 lg:px-10 py-8 max-w-[1600px]">
+      <div className="mx-auto w-full py-8 px-3 md:px-6 lg:px-8 xl:px-6 2xl:px-4 max-w-none">
         {/* Loading state */}
         {isLoading && (
           <div className="flex items-center justify-center min-h-[50vh]">
