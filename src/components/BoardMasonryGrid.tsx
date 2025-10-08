@@ -33,6 +33,7 @@ interface BoardMasonryGridProps {
   fitStyle?: "cover" | "contain";
   showSelectionToggle?: boolean;
   useOriginalSrc?: boolean;
+  showOverlays?: boolean;
 }
 
 interface LayoutItem {
@@ -70,6 +71,7 @@ export function BoardMasonryGrid({
   fitStyle = "contain",
   showSelectionToggle = true,
   useOriginalSrc = false,
+  showOverlays = true,
 }: BoardMasonryGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -221,6 +223,7 @@ export function BoardMasonryGrid({
               showMenu={showMenu}
               useOriginalSrc={useOriginalSrc}
               showSelectionToggle={showSelectionToggle}
+              showOverlays={showOverlays}
             />
           );
         }
@@ -245,6 +248,7 @@ export function BoardMasonryGrid({
             onDownload={hoverVariant === "download" && onDownload ? () => onDownload(image) : undefined}
             useOriginalSrc={useOriginalSrc}
             showSelectionToggle={showSelectionToggle}
+            showOverlays={showOverlays}
           />
         );
       })}

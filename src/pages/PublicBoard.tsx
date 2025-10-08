@@ -172,6 +172,7 @@ export default function PublicBoard() {
               onDownload={!isMobile ? handleDownloadImage : undefined}
               onShare={!isMobile ? handleShareImage : undefined}
               useMenu={!isMobile}
+              showOverlays={!isMobile}
             />
 
             {/* Lightbox */}

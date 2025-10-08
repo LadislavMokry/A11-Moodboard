@@ -7,6 +7,9 @@ import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, typ
 
 type SyntheticListenerMap = Record<string, Function> | undefined;
 
+const FALLBACK_IMAGE_SRC =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='960'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%23f4f4f5'/%3E%3Cstop offset='1' stop-color='%23e5e5e5'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' x2='1' y1='1' y2='0'%3E%3Cstop offset='0' stop-color='%23ff01eb' stop-opacity='.12'/%3E%3Cstop offset='1' stop-color='%23ff01eb' stop-opacity='.04'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='640' height='960' fill='url(%23a)'/%3E%3Cpath d='M0 960h640V0z' fill='url(%23b)'/%3E%3C/svg%3E";
+
 interface ImageGridItemProps {
   image: Image;
   onClick?: () => void;
@@ -61,6 +64,7 @@ export const ImageGridItem = memo(function ImageGridItem({
   const captionRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
 
   const isDownloadVariant = hoverVariant === "download";
   const allowSelection = hoverVariant === "default" && selectionMode && showSelectionToggle;
@@ -77,35 +81,48 @@ export const ImageGridItem = memo(function ImageGridItem({
   // Reset loading state when image ID changes
   useEffect(() => {
     setIsFullLoaded(isGif);
+    setIsUsingFallback(false);
   }, [image.id, isGif]);
 
-  // Effect to handle image loading, including cached images
+  // Effect to handle image loading, including cached assets and fallback application
   useEffect(() => {
-    console.log(`ImageGridItem (${image.id}): Running loading effect`, { isGif, isFullLoaded });
     if (isGif) {
-      console.log(`ImageGridItem (${image.id}): Is a GIF, marking as loaded`);
       setIsFullLoaded(true);
       return;
     }
 
-    const img = imgRef.current;
-    if (img?.complete) {
-      console.log(`ImageGridItem (${image.id}): Image is from cache, marking as loaded`);
+    const imageElement = imgRef.current;
+    if (imageElement?.complete && imageElement.naturalWidth > 0) {
       setIsFullLoaded(true);
+      return;
     }
 
-    const timer = setTimeout(() => {
-      if (!isFullLoaded) {
-        console.log(`ImageGridItem (${image.id}): Fallback timer fired, marking as loaded`);
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const fallbackTimer = window.setTimeout(() => {
+      const currentImage = imgRef.current;
+      if (!currentImage || isUsingFallback) {
+        return;
+      }
+
+      const hasFinishedLoading = currentImage.complete;
+      const hasValidDimensions = currentImage.naturalWidth > 0 && currentImage.naturalHeight > 0;
+
+      if (hasFinishedLoading && !hasValidDimensions) {
+        console.warn(`ImageGridItem (${image.id}): Applying fallback image after timeout`);
+        setCurrentSrc(FALLBACK_IMAGE_SRC);
+        setCurrentSrcSet(undefined);
+        setIsUsingFallback(true);
         setIsFullLoaded(true);
       }
-    }, 2000);
+    }, 4000);
 
     return () => {
-      console.log(`ImageGridItem (${image.id}): Cleaning up loading effect`);
-      clearTimeout(timer);
+      clearTimeout(fallbackTimer);
     };
-  }, [isGif, isFullLoaded, image.id]);
+  }, [image.id, isGif, currentSrc, isUsingFallback]);
 
   useEffect(() => {
     if (!showOverlays) {
@@ -280,7 +297,6 @@ export const ImageGridItem = memo(function ImageGridItem({
         }}
         onError={() => {
           console.error(`ImageGridItem (${image.id}): Failed to load ${currentSrc}`);
-          setIsFullLoaded(true);
 
           setRetryStep((prev) => {
             const nextStep = prev + 1;
@@ -297,6 +313,11 @@ export const ImageGridItem = memo(function ImageGridItem({
               const cacheBusted = `${srcFull}${srcFull.includes("?") ? "&" : "?"}retry=${Date.now()}`;
               setCurrentSrc(cacheBusted);
               setCurrentSrcSet(undefined);
+            } else if (!isUsingFallback) {
+              setCurrentSrc(FALLBACK_IMAGE_SRC);
+              setCurrentSrcSet(undefined);
+              setIsUsingFallback(true);
+              setIsFullLoaded(true);
             }
 
             return nextStep;
@@ -304,6 +325,13 @@ export const ImageGridItem = memo(function ImageGridItem({
         }}
         draggable={false}
       />
+
+      {!isFullLoaded && (
+        <div
+          className="pointer-events-none absolute inset-0 animate-pulse rounded-md bg-neutral-100 dark:bg-neutral-800/60"
+          aria-hidden="true"
+        />
+      )}
 
       {allowStandardOverlays && isSelected && showSelectionToggle && (
         <div className="pointer-events-none absolute inset-0 border-2 border-primary bg-primary/20" aria-hidden="true" />

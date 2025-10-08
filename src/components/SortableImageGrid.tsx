@@ -321,6 +321,7 @@ export function SortableImageGrid({
         selectedIds={selectedIds}
         onToggleSelection={onToggleSelection}
         hoverVariant="default"
+        showMenu={showImageMenus}
       />
     );
   }
