@@ -2,6 +2,7 @@ import { EditableText, type EditableTextHandle } from "@/components/EditableText
 import { SetOgImageDialog } from "@/components/SetOgImageDialog";
 import { ShareButton } from "@/components/ShareButton";
 import { useUpdateBoard } from "@/hooks/useBoardMutations";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { getPublicBoardUrl } from "@/lib/shareUtils";
 import { type BoardWithImages } from "@/schemas/boardWithImages";
 import { ArrowLeft } from "lucide-react";
@@ -17,6 +18,7 @@ export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
   const nameEditorRef = useRef<EditableTextHandle>(null);
   const { mutateAsync: updateBoard } = useUpdateBoard();
   const [showOgImageDialog, setShowOgImageDialog] = useState(false);
+  const isMobile = useIsMobile();
 
   const shareUrl = getPublicBoardUrl(board.share_token);
 
@@ -75,51 +77,38 @@ export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
 
   return (
     <header className="mb-8">
-      <div className="mb-4 flex items-center justify-between gap-2 md:hidden">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to boards
-        </Link>
+      {isMobile ? (
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to boards
+          </Link>
 
-        <div className="flex items-center gap-2">
-          <ShareButton
-            url={shareUrl}
-            title={board.name}
-            variant="ghost"
-            size="icon"
-            showLabel={false}
-          />
-          {actions}
-        </div>
-      </div>
-
-      <Link
-        to="/"
-        className="hidden md:mb-4 md:inline-flex md:items-center md:gap-2 md:text-sm md:text-neutral-600 md:transition-colors md:hover:text-neutral-900 md:dark:text-neutral-400 md:dark:hover:text-neutral-100"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to boards
-      </Link>
-
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
-          <div className="min-w-0 flex-1">
-            <EditableText
-              ref={nameEditorRef}
-              value={board.name}
-              onSave={handleNameSave}
-              maxLength={60}
-              placeholder="Enter a board name"
-              label="Board name"
-              className="truncate text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
-              editClassName="text-3xl font-semibold tracking-tight"
+          <div className="flex items-center gap-2">
+            <ShareButton
+              url={shareUrl}
+              title={board.name}
+              variant="ghost"
+              size="icon"
+              showLabel={false}
             />
+            {actions}
           </div>
+        </div>
+      ) : (
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to boards
+          </Link>
 
-          <div className="hidden md:flex flex-shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2">
             <ShareButton
               url={shareUrl}
               title={board.name}
@@ -129,6 +118,19 @@ export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
             {actions}
           </div>
         </div>
+      )}
+
+      <div className="flex flex-col gap-3">
+        <EditableText
+          ref={nameEditorRef}
+          value={board.name}
+          onSave={handleNameSave}
+          maxLength={60}
+          placeholder="Enter a board name"
+          label="Board name"
+          className="truncate text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
+          editClassName="text-3xl font-semibold tracking-tight"
+        />
 
         <EditableText
           value={board.description}
