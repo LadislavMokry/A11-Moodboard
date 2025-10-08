@@ -2,6 +2,7 @@ import { CustomDragOverlay } from "@/components/CustomDragOverlay";
 import { ImageGrid } from "@/components/ImageGrid";
 import { SortableImageItemWithMenu } from "@/components/SortableImageItemWithMenu";
 import { useImageReorder } from "@/hooks/useImageReorder";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { type Image } from "@/schemas/image";
 import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragCancelEvent, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
@@ -28,6 +29,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
   const [activeId, setActiveId] = useState<string | null>(null);
   const { queueReorder } = useImageReorder(boardId);
   const imagesKeyRef = useRef<string | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const sorted = sortImages(images);
@@ -135,11 +137,15 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
   const gap = 12;
 
   const columnCount = useMemo(() => {
+    if (isMobile) {
+      return 3;
+    }
+
     if (!containerWidth) {
       return 1;
     }
     return Math.max(1, Math.floor(containerWidth / minCardWidth));
-  }, [containerWidth, minCardWidth]);
+  }, [containerWidth, minCardWidth, isMobile]);
 
   const columnWidth = useMemo(() => {
     if (!containerWidth || columnCount === 0) {

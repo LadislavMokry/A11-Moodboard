@@ -1,3 +1,4 @@
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { cn } from "@/lib/utils";
 import { type Image } from "@/schemas/image";
 import type { DraggableAttributes } from "@dnd-kit/core";
@@ -55,6 +56,7 @@ export function BoardMasonryGrid({
 }: BoardMasonryGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -75,12 +77,16 @@ export function BoardMasonryGrid({
   }, []);
 
   const columnCount = useMemo(() => {
+    if (isMobile) {
+      return 3;
+    }
+
     if (!containerWidth) {
       return 1;
     }
 
     return Math.max(1, Math.floor(containerWidth / minCardWidth));
-  }, [containerWidth, minCardWidth]);
+  }, [containerWidth, minCardWidth, isMobile]);
 
   const columnWidth = useMemo(() => {
     if (!containerWidth || columnCount === 0) {
