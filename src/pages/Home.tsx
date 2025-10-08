@@ -37,7 +37,7 @@ export default function Home() {
   if (!user) {
     return (
       <Layout>
-        <section className="flex min-h-[calc(100vh-4rem)] flex-col gap-8 px-4 py-6 md:h-[calc(100vh-4rem)] md:py-[5vh]">
+        <section className="flex min-h-[calc(100vh-4rem)] flex-col gap-8 px-4 py-6 md:h-[calc(100vh-4rem)] md:gap-10 md:py-[5vh]">
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 md:flex-row md:items-stretch md:gap-12">
             {/* Hero Content */}
             <div className="flex flex-col items-center gap-6 text-center md:order-2 md:w-2/5 md:items-start md:gap-8 md:text-left lg:w-2/6">
