@@ -6,7 +6,6 @@ import { ShowcaseBoard } from "@/components/ShowcaseBoard";
 import { SignInButton } from "@/components/SignInButton";
 import { useAuth } from "@/hooks/useAuth";
 import { useBoards } from "@/hooks/useBoards";
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { getPublicBoardUrl } from "@/lib/shareUtils";
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +17,6 @@ export default function Home() {
   const navigate = useNavigate();
   const [shareDialogBoard, setShareDialogBoard] = useState<{ id: string; name: string; shareToken: string } | null>(null);
   const { data: boards, isLoading: boardsLoading, isError, error, refetch } = useBoards();
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (user && !boardsLoading && boards && boards.length === 0) {
@@ -71,7 +69,7 @@ export default function Home() {
   }
 
   const listContainerClasses = "flex flex-col gap-4 overflow-y-auto pb-4";
-  const boardCardClass = isMobile ? "w-full" : "md:w-full";
+  const boardCardClass = "w-full";
 
   let boardListContent: ReactNode;
 
