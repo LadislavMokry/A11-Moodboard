@@ -84,6 +84,19 @@ export const ImageGridItem = memo(function ImageGridItem({
     setIsUsingFallback(false);
   }, [image.id, isGif]);
 
+  const src360 = getSupabaseThumbnail(image.storage_path, 360);
+  const src720 = getSupabaseThumbnail(image.storage_path, 720);
+  const src1080 = getSupabaseThumbnail(image.storage_path, 1080);
+  const srcFull = getSupabasePublicUrl(image.storage_path);
+
+  const srcSet = `${src360} 360w, ${src720} 720w, ${src1080} 1080w`;
+  const sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
+  const shouldUseOriginal = useOriginalSrc || isGif || fitStyle === "contain";
+
+  const [currentSrc, setCurrentSrc] = useState<string>(shouldUseOriginal ? srcFull : src720);
+  const [currentSrcSet, setCurrentSrcSet] = useState<string | undefined>(shouldUseOriginal ? undefined : srcSet);
+  const [retryStep, setRetryStep] = useState(0);
+
   // Effect to handle image loading, including cached assets and fallback application
   useEffect(() => {
     if (isGif) {
@@ -135,19 +148,6 @@ export const ImageGridItem = memo(function ImageGridItem({
       setShouldMarquee(element.scrollWidth > element.clientWidth);
     }
   }, [image.caption, showOverlays]);
-
-  const src360 = getSupabaseThumbnail(image.storage_path, 360);
-  const src720 = getSupabaseThumbnail(image.storage_path, 720);
-  const src1080 = getSupabaseThumbnail(image.storage_path, 1080);
-  const srcFull = getSupabasePublicUrl(image.storage_path);
-
-  const srcSet = `${src360} 360w, ${src720} 720w, ${src1080} 1080w`;
-  const sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
-  const shouldUseOriginal = useOriginalSrc || isGif || fitStyle === "contain";
-
-  const [currentSrc, setCurrentSrc] = useState<string>(shouldUseOriginal ? srcFull : src720);
-  const [currentSrcSet, setCurrentSrcSet] = useState<string | undefined>(shouldUseOriginal ? undefined : srcSet);
-  const [retryStep, setRetryStep] = useState(0);
 
   useEffect(() => {
     setCurrentSrc(shouldUseOriginal ? srcFull : src720);
