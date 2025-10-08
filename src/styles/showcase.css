@@ -22,11 +22,13 @@
 /* Column animations with stagger */
 .showcase-column-up {
   animation: scroll-up 120s linear infinite;
+  will-change: transform;
 }
 
 .showcase-column-down {
   animation: scroll-down 120s linear infinite;
   animation-delay: 1s;
+  will-change: transform;
 }
 
 /* Disable animations for reduced motion preference */
@@ -47,4 +49,5 @@
     animation-duration: 60s;
     animation-delay: 1s;
   }
+
 }
