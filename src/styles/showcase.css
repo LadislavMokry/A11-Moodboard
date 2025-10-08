@@ -37,10 +37,14 @@
   }
 }
 
-/* Disable animations on mobile */
+/* Adjust animation speed on mobile for visibility */
 @media (max-width: 768px) {
-  .showcase-column-up,
+  .showcase-column-up {
+    animation-duration: 60s;
+  }
+
   .showcase-column-down {
-    animation: none;
+    animation-duration: 60s;
+    animation-delay: 1s;
   }
 }
