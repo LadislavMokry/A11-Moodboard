@@ -141,18 +141,18 @@ export function TransferImagesDialog({ open, onOpenChange, imageIds, sourceBoard
               <label className="flex items-center gap-2 cursor-pointer">
                 <RadioGroup.Item
                   value="copy"
-                  className="h-4 w-4 rounded-full border border-neutral-300 bg-white text-pink-600 hover:border-pink-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-500 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-pink-500"
+                  className="h-4 w-4 rounded-full border border-neutral-300 bg-white text-pink-400 hover:border-pink-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-500 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-pink-500"
                 >
-                  <RadioGroup.Indicator className="relative flex h-full w-full items-center justify-center after:block after:h-2 after:w-2 after:rounded-full after:bg-pink-600 dark:after:bg-pink-500" />
+                  <RadioGroup.Indicator className="relative flex h-full w-full items-center justify-center after:block after:h-2 after:w-2 after:rounded-full after:bg-pink-500 dark:after:bg-pink-500" />
                 </RadioGroup.Item>
                 <span className="text-sm text-neutral-700 dark:text-neutral-300">Copy</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <RadioGroup.Item
                   value="move"
-                  className="h-4 w-4 rounded-full border border-neutral-300 bg-white text-pink-600 hover:border-pink-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-500 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-pink-500"
+                  className="h-4 w-4 rounded-full border border-neutral-300 bg-white text-pink-400 hover:border-pink-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-500 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-pink-500"
                 >
-                  <RadioGroup.Indicator className="relative flex h-full w-full items-center justify-center after:block after:h-2 after:w-2 after:rounded-full after:bg-pink-600 dark:after:bg-pink-500" />
+                  <RadioGroup.Indicator className="relative flex h-full w-full items-center justify-center after:block after:h-2 after:w-2 after:rounded-full after:bg-pink-500 dark:after:bg-pink-500" />
                 </RadioGroup.Item>
                 <span className="text-sm text-neutral-700 dark:text-neutral-300">Move</span>
               </label>
@@ -184,7 +184,7 @@ export function TransferImagesDialog({ open, onOpenChange, imageIds, sourceBoard
                   className="w-full flex items-center gap-3 p-3 rounded-lg border-2 border-dashed border-neutral-300 hover:border-pink-500 hover:bg-pink-50 transition-colors dark:border-neutral-700 dark:hover:border-pink-500 dark:hover:bg-pink-950/20"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-950/40">
-                    <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
+                    <Plus className="h-5 w-5 text-pink-400 dark:text-pink-400" />
                   </div>
                   <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Create new board</span>
                 </button>

@@ -176,7 +176,7 @@ export function RegenerateShareTokenDialog({ open, onOpenChange, boardId, curren
                 <Button
                   type="button"
                   onClick={handleDone}
-                  className="bg-pink-600 text-white hover:bg-pink-700 focus-visible:outline-pink-600"
+                  className="bg-pink-500 text-white hover:bg-pink-600 focus-visible:outline-pink-600"
                 >
                   Done
                 </Button>

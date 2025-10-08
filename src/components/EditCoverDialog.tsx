@@ -151,7 +151,7 @@ export function EditCoverDialog({ open, onOpenChange, board }: EditCoverDialogPr
               type="button"
               onClick={handleSave}
               disabled={saving || board.images.length === 0}
-              className="flex-1 rounded-lg bg-pink-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-700 disabled:opacity-50"
+              className="flex-1 rounded-lg bg-pink-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-600 disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save"}
             </button>

@@ -52,7 +52,7 @@ export default function Home() {
               <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
                 <button
                   onClick={() => navigate("/staging")}
-                  className="rounded-lg bg-pink-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-pink-700"
+                  className="rounded-lg bg-pink-500 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-pink-600"
                 >
                   Create a board
                 </button>
@@ -61,7 +61,7 @@ export default function Home() {
             </div>
 
             {/* Showcase Board */}
-            <div className="h-[60vh] w-full overflow-hidden md:order-1 md:flex-1 md:w-3/5 md:h-[calc(100vh-4rem)] lg:w-4/6">
+            <div className="h-[60vh] w-full overflow-hidden md:order-1 md:h-full md:w-2/3">
               <ShowcaseBoard />
             </div>
           </div>

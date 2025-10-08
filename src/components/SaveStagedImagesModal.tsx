@@ -231,7 +231,7 @@ export function SaveStagedImagesModal({ open, onOpenChange, files, onSuccess }: 
               type="button"
               onClick={mode === "select" ? handleSaveToExisting : handleCreateAndSave}
               disabled={isUploading || (mode === "select" ? !selectedBoardId : !newBoardName.trim())}
-              className="flex items-center gap-2 rounded-md bg-pink-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-md bg-pink-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isUploading && <LoadingSpinner size="sm" />}
               {isUploading ? "Saving..." : mode === "select" ? "Save to board" : "Create & save"}

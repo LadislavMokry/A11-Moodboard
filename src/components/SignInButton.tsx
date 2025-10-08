@@ -26,7 +26,7 @@ export function SignInButton({ className }: SignInButtonProps) {
       <button
         onClick={handleSignIn}
         disabled={loading}
-        className={`rounded-lg bg-pink-600 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed ${className ?? ""}`}
+        className={`rounded-lg bg-pink-500 px-6 py-3 font-medium text-white transition-colors hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed ${className ?? ""}`}
       >
         {loading ? "Signing in..." : "Sign in with Google"}
       </button>

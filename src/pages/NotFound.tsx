@@ -10,7 +10,7 @@ export default function NotFound() {
         <p className="text-neutral-600 dark:text-neutral-300">The page you were looking for could not be located. It may have been moved or removed.</p>
         <Link
           to="/"
-          className="inline-flex w-fit items-center rounded-md bg-pink-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-700"
+          className="inline-flex w-fit items-center rounded-md bg-pink-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-600"
         >
           Return home
         </Link>
