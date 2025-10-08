@@ -135,7 +135,7 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
               }}
             >
               <Share2 className="h-4 w-4" />
-              <span>Share</span>
+              <span>Share image</span>
             </DropdownMenu.Item>
           )}
 
@@ -148,7 +148,7 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
               }}
             >
               <Download className="h-4 w-4" />
-              <span>Download</span>
+              <span>Download image</span>
             </DropdownMenu.Item>
           )}
 

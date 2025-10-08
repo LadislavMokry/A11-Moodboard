@@ -75,51 +75,74 @@ export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
 
   return (
     <header className="mb-8">
-      <Link
-        to="/"
-        className="mb-4 inline-flex items-center gap-2 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to boards
-      </Link>
+      <div className="mb-4 flex items-center justify-between gap-2 md:hidden">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to boards
+        </Link>
 
-      <div className="mb-3 flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <EditableText
-            ref={nameEditorRef}
-            value={board.name}
-            onSave={handleNameSave}
-            maxLength={60}
-            placeholder="Enter a board name"
-            label="Board name"
-            className="truncate text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
-            editClassName="text-3xl font-semibold tracking-tight"
-          />
-        </div>
-
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2">
           <ShareButton
             url={shareUrl}
             title={board.name}
-            text={board.description || undefined}
             variant="ghost"
             size="sm"
+            className="px-2"
+            showLabel={false}
           />
           {actions}
         </div>
       </div>
 
-      <EditableText
-        value={board.description}
-        onSave={handleDescriptionSave}
-        maxLength={160}
-        multiline
-        allowEmpty
-        placeholder="Add a description..."
-        label="Board description"
-        className="text-base text-neutral-700 dark:text-neutral-300"
-        editClassName="text-base"
-      />
+      <Link
+        to="/"
+        className="hidden md:mb-4 md:inline-flex md:items-center md:gap-2 md:text-sm md:text-neutral-600 md:transition-colors md:hover:text-neutral-900 md:dark:text-neutral-400 md:dark:hover:text-neutral-100"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to boards
+      </Link>
+
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
+          <div className="min-w-0 flex-1">
+            <EditableText
+              ref={nameEditorRef}
+              value={board.name}
+              onSave={handleNameSave}
+              maxLength={60}
+              placeholder="Enter a board name"
+              label="Board name"
+              className="truncate text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
+              editClassName="text-3xl font-semibold tracking-tight"
+            />
+          </div>
+
+          <div className="hidden md:flex flex-shrink-0 items-center gap-2">
+            <ShareButton
+              url={shareUrl}
+              title={board.name}
+              variant="ghost"
+              size="sm"
+            />
+            {actions}
+          </div>
+        </div>
+
+        <EditableText
+          value={board.description}
+          onSave={handleDescriptionSave}
+          maxLength={160}
+          multiline
+          allowEmpty
+          placeholder="Add a description..."
+          label="Board description"
+          className="text-base text-neutral-700 dark:text-neutral-300"
+          editClassName="text-base"
+        />
+      </div>
 
       <SetOgImageDialog
         open={showOgImageDialog}

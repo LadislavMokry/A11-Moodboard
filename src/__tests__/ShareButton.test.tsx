@@ -19,7 +19,6 @@ vi.mock('@/lib/shareUtils', async () => {
 describe('ShareButton', () => {
   const mockUrl = 'https://example.com/b/123';
   const mockTitle = 'Test Board';
-  const mockText = 'Check out my board';
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -118,15 +117,13 @@ describe('ShareButton', () => {
         configurable: true,
       });
 
-      render(<ShareButton url={mockUrl} title={mockTitle} text={mockText} />);
+      render(<ShareButton url={mockUrl} title={mockTitle} />);
 
       const button = screen.getByRole('button');
       fireEvent.click(button);
 
       await waitFor(() => {
         expect(mockShare).toHaveBeenCalledWith({
-          title: mockTitle,
-          text: mockText,
           url: mockUrl,
         });
       });

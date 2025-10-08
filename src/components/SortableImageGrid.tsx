@@ -72,6 +72,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
 
       if (isTouchDevice) {
         window.open(url, "_blank", "noopener,noreferrer");
+        toast.success("Image opened in a new tab");
         return;
       }
 

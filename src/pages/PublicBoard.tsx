@@ -47,15 +47,18 @@ export default function PublicBoard() {
 
     if (isTouchDevice) {
       window.open(url, "_blank", "noopener,noreferrer");
+      toast.success("Image opened in a new tab");
       return;
     }
 
-    void downloadImage(url, filename).then(() => {
-      toast.success("Download started");
-    }).catch((error) => {
-      console.error("Failed to download image:", error);
-      toast.error("Failed to download image");
-    });
+    void downloadImage(url, filename)
+      .then(() => {
+        toast.success("Download started");
+      })
+      .catch((error) => {
+        console.error("Failed to download image:", error);
+        toast.error("Failed to download image");
+      });
   };
 
   const handleShareImage = async (image: Image) => {

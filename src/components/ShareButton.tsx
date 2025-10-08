@@ -8,32 +8,31 @@ import { isMobileDevice, isWebShareSupported } from '@/lib/shareUtils';
 interface ShareButtonProps {
   url: string;
   title: string;
-  text?: string;
   variant?: 'default' | 'outline' | 'ghost';
-  size?: 'default' | 'sm' | 'lg';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
   className?: string;
+  showLabel?: boolean;
 }
 
 export function ShareButton({
   url,
   title,
-  text,
   variant = 'outline',
   size = 'sm',
   className,
+  showLabel = true,
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
 
   const useNativeShare = isMobileDevice() && isWebShareSupported();
+  const ariaLabel = showLabel ? undefined : `Share ${title}`;
 
   const handleShare = async () => {
     if (useNativeShare) {
       try {
         setIsSharing(true);
         await navigator.share({
-          title,
-          text,
           url,
         });
         // Native share sheet provides its own feedback on mobile
@@ -72,17 +71,18 @@ export function ShareButton({
       variant={variant}
       size={size}
       className={className}
+      aria-label={ariaLabel}
       disabled={isSharing}
     >
       {copied ? (
         <>
           <Check className="w-4 h-4" />
-          Copied!
+          {showLabel ? 'Copied!' : null}
         </>
       ) : (
         <>
           {useNativeShare ? <Share2 className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
-          {useNativeShare ? 'Share' : 'Copy Link'}
+          {showLabel ? (useNativeShare ? 'Share' : 'Copy Link') : null}
         </>
       )}
     </Button>

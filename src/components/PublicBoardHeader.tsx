@@ -26,27 +26,38 @@ export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
 
   return (
     <header className="mb-8">
-      <div className="mb-4 flex items-center gap-3">
-        {/* Owner Avatar */}
-        {owner.avatar_url ? (
-          <img
-            src={owner.avatar_url}
-            alt={ownerDisplayName}
-            className="w-12 h-12 rounded-full border-2 border-neutral-200 dark:border-neutral-700"
-          />
-        ) : (
-          <div className="w-12 h-12 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
-            <span className="text-lg font-semibold text-neutral-600 dark:text-neutral-400">
-              {ownerDisplayName.charAt(0).toUpperCase()}
-            </span>
-          </div>
-        )}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          {/* Owner Avatar */}
+          {owner.avatar_url ? (
+            <img
+              src={owner.avatar_url}
+              alt={ownerDisplayName}
+              className="w-12 h-12 rounded-full border-2 border-neutral-200 dark:border-neutral-700"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
+              <span className="text-lg font-semibold text-neutral-600 dark:text-neutral-400">
+                {ownerDisplayName.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
 
-        {/* Owner Name */}
-        <div>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">Shared by</p>
-          <p className="font-medium text-neutral-900 dark:text-neutral-100">{ownerDisplayName}</p>
+          {/* Owner Name */}
+          <div>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">Shared by</p>
+            <p className="font-medium text-neutral-900 dark:text-neutral-100">{ownerDisplayName}</p>
+          </div>
         </div>
+
+        {/* Share button (mobile) */}
+        <ShareButton
+          url={shareUrl}
+          title={board.name}
+          variant="outline"
+          size="sm"
+          className="gap-2 md:hidden"
+        />
       </div>
 
       <div className="mb-3 flex items-start justify-between gap-4">
@@ -60,15 +71,14 @@ export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
         </div>
 
         {/* Share button */}
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="hidden md:flex flex-shrink-0 items-center gap-2">
           <ShareButton
             url={shareUrl}
             title={board.name}
-            text={board.description || undefined}
             variant="outline"
             size="sm"
-            className="gap-2"
-          />
+        className="gap-2"
+      />
         </div>
       </div>
 
