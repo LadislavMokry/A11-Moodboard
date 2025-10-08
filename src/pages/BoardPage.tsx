@@ -306,7 +306,7 @@ function BoardPageContent() {
                 selectedIds={selectedIds}
                 onToggleSelection={handleToggleSelection}
                 dragEnabled={!isMobile || isReorderMode}
-                showImageMenus={!isMobile}
+                showImageMenus={!isReorderMode}
               />
 
               {/* Selection Toolbar */}

@@ -80,28 +80,6 @@ export function SortableImageGrid({
     })
   );
 
-  if (readOnly) {
-    return (
-      <ImageGrid
-        images={orderedImages}
-        onImageClick={onImageClick}
-      />
-    );
-  }
-
-  if (!dragEnabled) {
-    return (
-      <BoardMasonryGrid
-        images={orderedImages}
-        onImageClick={onImageClick}
-        selectionMode={selectionMode}
-        selectedIds={selectedIds}
-        onToggleSelection={onToggleSelection}
-        hoverVariant="default"
-      />
-    );
-  }
-
   const handleDownloadImage = useCallback(
     async (image: Image) => {
       const url = getSupabasePublicUrl(image.storage_path);
@@ -281,8 +259,7 @@ export function SortableImageGrid({
     );
   }
 
-  // Editable mode: full drag-and-drop functionality with responsive masonry layout
-  return (
+  let content = (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
@@ -334,4 +311,28 @@ export function SortableImageGrid({
       <DragOverlay dropAnimation={null}>{activeImage ? <CustomDragOverlay image={activeImage} /> : null}</DragOverlay>
     </DndContext>
   );
+
+  if (!dragEnabled) {
+    content = (
+      <BoardMasonryGrid
+        images={orderedImages}
+        onImageClick={onImageClick}
+        selectionMode={selectionMode}
+        selectedIds={selectedIds}
+        onToggleSelection={onToggleSelection}
+        hoverVariant="default"
+      />
+    );
+  }
+
+  if (readOnly) {
+    content = (
+      <ImageGrid
+        images={orderedImages}
+        onImageClick={onImageClick}
+      />
+    );
+  }
+
+  return content;
 }
