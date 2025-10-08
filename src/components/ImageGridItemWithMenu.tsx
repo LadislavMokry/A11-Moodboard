@@ -2,8 +2,7 @@ import { type Image } from "@/schemas/image";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Edit2, MoreVertical, Trash2 } from "lucide-react";
-import type { CSSProperties } from "react";
-import { useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { ImageGridItem } from "./ImageGridItem";
 
 type SyntheticListenerMap = Record<string, Function> | undefined;
@@ -32,10 +31,34 @@ interface ImageGridItemWithMenuProps {
 export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, useOriginalSrc = false, hoverVariant = "default", onDownload, fitStyle = "cover" }: ImageGridItemWithMenuProps) {
   const [isHovered, setIsHovered] = useState(false);
 
+  const wrapperStyle = useMemo(() => {
+    if (!style) {
+      return { position: "relative" } as CSSProperties;
+    }
+    return {
+      position: "relative",
+      ...style
+    } as CSSProperties;
+  }, [style]);
+
+  const itemStyle = useMemo(() => {
+    if (!style) {
+      return undefined;
+    }
+
+    const { gridRowEnd, gridColumnEnd, ...rest } = style;
+    if (gridRowEnd === undefined && gridColumnEnd === undefined) {
+      return style;
+    }
+
+    return Object.keys(rest).length > 0 ? rest : undefined;
+  }, [style]);
+
   return (
     <DropdownMenu.Root>
       <div
-        style={{ position: "relative" }}
+        ref={setRef}
+        style={wrapperStyle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -43,10 +66,9 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
           image={image}
           onClick={onClick}
           onMenuClick={undefined} // Don't use the built-in menu button
-          setRef={setRef}
           dragAttributes={dragAttributes}
           dragListeners={dragListeners}
-          style={style}
+          style={itemStyle}
           className={className}
           isDragging={isDragging}
           dataTestId={dataTestId}

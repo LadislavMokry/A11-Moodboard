@@ -131,7 +131,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     return () => observer.disconnect();
   }, []);
 
-  const minCardWidth = 220;
+  const minCardWidth = 200;
   const gap = 12;
 
   const columnCount = useMemo(() => {
