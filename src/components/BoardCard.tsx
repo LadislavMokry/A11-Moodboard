@@ -13,9 +13,8 @@ import { RotatingBoardCover } from "./RotatingBoardCover";
 const RenameBoardDialog = lazy(() => import("./RenameBoardDialog").then((m) => ({ default: m.RenameBoardDialog })));
 const DeleteBoardDialog = lazy(() => import("./DeleteBoardDialog").then((m) => ({ default: m.DeleteBoardDialog })));
 const RegenerateShareTokenDialog = lazy(() => import("./RegenerateShareTokenDialog").then((m) => ({ default: m.RegenerateShareTokenDialog })));
-const EditCoverDialog = lazy(() => import("./EditCoverDialog").then((m) => ({ default: m.EditCoverDialog })));
 
-type DialogState = "rename" | "delete" | "regenerate" | "editCover" | null;
+type DialogState = "rename" | "delete" | "regenerate" | null;
 
 interface BoardCardProps {
   board: BoardWithImages;
@@ -96,7 +95,6 @@ export const BoardCard = memo(function BoardCard({ board, onShare }: BoardCardPr
             onShare={() => onShare?.(board.id)}
             onRegenerateLink={() => setDialogOpen("regenerate")}
             onDelete={() => setDialogOpen("delete")}
-            onEditCover={() => setDialogOpen("editCover")}
             onToggleRotation={handleToggleRotation}
             rotationEnabled={board.cover_rotation_enabled}
           />
@@ -135,17 +133,6 @@ export const BoardCard = memo(function BoardCard({ board, onShare }: BoardCardPr
             onOpenChange={(open) => setDialogOpen(open ? "regenerate" : null)}
             boardId={board.id}
             currentShareToken={board.share_token}
-          />
-        </Suspense>
-      )}
-
-      {/* Edit Cover Dialog */}
-      {dialogOpen === "editCover" && (
-        <Suspense fallback={null}>
-          <EditCoverDialog
-            open={true}
-            onOpenChange={(open) => setDialogOpen(open ? "editCover" : null)}
-            board={board}
           />
         </Suspense>
       )}

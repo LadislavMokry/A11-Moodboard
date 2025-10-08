@@ -8,7 +8,6 @@ interface BoardCardMenuProps {
   onShare: () => void;
   onRegenerateLink: () => void;
   onDelete: () => void;
-  onEditCover: () => void;
   onToggleRotation: () => void;
   rotationEnabled: boolean;
 }
@@ -20,7 +19,6 @@ export function BoardCardMenu({
   onShare,
   onRegenerateLink,
   onDelete,
-  onEditCover,
   onToggleRotation,
   rotationEnabled,
 }: BoardCardMenuProps) {
@@ -41,18 +39,6 @@ export function BoardCardMenu({
           >
             <Edit2 className="h-4 w-4" />
             <span>Rename</span>
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-            onClick={(e) => {
-              e.preventDefault();
-              onEditCover();
-              onOpenChange(false);
-            }}
-          >
-            <Image className="h-4 w-4" />
-            <span>Edit cover</span>
           </DropdownMenu.Item>
 
           <DropdownMenu.Item

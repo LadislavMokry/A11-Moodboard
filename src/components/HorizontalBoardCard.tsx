@@ -7,14 +7,14 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { BoardCardMenu } from "./BoardCardMenu";
 import { RotatingBoardCover } from "./RotatingBoardCover";
+import { shuffleArray } from "@/lib/utils";
 
 // Lazy load dialogs - they're only needed when user opens them
 const RenameBoardDialog = lazy(() => import("./RenameBoardDialog").then((m) => ({ default: m.RenameBoardDialog })));
 const DeleteBoardDialog = lazy(() => import("./DeleteBoardDialog").then((m) => ({ default: m.DeleteBoardDialog })));
 const RegenerateShareTokenDialog = lazy(() => import("./RegenerateShareTokenDialog").then((m) => ({ default: m.RegenerateShareTokenDialog })));
-const EditCoverDialog = lazy(() => import("./EditCoverDialog").then((m) => ({ default: m.EditCoverDialog })));
 
-type DialogState = "rename" | "delete" | "regenerate" | "editCover" | null;
+type DialogState = "rename" | "delete" | "regenerate" | null;
 
 interface HorizontalBoardCardProps {
   board: BoardWithImages;
@@ -49,7 +49,7 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
       >
         <div className="flex-shrink-0">
           <RotatingBoardCover
-            images={board.images}
+            images={shuffleArray(board.images)}
             boardName={board.name}
             rotationEnabled={board.cover_rotation_enabled}
             className="h-32 w-32 bg-neutral-200 dark:bg-neutral-800"
@@ -91,7 +91,6 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
             onShare={() => onShare?.(board.id)}
             onRegenerateLink={() => setDialogOpen("regenerate")}
             onDelete={() => setDialogOpen("delete")}
-            onEditCover={() => setDialogOpen("editCover")}
             onToggleRotation={handleToggleRotation}
             rotationEnabled={board.cover_rotation_enabled}
           />
@@ -128,16 +127,6 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
             onOpenChange={(open) => setDialogOpen(open ? "regenerate" : null)}
             boardId={board.id}
             currentShareToken={board.share_token}
-          />
-        </Suspense>
-      )}
-
-      {dialogOpen === "editCover" && (
-        <Suspense fallback={null}>
-          <EditCoverDialog
-            open={true}
-            onOpenChange={(open) => setDialogOpen(open ? "editCover" : null)}
-            board={board}
           />
         </Suspense>
       )}
