@@ -1,5 +1,5 @@
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { ImageGrid } from "@/components/ImageGrid";
+import { BoardMasonryGrid } from "@/components/BoardMasonryGrid";
 import { Layout } from "@/components/Layout";
 import { LightboxSkeleton } from "@/components/LightboxSkeleton";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
@@ -165,13 +165,17 @@ export default function PublicBoard() {
               owner={owner}
             />
 
-            <ImageGrid
+            <BoardMasonryGrid
               images={board.images}
               onImageClick={handleImageClick}
               hoverVariant="default"
               onDownload={!isMobile ? handleDownloadImage : undefined}
               onShare={!isMobile ? handleShareImage : undefined}
-              useMenu={!isMobile}
+              itemVariant="menu"
+              showMenu={!isMobile}
+              fitStyle="contain"
+              showSelectionToggle={false}
+              useOriginalSrc
               showOverlays={!isMobile}
             />
 
