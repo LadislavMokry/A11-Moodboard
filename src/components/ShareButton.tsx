@@ -3,7 +3,7 @@ import { Share2, Check, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { copyToClipboard } from '@/lib/clipboard';
-import { isWebShareSupported } from '@/lib/shareUtils';
+import { isMobileDevice, isWebShareSupported } from '@/lib/shareUtils';
 
 interface ShareButtonProps {
   url: string;
@@ -25,9 +25,10 @@ export function ShareButton({
   const [copied, setCopied] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
 
+  const useNativeShare = isMobileDevice() && isWebShareSupported();
+
   const handleShare = async () => {
-    // Check if Web Share API is available (mobile)
-    if (isWebShareSupported()) {
+    if (useNativeShare) {
       try {
         setIsSharing(true);
         await navigator.share({
@@ -35,21 +36,22 @@ export function ShareButton({
           text,
           url,
         });
-        // Note: No success toast for Web Share API as the native dialog provides feedback
+        // Native share sheet provides its own feedback on mobile
+        return;
       } catch (error) {
         // User cancelled the share or an error occurred
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Web Share API failed:', error);
-          // Fall back to copy on error
           await handleCopyLink();
         }
+        return;
       } finally {
         setIsSharing(false);
       }
-    } else {
-      // Desktop: copy to clipboard
-      await handleCopyLink();
     }
+
+    // Desktop (or fallback when share sheet unavailable)
+    await handleCopyLink();
   };
 
   const handleCopyLink = async () => {
@@ -63,8 +65,6 @@ export function ShareButton({
       toast.error('Failed to copy link');
     }
   };
-
-  const isMobile = isWebShareSupported();
 
   return (
     <Button
@@ -81,8 +81,8 @@ export function ShareButton({
         </>
       ) : (
         <>
-          {isMobile ? <Share2 className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
-          {isMobile ? 'Share' : 'Copy Link'}
+          {useNativeShare ? <Share2 className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
+          {useNativeShare ? 'Share' : 'Copy Link'}
         </>
       )}
     </Button>
