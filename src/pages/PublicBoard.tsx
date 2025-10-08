@@ -1,5 +1,5 @@
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { ImageGrid } from "@/components/ImageGrid";
+import { BoardMasonryGrid } from "@/components/BoardMasonryGrid";
 import { Layout } from "@/components/Layout";
 import { LightboxSkeleton } from "@/components/LightboxSkeleton";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
@@ -65,26 +65,13 @@ export default function PublicBoard() {
 
   const handleShareImage = async (image: Image) => {
     const url = getSupabasePublicUrl(image.storage_path);
-    const title = image.caption || image.original_filename || "Image";
-
-    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-      try {
-        await navigator.share({ title, url });
-        return;
-      } catch (error) {
-        if ((error as Error).name === "AbortError") {
-          return;
-        }
-        console.warn("Share failed, falling back to copy:", error);
-      }
-    }
 
     try {
       await copyToClipboard(url);
-      toast.success("Link copied to clipboard");
+      toast.success("Image link copied to clipboard");
     } catch (error) {
       console.error("Failed to copy image link:", error);
-      toast.error("Failed to copy link");
+      toast.error("Failed to copy image link");
     }
   };
 
@@ -178,13 +165,17 @@ export default function PublicBoard() {
               owner={owner}
             />
 
-            <ImageGrid
+            <BoardMasonryGrid
               images={board.images}
               onImageClick={handleImageClick}
               hoverVariant="default"
-              onDownload={isMobile ? undefined : handleDownloadImage}
-              onShare={isMobile ? undefined : handleShareImage}
-              useMenu={!isMobile}
+              onDownload={!isMobile ? handleDownloadImage : undefined}
+              onShare={!isMobile ? handleShareImage : undefined}
+              itemVariant="menu"
+              showMenu={!isMobile}
+              fitStyle="contain"
+              showSelectionToggle={false}
+              useOriginalSrc
             />
 
             {/* Lightbox */}

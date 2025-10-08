@@ -4,6 +4,7 @@ import { type Image } from "@/schemas/image";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { ImageGridItem } from "./ImageGridItem";
+import { ImageGridItemWithMenu } from "./ImageGridItemWithMenu";
 
 type SyntheticListenerMap = Record<string, Function> | undefined;
 
@@ -24,6 +25,14 @@ interface BoardMasonryGridProps {
   dataTestId?: string;
   hoverVariant?: "default" | "download";
   onDownload?: (image: Image) => void;
+  itemVariant?: "default" | "menu";
+  onEditCaption?: (image: Image) => void;
+  onDelete?: (image: Image) => void;
+  onShare?: (image: Image) => void;
+  showMenu?: boolean;
+  fitStyle?: "cover" | "contain";
+  showSelectionToggle?: boolean;
+  useOriginalSrc?: boolean;
 }
 
 interface LayoutItem {
@@ -53,6 +62,14 @@ export function BoardMasonryGrid({
   dataTestId,
   hoverVariant = "default",
   onDownload,
+  itemVariant = "default",
+  onEditCaption,
+  onDelete,
+  onShare,
+  showMenu = true,
+  fitStyle = "contain",
+  showSelectionToggle = true,
+  useOriginalSrc = false,
 }: BoardMasonryGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -172,31 +189,65 @@ export function BoardMasonryGrid({
       className="w-full"
       data-testid={dataTestId}
     >
-      {layoutItems.map(({ image, rowSpan, columnSpan }) => (
-        <ImageGridItem
-          key={image.id}
-          image={image}
-          onClick={() => handleImageClick(image)}
-          onMenuClick={handleMenuClick ? (event) => handleMenuClick(image, event) : undefined}
-          setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
-          dragAttributes={dragAttributes}
-          dragListeners={dragListeners}
-          style={{
-            ...(dragStyle ?? {}),
-            gridRowEnd: `span ${rowSpan}`,
-            gridColumnEnd: columnSpan > 1 ? `span ${columnSpan}` : undefined,
-            width: "100%"
-          }}
-          className={cn(isDragging && "opacity-50")}
-          dataTestId={`board-masonry-item-${image.id}`}
-          selectionMode={selectionMode}
-          isSelected={selectedIds.has(image.id)}
-          onToggleSelection={() => onToggleSelection?.(image.id)}
-          fitStyle="contain"
-          hoverVariant={hoverVariant}
-          onDownload={hoverVariant === "download" ? () => onDownload?.(image) : undefined}
-        />
-      ))}
+      {layoutItems.map(({ image, rowSpan, columnSpan }) => {
+        const style: CSSProperties = {
+          ...(dragStyle ?? {}),
+          gridRowEnd: `span ${rowSpan}`,
+          gridColumnEnd: columnSpan > 1 ? `span ${columnSpan}` : undefined,
+          width: "100%"
+        };
+
+        if (itemVariant === "menu") {
+          return (
+            <ImageGridItemWithMenu
+              key={image.id}
+              image={image}
+              onClick={() => handleImageClick(image)}
+              onEditCaption={onEditCaption ? () => onEditCaption(image) : undefined}
+              onDelete={onDelete ? () => onDelete(image) : undefined}
+              setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
+              dragAttributes={dragAttributes}
+              dragListeners={dragListeners}
+              style={style}
+              className={cn(isDragging && "opacity-50")}
+              dataTestId={`board-masonry-item-${image.id}`}
+              selectionMode={selectionMode}
+              isSelected={selectedIds.has(image.id)}
+              onToggleSelection={onToggleSelection ? () => onToggleSelection(image.id) : undefined}
+              hoverVariant={hoverVariant}
+              onDownload={onDownload ? () => onDownload(image) : undefined}
+              onShare={onShare ? () => onShare(image) : undefined}
+              fitStyle={fitStyle}
+              showMenu={showMenu}
+              useOriginalSrc={useOriginalSrc}
+              showSelectionToggle={showSelectionToggle}
+            />
+          );
+        }
+
+        return (
+          <ImageGridItem
+            key={image.id}
+            image={image}
+            onClick={() => handleImageClick(image)}
+            onMenuClick={handleMenuClick ? (event) => handleMenuClick(image, event) : undefined}
+            setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
+            dragAttributes={dragAttributes}
+            dragListeners={dragListeners}
+            style={style}
+            className={cn(isDragging && "opacity-50")}
+            dataTestId={`board-masonry-item-${image.id}`}
+            selectionMode={selectionMode}
+            isSelected={selectedIds.has(image.id)}
+            onToggleSelection={onToggleSelection ? () => onToggleSelection(image.id) : undefined}
+            fitStyle={fitStyle}
+            hoverVariant={hoverVariant}
+            onDownload={hoverVariant === "download" && onDownload ? () => onDownload(image) : undefined}
+            useOriginalSrc={useOriginalSrc}
+            showSelectionToggle={showSelectionToggle}
+          />
+        );
+      })}
     </div>
   );
 }

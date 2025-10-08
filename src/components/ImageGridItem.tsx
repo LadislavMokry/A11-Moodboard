@@ -27,6 +27,7 @@ interface ImageGridItemProps {
   useOriginalSrc?: boolean;
   hoverVariant?: "default" | "download";
   onDownload?: () => void;
+  showSelectionToggle?: boolean;
 }
 
 export const ImageGridItem = memo(function ImageGridItem({
@@ -49,6 +50,7 @@ export const ImageGridItem = memo(function ImageGridItem({
   useOriginalSrc = false,
   hoverVariant = "default",
   onDownload,
+  showSelectionToggle = true,
 }: ImageGridItemProps) {
   console.log(`ImageGridItem (${image.id}): Rendering`, { isSelected, isDragging, selectionMode, showOverlays });
   const isGif = image.mime_type?.toLowerCase() === "image/gif";
@@ -61,7 +63,7 @@ export const ImageGridItem = memo(function ImageGridItem({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const isDownloadVariant = hoverVariant === "download";
-  const allowSelection = hoverVariant === "default" && selectionMode;
+  const allowSelection = hoverVariant === "default" && selectionMode && showSelectionToggle;
   const allowStandardOverlays = hoverVariant === "default" && showOverlays;
 
   console.log(`ImageGridItem (${image.id}): State`, { isFullLoaded, isGif });
@@ -303,7 +305,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         draggable={false}
       />
 
-      {allowStandardOverlays && isSelected && (
+      {allowStandardOverlays && isSelected && showSelectionToggle && (
         <div className="pointer-events-none absolute inset-0 border-2 border-primary bg-primary/20" aria-hidden="true" />
       )}
 
@@ -317,7 +319,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         />
       )}
 
-      {allowStandardOverlays && (allowSelection || effectiveIsHovered) && (
+      {allowStandardOverlays && showSelectionToggle && (allowSelection || effectiveIsHovered) && (
         <button
           className={cn(
             "absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-sm border-2 transition-all duration-150",

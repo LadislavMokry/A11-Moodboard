@@ -29,6 +29,7 @@ interface ImageGridItemWithMenuProps {
   fitStyle?: "cover" | "contain";
   onShare?: () => void;
   showMenu?: boolean;
+  showSelectionToggle?: boolean;
 }
 
 export function ImageGridItemWithMenu({
@@ -52,6 +53,7 @@ export function ImageGridItemWithMenu({
   onShare,
   fitStyle = "cover",
   showMenu = true,
+  showSelectionToggle = true,
 }: ImageGridItemWithMenuProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isTouch] = useState(() => typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0));
@@ -104,6 +106,7 @@ export function ImageGridItemWithMenu({
         hoverVariant={hoverVariant}
         onDownload={hoverVariant === "download" ? onDownload : undefined}
         fitStyle={fitStyle}
+        showSelectionToggle={showSelectionToggle}
       />
 
       {!selectionMode && showMenu && (
