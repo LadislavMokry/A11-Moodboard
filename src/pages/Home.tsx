@@ -1,5 +1,3 @@
-import { BoardCard } from "@/components/BoardCard";
-import { BoardCardSkeleton } from "@/components/BoardCardSkeleton";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { HorizontalBoardCard } from "@/components/HorizontalBoardCard";
 import { Layout } from "@/components/Layout";
@@ -9,7 +7,7 @@ import { SignInButton } from "@/components/SignInButton";
 import { useAuth } from "@/hooks/useAuth";
 import { useBoards } from "@/hooks/useBoards";
 import { getPublicBoardUrl } from "@/lib/shareUtils";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ShareDialog = lazy(() => import("@/components/ShareDialog").then((m) => ({ default: m.ShareDialog })));
@@ -87,45 +85,89 @@ export default function Home() {
   }
 
   // Logged-in user homepage
+  const horizontalListClasses =
+    "flex gap-4 overflow-x-auto pb-4 md:flex-col md:overflow-x-hidden md:overflow-y-auto md:pb-0 md:pr-2 md:space-y-4";
+
+  let boardListContent: ReactNode;
+
+  if (boardsLoading) {
+    boardListContent = (
+      <div className={`${horizontalListClasses} mt-4`}>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex min-w-[280px] flex-shrink-0 items-center gap-4 border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-neutral-900/40 md:min-w-0 md:w-full"
+          >
+            <div className="h-32 w-32 bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
+            <div className="flex-1 space-y-3">
+              <div className="h-4 w-3/4 rounded bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
+              <div className="h-4 w-1/2 rounded bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  } else if (isError) {
+    boardListContent = (
+      <div className="mt-4">
+        <ErrorMessage error={error} onRetry={() => refetch()} />
+      </div>
+    );
+  } else if (boards && boards.length > 0) {
+    boardListContent = (
+      <div className={`${horizontalListClasses} mt-4`}>
+        {boards.map((board) => (
+          <HorizontalBoardCard
+            key={board.id}
+            board={board}
+            className="min-w-[280px] flex-shrink-0 md:min-w-0 md:w-full"
+            onShare={(boardId) => {
+              const targetBoard = boards.find((b) => b.id === boardId);
+              if (targetBoard) {
+                setShareDialogBoard({
+                  id: targetBoard.id,
+                  name: targetBoard.name,
+                  shareToken: targetBoard.share_token
+                });
+              }
+            }}
+          />
+        ))}
+      </div>
+    );
+  } else {
+    boardListContent = <p className="mt-4 text-neutral-500">No boards yet. Create one!</p>;
+  }
+
   return (
     <Layout>
-      <section className="flex h-[calc(100vh-4rem)] gap-6 overflow-hidden border-b border-neutral-200 px-4 py-[5vh] dark:border-neutral-800 md:gap-10">
-        {/* Left column: Horizontal Board Cards */}
-        <div className="h-full w-1/3 max-h-full overflow-y-auto p-4">
-          <h2 className="text-2xl font-semibold mb-4">Your Boards</h2>
-          {boardsLoading ? (
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-lg mb-4 animate-pulse" />
-            ))
-          ) : isError ? (
-            <ErrorMessage error={error} onRetry={() => refetch()} />
-          ) : boards && boards.length > 0 ? (
-            boards.map((board) => (
-              <HorizontalBoardCard
-                key={board.id}
-                board={board}
-                onShare={(boardId) => {
-                  const targetBoard = boards.find((b) => b.id === boardId);
-                  if (targetBoard) {
-                    setShareDialogBoard({
-                      id: targetBoard.id,
-                      name: targetBoard.name,
-                      shareToken: targetBoard.share_token
-                    });
-                  }
-                }}
-              />
-            ))
-          ) : (
-            <p className="text-neutral-500">No boards yet. Create one!</p>
-          )}
+      <section className="flex min-h-[calc(100vh-4rem)] flex-col gap-6 border-b border-neutral-200 px-4 py-6 dark:border-neutral-800 md:h-[calc(100vh-4rem)] md:flex-row md:gap-10 md:py-[5vh]">
+        {/* Left column: Board list */}
+        <div className="w-full md:w-1/3 md:max-h-full md:overflow-y-auto md:pr-4">
+          <h2 className="text-2xl font-semibold">Your Boards</h2>
+          {boardListContent}
         </div>
 
         {/* Right column: Waterfall Showcase */}
-        <div className="h-full w-2/3 overflow-hidden">
+        <div className="h-[60vh] w-full overflow-hidden md:h-full md:w-2/3">
           <ShowcaseBoard userId={user.id} />
         </div>
       </section>
+
+      {shareDialogBoard && (
+        <Suspense fallback={null}>
+          <ShareDialog
+            open={Boolean(shareDialogBoard)}
+            onOpenChange={(open) => {
+              if (!open) {
+                setShareDialogBoard(null);
+              }
+            }}
+            url={getPublicBoardUrl(shareDialogBoard.shareToken)}
+            title={shareDialogBoard.name}
+          />
+        </Suspense>
+      )}
     </Layout>
   );
 }

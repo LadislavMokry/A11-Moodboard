@@ -26,6 +26,7 @@ interface MasonryGridProps {
   readOnly?: boolean;
   fitStyle?: "cover" | "contain";
   minItemHeight?: number;
+  columnCountOverride?: number;
 }
 
 /**
@@ -51,6 +52,7 @@ export function MasonryGrid({
   readOnly = false,
   fitStyle = "cover",
   minItemHeight,
+  columnCountOverride,
 }: MasonryGridProps) {
   console.log("MasonryGrid: Rendering", {
     imageCount: images.length,
@@ -66,12 +68,16 @@ export function MasonryGrid({
   const [containerWidth, setContainerWidth] = useState(0);
 
   const columnCount = useMemo(() => {
+    if (typeof columnCountOverride === "number") {
+      return columnCountOverride;
+    }
+
     if (!containerWidth) return 2;
     const columns = Math.max(1, Math.floor(containerWidth / minCardWidth));
     const count = Math.min(columns, 6);
     console.log("MasonryGrid: Calculated columnCount", { containerWidth, minCardWidth, count });
     return count;
-  }, [containerWidth, minCardWidth]);
+  }, [columnCountOverride, containerWidth, minCardWidth]);
 
   useEffect(() => {
     const container = containerRef.current;

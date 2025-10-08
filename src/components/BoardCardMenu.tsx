@@ -1,5 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Share2, Edit2, RefreshCw, Trash2, Image, RotateCw } from 'lucide-react';
+import { Share2, Edit2, RefreshCw, Trash2, RotateCw } from 'lucide-react';
 
 interface BoardCardMenuProps {
   open: boolean;

@@ -1,7 +1,8 @@
 import { MasonryGrid } from "@/components/MasonryGrid";
 import { useShowcaseBoard } from "@/hooks/useShowcaseBoard";
 import { useUserImages } from "@/hooks/useUserImages";
-import { useMemo } from "react";
+import { shuffleArray } from "@/lib/utils";
+import { useEffect, useMemo, useState } from "react";
 
 interface ShowcaseBoardProps {
   userId?: string;
@@ -14,6 +15,18 @@ interface ShowcaseBoardProps {
 export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
   const { data: publicBoard, isLoading: isLoadingPublic, error: errorPublic } = useShowcaseBoard();
   const { data: userImages, isLoading: isLoadingUser, error: errorUser } = useUserImages({ userId: userId || "", enabled: !!userId });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const displayImages = useMemo(() => {
     const sourceImages = userId && userImages && userImages.length >= 10 ? userImages : publicBoard?.images ?? [];
@@ -21,12 +34,7 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
       return [];
     }
 
-    const shuffled = [...sourceImages];
-    for (let i = shuffled.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-
+    const shuffled = shuffleArray(sourceImages);
     return shuffled.map((image, index) => ({
       ...image,
       position: index + 1,
@@ -56,11 +64,12 @@ export function ShowcaseBoard({ userId }: ShowcaseBoardProps) {
     <div className="showcase-board relative h-full w-full overflow-hidden">
       <MasonryGrid
         images={displayImages}
-        minCardWidth={180}
+        minCardWidth={isMobile ? 160 : 180}
         gap={8}
         alternatingDirection
         readOnly
         fitStyle="contain"
+        columnCountOverride={isMobile ? 2 : undefined}
       />
     </div>
   );

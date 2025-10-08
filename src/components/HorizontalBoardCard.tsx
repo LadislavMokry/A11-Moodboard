@@ -2,12 +2,12 @@ import { useUpdateBoard } from "@/hooks/useBoardMutations";
 import { type BoardWithImages } from "@/schemas/boardWithImages";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
-import { lazy, memo, Suspense, useCallback, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { BoardCardMenu } from "./BoardCardMenu";
 import { RotatingBoardCover } from "./RotatingBoardCover";
-import { shuffleArray } from "@/lib/utils";
+import { cn, shuffleArray } from "@/lib/utils";
 
 // Lazy load dialogs - they're only needed when user opens them
 const RenameBoardDialog = lazy(() => import("./RenameBoardDialog").then((m) => ({ default: m.RenameBoardDialog })));
@@ -19,9 +19,10 @@ type DialogState = "rename" | "delete" | "regenerate" | null;
 interface HorizontalBoardCardProps {
   board: BoardWithImages;
   onShare?: (boardId: string) => void;
+  className?: string;
 }
 
-export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, onShare }: HorizontalBoardCardProps) {
+export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, onShare, className }: HorizontalBoardCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState<DialogState>(null);
   const updateBoard = useUpdateBoard();
@@ -41,15 +42,17 @@ export const HorizontalBoardCard = memo(function HorizontalBoardCard({ board, on
     }
   }, [board.id, board.cover_rotation_enabled, updateBoard]);
 
+  const coverImages = useMemo(() => shuffleArray(board.images), [board.images]);
+
   return (
-    <div className="group relative mb-4 flex items-center border border-neutral-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
+    <div className={cn("group relative flex items-center border border-neutral-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900", className)}>
       <Link
         to={`/boards/${board.id}`}
         className="flex flex-1 items-center gap-4 overflow-hidden p-4"
       >
         <div className="flex-shrink-0">
           <RotatingBoardCover
-            images={shuffleArray(board.images)}
+            images={coverImages}
             boardName={board.name}
             rotationEnabled={board.cover_rotation_enabled}
             className="h-32 w-32 bg-neutral-200 dark:bg-neutral-800"
