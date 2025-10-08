@@ -127,7 +127,12 @@ export function BoardMasonryGrid({
       const widthForMath = columnWidth || minCardWidth;
       const effectiveWidth = columnSpan > 1 ? widthForMath * columnSpan + gap * (columnSpan - 1) : widthForMath;
       const targetHeight = effectiveWidth * aspectRatio;
-      const rowSpan = Math.max(1, Math.round((targetHeight + gap) / (baseRowHeight + gap)));
+      const rowHeightWithGap = baseRowHeight + gap;
+      const safetyPadding = gap * 0.5; // favour extra space to avoid collisions
+      const rowSpan = Math.max(
+        1,
+        Math.ceil((targetHeight + gap + safetyPadding) / (rowHeightWithGap > 0 ? rowHeightWithGap : 1))
+      );
 
       return {
         image,
