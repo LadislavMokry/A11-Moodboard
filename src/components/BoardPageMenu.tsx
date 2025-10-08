@@ -1,5 +1,5 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { CheckSquare, Edit2, Image, Link, RefreshCw, Trash2 } from "lucide-react";
+import { CheckSquare, Edit2, Image, Link, Move, RefreshCw, Trash2 } from "lucide-react";
 
 interface BoardPageMenuProps {
   open: boolean;
@@ -11,9 +11,25 @@ interface BoardPageMenuProps {
   onSelect: () => void;
   selectionMode: boolean;
   onDelete: () => void;
+  showReorder?: boolean;
+  reorderActive?: boolean;
+  onToggleReorder?: () => void;
 }
 
-export function BoardPageMenu({ open: _open, onOpenChange, onRename, onRegenerateLink, onSetPreviewImage, onImportUrl, onSelect, selectionMode, onDelete }: BoardPageMenuProps) {
+export function BoardPageMenu({
+  open: _open,
+  onOpenChange,
+  onRename,
+  onRegenerateLink,
+  onSetPreviewImage,
+  onImportUrl,
+  onSelect,
+  selectionMode,
+  onDelete,
+  showReorder = false,
+  reorderActive = false,
+  onToggleReorder,
+}: BoardPageMenuProps) {
   return (
     <DropdownMenu.Portal>
       <DropdownMenu.Content
@@ -70,6 +86,20 @@ export function BoardPageMenu({ open: _open, onOpenChange, onRename, onRegenerat
           <Link className="h-4 w-4" />
           <span>Import from URL</span>
         </DropdownMenu.Item>
+
+        {showReorder && onToggleReorder && (
+          <DropdownMenu.Item
+            className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+            onClick={(e) => {
+              e.preventDefault();
+              onToggleReorder();
+              onOpenChange(false);
+            }}
+          >
+            <Move className="h-4 w-4" />
+            <span>{reorderActive ? "Done rearranging" : "Rearrange images"}</span>
+          </DropdownMenu.Item>
+        )}
 
         <DropdownMenu.Item
           className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"

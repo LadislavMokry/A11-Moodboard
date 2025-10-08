@@ -89,8 +89,7 @@ export function BoardPageHeader({ board, actions }: BoardPageHeaderProps) {
             url={shareUrl}
             title={board.name}
             variant="ghost"
-            size="sm"
-            className="px-2"
+            size="icon"
             showLabel={false}
           />
           {actions}

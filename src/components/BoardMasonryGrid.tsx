@@ -57,6 +57,7 @@ export function BoardMasonryGrid({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const isMobile = useIsMobile();
+  const handleMenuClick = onImageMenuClick ? (image: Image, event: React.MouseEvent) => onImageMenuClick(image, event) : null;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -176,7 +177,7 @@ export function BoardMasonryGrid({
           key={image.id}
           image={image}
           onClick={() => handleImageClick(image)}
-          onMenuClick={(event) => onImageMenuClick?.(image, event)}
+          onMenuClick={handleMenuClick ? (event) => handleMenuClick(image, event) : undefined}
           setRef={setItemRef ? (node) => setItemRef(image.id, node) : undefined}
           dragAttributes={dragAttributes}
           dragListeners={dragListeners}

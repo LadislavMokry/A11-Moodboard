@@ -55,8 +55,9 @@ export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
           url={shareUrl}
           title={board.name}
           variant="outline"
-          size="sm"
-          className="gap-2 md:hidden"
+          size="icon"
+          className="md:hidden"
+          showLabel={false}
         />
       </div>
 
@@ -77,8 +78,8 @@ export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
             title={board.name}
             variant="outline"
             size="sm"
-        className="gap-2"
-      />
+            className="gap-2"
+          />
         </div>
       </div>
 

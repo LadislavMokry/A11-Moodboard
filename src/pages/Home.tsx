@@ -38,8 +38,26 @@ export default function Home() {
     return (
       <Layout>
         <section className="h-[calc(100vh-4rem)] overflow-hidden px-4 py-[5vh]">
-          <div className="mx-auto flex h-full max-w-7xl gap-8 md:gap-12">
-            <div className="flex-1 md:w-3/5 lg:w-4/6">
+          <div className="mx-auto flex h-full max-w-7xl flex-col gap-8 md:flex-row md:items-stretch md:gap-12">
+            <div className="flex flex-col items-center gap-6 text-center md:hidden">
+              <div className="space-y-4">
+                <h1 className="text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">Capture your vibe.</h1>
+                <p className="text-base text-neutral-600 dark:text-neutral-300">
+                  Drop images and arrange them into living moodboards. Share instantly with a single link.
+                </p>
+              </div>
+              <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
+                <button
+                  onClick={() => navigate("/staging")}
+                  className="rounded-lg bg-[#ff01eb] px-8 py-3 text-base font-medium text-white transition-colors hover:bg-[#d000c5]"
+                >
+                  Create a board
+                </button>
+                <SignInButton className="w-full sm:w-auto" />
+              </div>
+            </div>
+
+            <div className="flex-1 h-[60vh] w-full overflow-hidden md:h-full md:w-3/5 lg:w-4/6">
               <ShowcaseBoard />
             </div>
 
@@ -49,22 +67,6 @@ export default function Home() {
                 <p className="text-base text-neutral-600 dark:text-neutral-300 md:text-lg">Drop images and arrange them into living moodboards. Share instantly with a single link.</p>
               </div>
               <div className="flex flex-col gap-4">
-                <button
-                  onClick={() => navigate("/staging")}
-                  className="rounded-lg bg-[#ff01eb] px-8 py-3 text-base font-medium text-white transition-colors hover:bg-[#d000c5]"
-                >
-                  Create a board
-                </button>
-                <SignInButton />
-              </div>
-            </div>
-
-            <div className="md:hidden mt-8 flex flex-col items-center justify-center gap-8 text-center">
-              <div className="space-y-6">
-                <h1 className="text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">Capture your vibe.</h1>
-                <p className="text-base text-neutral-600 dark:text-neutral-300">Drop images and arrange them into living moodboards. Share instantly with a single link.</p>
-              </div>
-              <div className="flex flex-col gap-4 sm:flex-row">
                 <button
                   onClick={() => navigate("/staging")}
                   className="rounded-lg bg-[#ff01eb] px-8 py-3 text-base font-medium text-white transition-colors hover:bg-[#d000c5]"

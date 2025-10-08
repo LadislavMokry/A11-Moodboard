@@ -17,6 +17,7 @@ interface SortableImageItemWithMenuProps {
   onDownload?: (image: Image) => void;
   onShare?: (image: Image) => void;
   fitStyle?: "cover" | "contain";
+  showMenu?: boolean;
 }
 
 export function SortableImageItemWithMenu({
@@ -32,6 +33,7 @@ export function SortableImageItemWithMenu({
   onDownload,
   onShare,
   fitStyle = "cover",
+  showMenu = true,
 }: SortableImageItemWithMenuProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: image.id,
@@ -75,6 +77,7 @@ export function SortableImageItemWithMenu({
       onDownload={onDownload ? () => onDownload(image) : undefined}
       onShare={onShare ? () => onShare(image) : undefined}
       fitStyle={fitStyle}
+      showMenu={showMenu}
     />
   );
 }

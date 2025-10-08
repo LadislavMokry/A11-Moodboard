@@ -40,11 +40,15 @@ export function ImageUploadButton({ onSelectFiles, uploading, accept, inProgress
         onClick={handleClick}
         disabled={uploading}
         size="sm"
-        className="gap-1 px-2 md:gap-2 md:px-3"
+        className="h-9 w-9 justify-center md:h-8 md:w-auto md:gap-2 md:px-3"
       >
         <Upload className="h-4 w-4" />
         <span className="hidden md:inline">Upload</span>
-        {uploading && inProgressCount > 0 ? <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20 dark:text-primary/80">{inProgressCount}</span> : null}
+        {uploading && inProgressCount > 0 ? (
+          <span className="hidden md:inline rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20 dark:text-primary/80">
+            {inProgressCount}
+          </span>
+        ) : null}
       </Button>
     </div>
   );

@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useBoard } from "@/hooks/useBoard";
 import { useClipboardPaste } from "@/hooks/useClipboardPaste";
 import { useImageUpload } from "@/hooks/useImageUpload";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { useLightbox } from "@/hooks/useLightbox";
 import { toast } from "@/lib/toast";
 import { type Image } from "@/schemas/image";
@@ -52,6 +53,7 @@ function BoardPageContent() {
   const { data: board, isLoading, error } = useBoard(boardId);
   const { uploadImages, handlePaste, uploading, progress, accept } = useImageUpload(board?.id);
   const { selectionMode, selectedIds, toggleSelection, selectAll: _selectAll, enterSelectionMode, exitSelectionMode } = useSelection();
+  const isMobile = useIsMobile();
 
   const [editCaptionImage, setEditCaptionImage] = useState<Image | null>(null);
   const [deleteImageData, setDeleteImageData] = useState<Image | null>(null);
@@ -64,6 +66,7 @@ function BoardPageContent() {
   const [showImportUrlDialog, setShowImportUrlDialog] = useState(false);
   const [showOgImageDialog, setShowOgImageDialog] = useState(false);
   const [pastedUrl, setPastedUrl] = useState<string | undefined>();
+  const [isReorderMode, setIsReorderMode] = useState(false);
 
   const sortedImages = useMemo(() => (board?.images ? [...board.images].sort((a, b) => a.position - b.position) : []), [board?.images]);
 
@@ -92,6 +95,9 @@ function BoardPageContent() {
   };
 
   const handleSelectClick = () => {
+    if (isMobile && isReorderMode) {
+      setIsReorderMode(false);
+    }
     if (selectionMode) {
       exitSelectionMode();
     } else {
@@ -116,6 +122,9 @@ function BoardPageContent() {
   };
 
   const handleToggleSelection = (imageId: string) => {
+    if (isReorderMode) {
+      setIsReorderMode(false);
+    }
     // Auto-enter selection mode if not already in it
     if (!selectionMode) {
       enterSelectionMode();
@@ -185,6 +194,26 @@ function BoardPageContent() {
     return () => window.removeEventListener("paste", handlePasteUrl);
   }, [board, isOwner]);
 
+  useEffect(() => {
+    if (!isMobile && isReorderMode) {
+      setIsReorderMode(false);
+    }
+  }, [isMobile, isReorderMode]);
+
+  const handleToggleReorder = () => {
+    if (!isMobile) {
+      return;
+    }
+    setIsReorderMode((prev) => {
+      const next = !prev;
+      if (next) {
+        exitSelectionMode();
+      }
+      return next;
+    });
+    setBoardMenuOpen(false);
+  };
+
   return (
     <Layout>
       <ImageDropZone
@@ -240,24 +269,27 @@ function BoardPageContent() {
                           <DropdownMenu.Trigger asChild>
                             <Button
                               variant="ghost"
-                              size="sm"
-                              className="px-2"
+                              size={isMobile ? "icon" : "sm"}
+                              className={isMobile ? undefined : "px-2"}
                             >
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                           </DropdownMenu.Trigger>
-                          <BoardPageMenu
-                            open={boardMenuOpen}
-                            onOpenChange={setBoardMenuOpen}
-                            onRename={() => setShowRenameBoardDialog(true)}
-                            onRegenerateLink={() => setShowRegenerateTokenDialog(true)}
-                            onSetPreviewImage={() => setShowOgImageDialog(true)}
-                            onImportUrl={() => setShowImportUrlDialog(true)}
-                            onSelect={handleSelectClick}
-                            selectionMode={selectionMode}
-                            onDelete={() => setShowDeleteBoardDialog(true)}
-                          />
-                        </DropdownMenu.Root>
+                            <BoardPageMenu
+                              open={boardMenuOpen}
+                              onOpenChange={setBoardMenuOpen}
+                              onRename={() => setShowRenameBoardDialog(true)}
+                              onRegenerateLink={() => setShowRegenerateTokenDialog(true)}
+                              onSetPreviewImage={() => setShowOgImageDialog(true)}
+                              onImportUrl={() => setShowImportUrlDialog(true)}
+                              onSelect={handleSelectClick}
+                              selectionMode={selectionMode}
+                              onDelete={() => setShowDeleteBoardDialog(true)}
+                              showReorder={isMobile}
+                              reorderActive={isReorderMode}
+                              onToggleReorder={handleToggleReorder}
+                            />
+                          </DropdownMenu.Root>
                       </>
                     ) : null}
                   </>
@@ -270,9 +302,11 @@ function BoardPageContent() {
                 onImageClick={handleImageClick}
                 onEditCaption={(image) => setEditCaptionImage(image)}
                 onDelete={(image) => setDeleteImageData(image)}
-                selectionMode={selectionMode}
+                selectionMode={selectionMode && !isReorderMode}
                 selectedIds={selectedIds}
                 onToggleSelection={handleToggleSelection}
+                dragEnabled={!isMobile || isReorderMode}
+                showImageMenus={!isMobile}
               />
 
               {/* Selection Toolbar */}

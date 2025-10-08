@@ -1,3 +1,4 @@
+import { BoardMasonryGrid } from "@/components/BoardMasonryGrid";
 import { CustomDragOverlay } from "@/components/CustomDragOverlay";
 import { ImageGrid } from "@/components/ImageGrid";
 import { SortableImageItemWithMenu } from "@/components/SortableImageItemWithMenu";
@@ -22,13 +23,27 @@ interface SortableImageGridProps {
   selectedIds?: Set<string>;
   onToggleSelection?: (imageId: string) => void;
   readOnly?: boolean;
+  dragEnabled?: boolean;
+  showImageMenus?: boolean;
 }
 
 function sortImages(images: Image[]): Image[] {
   return [...images].sort((a, b) => a.position - b.position);
 }
 
-export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption, onDelete, selectionMode = false, selectedIds = new Set(), onToggleSelection, readOnly = false }: SortableImageGridProps) {
+export function SortableImageGrid({
+  boardId,
+  images,
+  onImageClick,
+  onEditCaption,
+  onDelete,
+  selectionMode = false,
+  selectedIds = new Set(),
+  onToggleSelection,
+  readOnly = false,
+  dragEnabled = true,
+  showImageMenus = true,
+}: SortableImageGridProps) {
   const [orderedImages, setOrderedImages] = useState<Image[]>(() => sortImages(images));
   const [activeId, setActiveId] = useState<string | null>(null);
   const { queueReorder } = useImageReorder(boardId);
@@ -47,6 +62,28 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     imagesKeyRef.current = key;
     setOrderedImages(sorted);
   }, [images]);
+
+  if (readOnly) {
+    return (
+      <ImageGrid
+        images={orderedImages}
+        onImageClick={onImageClick}
+      />
+    );
+  }
+
+  if (!dragEnabled) {
+    return (
+      <BoardMasonryGrid
+        images={orderedImages}
+        onImageClick={onImageClick}
+        selectionMode={selectionMode}
+        selectedIds={selectedIds}
+        onToggleSelection={onToggleSelection}
+        hoverVariant="default"
+      />
+    );
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -72,7 +109,6 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
 
       if (isTouchDevice) {
         window.open(url, "_blank", "noopener,noreferrer");
-        toast.success("Image opened in a new tab");
         return;
       }
 
@@ -245,16 +281,6 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     );
   }
 
-  // Read-only mode: delegate to ImageGrid so the feature flag controls layout consistently
-  if (readOnly) {
-    return (
-      <ImageGrid
-        images={orderedImages}
-        onImageClick={onImageClick}
-      />
-    );
-  }
-
   // Editable mode: full drag-and-drop functionality with responsive masonry layout
   return (
     <DndContext
@@ -291,13 +317,14 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
                 onClick={onImageClick}
                 onEditCaption={onEditCaption}
                 onDelete={onDelete}
-                onShare={handleShareImage}
-                onDownload={handleDownloadImage}
+                onShare={showImageMenus ? handleShareImage : undefined}
+                onDownload={showImageMenus ? handleDownloadImage : undefined}
                 selectionMode={selectionMode}
                 isSelected={selectedIds.has(image.id)}
                 onToggleSelection={() => onToggleSelection?.(image.id)}
                 style={layoutStyle}
                 fitStyle="contain"
+                showMenu={showImageMenus}
               />
             );
           })}

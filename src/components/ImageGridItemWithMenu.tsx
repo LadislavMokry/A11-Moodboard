@@ -28,9 +28,31 @@ interface ImageGridItemWithMenuProps {
   onDownload?: () => void;
   fitStyle?: "cover" | "contain";
   onShare?: () => void;
+  showMenu?: boolean;
 }
 
-export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, useOriginalSrc = false, hoverVariant = "default", onDownload, onShare, fitStyle = "cover" }: ImageGridItemWithMenuProps) {
+export function ImageGridItemWithMenu({
+  image,
+  onClick,
+  onEditCaption,
+  onDelete,
+  setRef,
+  dragAttributes,
+  dragListeners,
+  style,
+  className,
+  isDragging = false,
+  dataTestId,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelection,
+  useOriginalSrc = false,
+  hoverVariant = "default",
+  onDownload,
+  onShare,
+  fitStyle = "cover",
+  showMenu = true,
+}: ImageGridItemWithMenuProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isTouch] = useState(() => typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0));
 
@@ -57,50 +79,57 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
     return Object.keys(rest).length > 0 ? rest : undefined;
   }, [style]);
 
+  const content = (
+    <div
+      ref={setRef}
+      style={wrapperStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <ImageGridItem
+        image={image}
+        onClick={onClick}
+        onMenuClick={undefined}
+        dragAttributes={dragAttributes}
+        dragListeners={dragListeners}
+        style={itemStyle}
+        className={className}
+        isDragging={isDragging}
+        dataTestId={dataTestId}
+        selectionMode={selectionMode}
+        isSelected={isSelected}
+        onToggleSelection={onToggleSelection}
+        forceHover={isHovered}
+        useOriginalSrc={useOriginalSrc}
+        hoverVariant={hoverVariant}
+        onDownload={hoverVariant === "download" ? onDownload : undefined}
+        fitStyle={fitStyle}
+      />
+
+      {!selectionMode && showMenu && (
+        <DropdownMenu.Trigger asChild>
+          <button
+            className={`absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 ${(isHovered || isTouch) ? "opacity-100" : "opacity-0"}`}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            aria-label="Image options"
+            style={{ zIndex: 10 }}
+          >
+            <MoreVertical className="w-4 h-4 text-white" />
+          </button>
+        </DropdownMenu.Trigger>
+      )}
+    </div>
+  );
+
+  if (!showMenu) {
+    return content;
+  }
+
   return (
     <DropdownMenu.Root>
-      <div
-        ref={setRef}
-        style={wrapperStyle}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <ImageGridItem
-          image={image}
-          onClick={onClick}
-          onMenuClick={undefined} // Don't use the built-in menu button
-          dragAttributes={dragAttributes}
-          dragListeners={dragListeners}
-          style={itemStyle}
-          className={className}
-          isDragging={isDragging}
-          dataTestId={dataTestId}
-          selectionMode={selectionMode}
-          isSelected={isSelected}
-          onToggleSelection={onToggleSelection}
-          forceHover={isHovered}
-          useOriginalSrc={useOriginalSrc}
-          hoverVariant={hoverVariant}
-          onDownload={hoverVariant === "download" ? onDownload : undefined}
-          fitStyle={fitStyle}
-        />
-
-        {/* Render our own menu trigger button (hidden in selection mode) */}
-        {!selectionMode && (
-          <DropdownMenu.Trigger asChild>
-            <button
-              className={`absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 ${(isHovered || isTouch) ? "opacity-100" : "opacity-0"}`}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              aria-label="Image options"
-              style={{ zIndex: 10 }}
-            >
-              <MoreVertical className="w-4 h-4 text-white" />
-            </button>
-          </DropdownMenu.Trigger>
-        )}
-      </div>
+      {content}
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
