@@ -32,6 +32,7 @@ interface ImageGridItemWithMenuProps {
 
 export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete, setRef, dragAttributes, dragListeners, style, className, isDragging = false, dataTestId, selectionMode = false, isSelected = false, onToggleSelection, useOriginalSrc = false, hoverVariant = "default", onDownload, onShare, fitStyle = "cover" }: ImageGridItemWithMenuProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isTouch] = useState(() => typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0));
 
   const wrapperStyle = useMemo(() => {
     if (!style) {
@@ -88,7 +89,7 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
         {!selectionMode && (
           <DropdownMenu.Trigger asChild>
             <button
-              className={`absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 ${isHovered ? "opacity-100" : "opacity-0"}`}
+              className={`absolute top-2 right-2 p-1.5 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur-sm transition-opacity duration-150 ${(isHovered || isTouch) ? "opacity-100" : "opacity-0"}`}
               onClick={(e) => {
                 e.stopPropagation();
               }}
@@ -122,6 +123,8 @@ export function ImageGridItemWithMenu({ image, onClick, onEditCaption, onDelete,
               <DropdownMenu.Separator className="my-1 h-px bg-neutral-200 dark:bg-neutral-800" />
             </>
           )}
+
+          {(onShare || onDownload) && onEditCaption && <DropdownMenu.Separator className="my-1 h-px bg-neutral-200 dark:bg-neutral-800" />}
 
           {onShare && (
             <DropdownMenu.Item

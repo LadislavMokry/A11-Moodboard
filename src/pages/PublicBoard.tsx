@@ -7,11 +7,13 @@ import { PublicBoardHeader } from "@/components/PublicBoardHeader";
 import { useLightbox } from "@/hooks/useLightbox";
 import { usePublicBoard } from "@/hooks/usePublicBoard";
 import { type Image } from "@/schemas/image";
+import { copyToClipboard } from "@/lib/clipboard";
 import { downloadImage } from "@/lib/download";
 import { getSupabasePublicUrl } from "@/lib/imageUtils";
 import { lazy, Suspense, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const Lightbox = lazy(() => import("@/components/Lightbox").then((m) => ({ default: m.Lightbox })));
 
@@ -37,10 +39,48 @@ export default function PublicBoard() {
     }
   };
 
+  const isTouchDevice = typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+
   const handleDownloadImage = (image: Image) => {
     const url = getSupabasePublicUrl(image.storage_path);
     const filename = image.original_filename || `${image.id}.jpg`;
-    void downloadImage(url, filename);
+
+    if (isTouchDevice) {
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    void downloadImage(url, filename).then(() => {
+      toast.success("Download started");
+    }).catch((error) => {
+      console.error("Failed to download image:", error);
+      toast.error("Failed to download image");
+    });
+  };
+
+  const handleShareImage = async (image: Image) => {
+    const url = getSupabasePublicUrl(image.storage_path);
+    const title = image.caption || image.original_filename || "Image";
+
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (error) {
+        if ((error as Error).name === "AbortError") {
+          return;
+        }
+        console.warn("Share failed, falling back to copy:", error);
+      }
+    }
+
+    try {
+      await copyToClipboard(url);
+      toast.success("Link copied to clipboard");
+    } catch (error) {
+      console.error("Failed to copy image link:", error);
+      toast.error("Failed to copy link");
+    }
   };
 
   // 404 - Board not found
@@ -136,8 +176,10 @@ export default function PublicBoard() {
             <ImageGrid
               images={board.images}
               onImageClick={handleImageClick}
-              hoverVariant="download"
+              hoverVariant="default"
               onDownload={handleDownloadImage}
+              onShare={handleShareImage}
+              useMenu
             />
 
             {/* Lightbox */}

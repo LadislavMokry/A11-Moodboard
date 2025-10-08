@@ -65,6 +65,52 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     })
   );
 
+  const handleDownloadImage = useCallback(
+    async (image: Image) => {
+      const url = getSupabasePublicUrl(image.storage_path);
+      const filename = image.original_filename || `${image.id}.jpg`;
+
+      if (isTouchDevice) {
+        window.open(url, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      try {
+        await downloadImage(url, filename);
+        toast.success("Download started");
+      } catch (error) {
+        console.error("Failed to download image:", error);
+        toast.error("Failed to download image");
+      }
+    },
+    [isTouchDevice]
+  );
+
+  const handleShareImage = useCallback(async (image: Image) => {
+    const url = getSupabasePublicUrl(image.storage_path);
+    const title = image.caption || image.original_filename || "Image";
+
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (error) {
+        if ((error as Error).name === "AbortError") {
+          return;
+        }
+        console.warn("Share failed, falling back to copy:", error);
+      }
+    }
+
+    try {
+      await copyToClipboard(url);
+      toast.success("Link copied to clipboard");
+    } catch (error) {
+      console.error("Failed to copy image link:", error);
+      toast.error("Failed to copy link");
+    }
+  }, []);
+
   const activeImage = useMemo(() => (activeId ? orderedImages.find((image) => image.id === activeId) ?? null : null), [activeId, orderedImages]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -244,6 +290,8 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
                 onClick={onImageClick}
                 onEditCaption={onEditCaption}
                 onDelete={onDelete}
+                onShare={handleShareImage}
+                onDownload={handleDownloadImage}
                 selectionMode={selectionMode}
                 isSelected={selectedIds.has(image.id)}
                 onToggleSelection={() => onToggleSelection?.(image.id)}

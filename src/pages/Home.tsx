@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useBoards } from "@/hooks/useBoards";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { getPublicBoardUrl } from "@/lib/shareUtils";
-import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ShareDialog = lazy(() => import("@/components/ShareDialog").then((m) => ({ default: m.ShareDialog })));
