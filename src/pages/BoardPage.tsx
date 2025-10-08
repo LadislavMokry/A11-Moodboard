@@ -198,7 +198,7 @@ function BoardPageContent() {
           }
         }}
       >
-        <div className="px-6 py-8 bg-inherit">
+        <div className="mx-auto w-full py-8 px-3 md:px-6 lg:px-8 xl:px-6 2xl:px-4 max-w-none bg-inherit">
           {/* Loading state */}
           {isLoading && (
             <div className="space-y-8">

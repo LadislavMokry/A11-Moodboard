@@ -138,9 +138,8 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     if (!containerWidth) {
       return 1;
     }
-    const columns = Math.max(1, Math.floor(containerWidth / minCardWidth));
-    return Math.min(columns, 6);
-  }, [containerWidth]);
+    return Math.max(1, Math.floor(containerWidth / minCardWidth));
+  }, [containerWidth, minCardWidth]);
 
   const columnWidth = useMemo(() => {
     if (!containerWidth || columnCount === 0) {
@@ -149,12 +148,12 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
     const totalGap = gap * Math.max(0, columnCount - 1);
     const usableWidth = containerWidth - totalGap;
     return usableWidth / columnCount;
-  }, [containerWidth, columnCount]);
+  }, [containerWidth, columnCount, gap, minCardWidth]);
 
   const baseRowHeight = useMemo(() => {
     const referenceWidth = columnWidth || minCardWidth;
     return Math.max(8, Math.round(referenceWidth / 6));
-  }, [columnWidth]);
+  }, [columnWidth, minCardWidth]);
 
   const layoutMap = useMemo(() => {
     return orderedImages.map((image) => {
@@ -165,14 +164,19 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
       const widthForMath = columnWidth || minCardWidth;
       const effectiveWidth = spanColumns > 1 ? widthForMath * spanColumns + gap * (spanColumns - 1) : widthForMath;
       const targetHeight = effectiveWidth * aspectRatio;
-      const spanRows = Math.max(1, Math.round((targetHeight + gap) / (baseRowHeight + gap)));
+      const rowHeightWithGap = baseRowHeight + gap;
+      const safetyPadding = gap * 0.5;
+      const spanRows = Math.max(
+        1,
+        Math.ceil((targetHeight + gap + safetyPadding) / (rowHeightWithGap > 0 ? rowHeightWithGap : 1))
+      );
 
       return {
         rowSpan: spanRows,
         columnSpan: spanColumns
       };
     });
-  }, [orderedImages, columnCount, columnWidth, baseRowHeight]);
+  }, [orderedImages, columnCount, columnWidth, baseRowHeight, gap, minCardWidth]);
 
   if (orderedImages.length === 0) {
     return (
@@ -211,8 +215,7 @@ export function SortableImageGrid({ boardId, images, onImageClick, onEditCaption
             gap: `${gap}px`,
             gridTemplateColumns: columnCount ? `repeat(${columnCount}, minmax(0, 1fr))` : "repeat(1, minmax(0, 1fr))",
             gridAutoRows: `${baseRowHeight}px`,
-            gridAutoFlow: "row dense",
-            paddingTop: `${gap}px`
+            gridAutoFlow: "row dense"
           }}
         >
           {orderedImages.map((image, index) => {
