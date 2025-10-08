@@ -79,8 +79,7 @@ export function BoardMasonryGrid({
       return 1;
     }
 
-    const columns = Math.max(1, Math.floor(containerWidth / minCardWidth));
-    return Math.min(columns, 6);
+    return Math.max(1, Math.floor(containerWidth / minCardWidth));
   }, [containerWidth, minCardWidth]);
 
   const columnWidth = useMemo(() => {
