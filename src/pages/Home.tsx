@@ -38,7 +38,7 @@ export default function Home() {
     return (
       <Layout>
         <section className="flex min-h-[calc(100vh-4rem)] flex-col gap-8 px-4 py-6 md:h-[calc(100vh-4rem)] md:py-[5vh]">
-          <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 md:flex-row md:items-center md:gap-12">
+          <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 md:flex-row md:items-stretch md:gap-12">
             {/* Hero Content */}
             <div className="flex flex-col items-center gap-6 text-center md:order-2 md:w-2/5 md:items-start md:gap-8 md:text-left lg:w-2/6">
               <div className="space-y-4 md:space-y-6">
@@ -61,7 +61,7 @@ export default function Home() {
             </div>
 
             {/* Showcase Board */}
-            <div className="h-[60vh] w-full overflow-hidden rounded-2xl md:order-1 md:h-full md:flex-1 md:w-3/5 md:rounded-3xl lg:w-4/6">
+            <div className="h-[60vh] w-full overflow-hidden md:order-1 md:flex-1 md:w-3/5 md:h-[calc(100vh-4rem)] lg:w-4/6">
               <ShowcaseBoard />
             </div>
           </div>
