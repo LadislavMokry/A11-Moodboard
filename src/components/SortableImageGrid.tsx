@@ -63,6 +63,23 @@ export function SortableImageGrid({
     setOrderedImages(sorted);
   }, [images]);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 6
+      }
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 2000,
+        tolerance: 8
+      }
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  );
+
   if (readOnly) {
     return (
       <ImageGrid
@@ -84,23 +101,6 @@ export function SortableImageGrid({
       />
     );
   }
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 6
-      }
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 2000,
-        tolerance: 8
-      }
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  );
 
   const handleDownloadImage = useCallback(
     async (image: Image) => {
