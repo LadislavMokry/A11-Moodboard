@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, forwardRef, useMemo, useCallback } from 'react';
-import type { MutableRefObject } from 'react';
+import { useState, useEffect, useRef, forwardRef, useMemo, useImperativeHandle } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { useSpring, animated, to } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
@@ -165,22 +164,11 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
     setIsLoading(false);
   };
 
-  const setContainerRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      containerRef.current = node;
-
-      if (typeof ref === 'function') {
-        ref(node);
-      } else if (ref) {
-        (ref as MutableRefObject<HTMLDivElement | null>).current = node;
-      }
-    },
-    [ref],
-  );
+  useImperativeHandle(ref, () => containerRef.current);
 
   return (
     <div
-      ref={setContainerRef}
+      ref={containerRef}
       className="relative flex h-full w-full items-center justify-center p-4 touch-none"
       style={{ contain: 'layout paint' }}
       {...bind()}
