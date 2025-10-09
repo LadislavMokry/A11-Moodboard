@@ -39,8 +39,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   const captionPanelRef = useRef<HTMLDivElement>(null);
 
   const [scale, setScale] = useState(1);
-  const [panX, setPanX] = useState(0);
-  const [panY, setPanY] = useState(0);
+  const panRef = useRef({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
   const [isCaptionPanelOpen, setIsCaptionPanelOpen] = useState(false);
 
@@ -69,8 +68,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   // Reset zoom when navigating between images
   useEffect(() => {
     setScale(1);
-    setPanX(0);
-    setPanY(0);
+    panRef.current = { x: 0, y: 0 };
   }, [currentIndex]);
 
 
@@ -83,8 +81,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
     setScale((prev) => {
       const newScale = Math.max(MIN_SCALE, prev - ZOOM_STEP);
       if (newScale === MIN_SCALE) {
-        setPanX(0);
-        setPanY(0);
+        panRef.current = { x: 0, y: 0 };
       }
       return newScale;
     });
@@ -92,13 +89,11 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
 
   const handleZoomReset = useCallback(() => {
     setScale(1);
-    setPanX(0);
-    setPanY(0);
+    panRef.current = { x: 0, y: 0 };
   }, []);
 
   const handlePanChange = useCallback((x: number, y: number) => {
-    setPanX(x);
-    setPanY(y);
+    panRef.current = { x, y };
   }, []);
 
   const currentImage = images[currentIndex];
@@ -163,17 +158,6 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
     }
   );
 
-  const thumbnailStrip = !hideThumbnails ? (
-    <LightboxThumbnailStrip
-      images={images}
-      currentIndex={currentIndex}
-      onThumbnailClick={handleThumbnailClick}
-    />
-  ) : null;
-  if (!currentImage) {
-    return null;
-  }
-
   const handleOverlayClick = useCallback(
     (event: ReactMouseEvent<HTMLDivElement>) => {
       if (scale > MIN_SCALE) {
@@ -197,6 +181,18 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
     },
     [onClose, scale]
   );
+
+  const thumbnailStrip = !hideThumbnails ? (
+    <LightboxThumbnailStrip
+      images={images}
+      currentIndex={currentIndex}
+      onThumbnailClick={handleThumbnailClick}
+    />
+  ) : null;
+
+  if (!currentImage) {
+    return null;
+  }
 
   return (
     <div

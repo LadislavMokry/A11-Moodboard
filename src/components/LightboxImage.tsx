@@ -195,7 +195,7 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
           alt=""
           aria-hidden="true"
           className={cn(
-            'absolute inset-0 h-full w-full object-contain blur-2xl transition-opacity duration-300',
+            'absolute inset-0 h-full w-full object-contain blur-2xl transition-opacity duration-300 pointer-events-none',
             isLoading && isPreviewLoaded ? 'opacity-100' : 'opacity-0',
           )}
           onLoad={() => setIsPreviewLoaded(true)}
@@ -204,7 +204,7 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
 
       <Skeleton
         className={cn(
-          'absolute inset-0 h-full w-full transition-opacity duration-300',
+          'absolute inset-0 h-full w-full transition-opacity duration-300 pointer-events-none',
           (isPreviewLoaded || !isLoading) ? 'opacity-0' : 'opacity-100',
         )}
       />
