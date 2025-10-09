@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { type BoardWithImages } from '@/schemas/boardWithImages';
 import { type PublicBoardOwner } from '@/schemas/publicBoard';
 import { ShareButton } from '@/components/ShareButton';
@@ -10,17 +9,6 @@ interface PublicBoardHeaderProps {
 }
 
 export function PublicBoardHeader({ board, owner }: PublicBoardHeaderProps) {
-  const lastUpdated = useMemo(
-    () =>
-      new Date(board.updated_at).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }),
-    [board.updated_at],
-  );
-
-  const imageCount = board.images.length;
   const ownerDisplayName = owner.display_name || 'Anonymous';
   const shareUrl = getPublicBoardUrl(board.share_token);
 

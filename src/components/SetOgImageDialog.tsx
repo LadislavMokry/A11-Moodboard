@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useUpdateBoard } from "@/hooks/useBoardMutations";
 import { getSupabaseThumbnail } from "@/lib/imageUtils";
 import { type BoardWithImages } from "@/schemas/boardWithImages";
 import { generateOgImage } from "@/services/boards";
@@ -17,7 +16,6 @@ interface SetOgImageDialogProps {
 export function SetOgImageDialog({ open, onOpenChange, board }: SetOgImageDialogProps) {
   const [selectedImageId, setSelectedImageId] = useState<string | null>(board.og_image_id || null);
   const [isUpdating, setIsUpdating] = useState(false);
-  const { mutateAsync: updateBoard } = useUpdateBoard();
 
   const handleSave = async () => {
     setIsUpdating(true);

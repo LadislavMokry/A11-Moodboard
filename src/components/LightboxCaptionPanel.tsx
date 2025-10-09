@@ -1,5 +1,4 @@
 import { forwardRef, type ReactNode } from 'react';
-import { Pencil } from 'lucide-react';
 
 interface LightboxCaptionPanelProps {
   caption: string | null;
@@ -9,7 +8,7 @@ interface LightboxCaptionPanelProps {
   isOpen?: boolean;
 }
 
-export const LightboxCaptionPanel = forwardRef<HTMLDivElement, LightboxCaptionPanelProps>(function LightboxCaptionPanel({ caption, onEditClick, isOwner = false, thumbnails, isOpen = true }: LightboxCaptionPanelProps, ref) {
+export const LightboxCaptionPanel = forwardRef<HTMLDivElement, LightboxCaptionPanelProps>(function LightboxCaptionPanel({ caption, isOwner = false, thumbnails, isOpen = true }: LightboxCaptionPanelProps, ref) {
   const hasContent = caption || isOwner || thumbnails;
   if (!hasContent) return null;
 
