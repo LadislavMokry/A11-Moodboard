@@ -71,6 +71,17 @@ export const ImageGridItem = memo(function ImageGridItem({
 
   console.log(`ImageGridItem (${image.id}): State`, { isFullLoaded, isGif });
 
+  // Preload full-res image on hover for faster lightbox opening
+  const preloadRef = useRef<HTMLImageElement | null>(null);
+  useEffect(() => {
+    if (effectiveIsHovered && !isGif && onClick) {
+      if (!preloadRef.current) {
+        preloadRef.current = new window.Image();
+      }
+      preloadRef.current.src = srcFull;
+    }
+  }, [effectiveIsHovered, srcFull, isGif, onClick]);
+
   // Touch handling for mobile
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [preventClick, setPreventClick] = useState(false);
@@ -155,6 +166,12 @@ export const ImageGridItem = memo(function ImageGridItem({
 
   const handleTouchStart = useCallback(
     (e: TouchEvent<HTMLDivElement>) => {
+      // Preload full-res image on touch for faster lightbox opening
+      if (!isGif && onClick && !preloadRef.current) {
+        preloadRef.current = new window.Image();
+        preloadRef.current.src = srcFull;
+      }
+
       if (!showOverlays) {
         setTouchStartPos(null);
         setPreventClick(false);
@@ -187,7 +204,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         setPreventClick(true);
       }, 500);
     },
-    [showOverlays, selectionMode, image.storage_path, image.caption, image.id],
+    [showOverlays, selectionMode, image.storage_path, image.caption, image.id, isGif, onClick, srcFull],
   );
 
   const handleTouchMove = useCallback(

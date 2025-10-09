@@ -189,34 +189,44 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
       style={{ contain: 'layout paint' }}
       {...bind()}
     >
+      {/* Hidden preview loader */}
       {previewSrc && (
         <img
           src={previewSrc}
           alt=""
           aria-hidden="true"
-          className={cn(
-            'absolute inset-0 h-full w-full object-contain blur-2xl transition-opacity duration-300 pointer-events-none',
-            isLoading && isPreviewLoaded ? 'opacity-100' : 'opacity-0',
-          )}
+          className="sr-only"
           onLoad={() => setIsPreviewLoaded(true)}
         />
       )}
 
-      <Skeleton
-        className={cn(
-          'absolute inset-0 h-full w-full transition-opacity duration-300 pointer-events-none',
-          (isPreviewLoaded || !isLoading) ? 'opacity-0' : 'opacity-100',
-        )}
-      />
+      {/* Show skeleton or preview only while loading */}
+      {isLoading && (
+        <>
+          {previewSrc && isPreviewLoaded ? (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <img
+                src={previewSrc}
+                alt=""
+                aria-hidden="true"
+                className="max-h-full max-w-full object-contain blur-md"
+              />
+            </div>
+          ) : (
+            <Skeleton className="absolute inset-0 h-full w-full pointer-events-none" />
+          )}
+        </>
+      )}
 
       <animated.img
         ref={imgRef}
         src={currentSrc}
         alt={image.caption || ''}
-        className="relative z-10 max-h-full max-w-full select-none object-contain"
+        className={cn(
+          "relative z-10 max-h-full max-w-full select-none object-contain transition-opacity duration-300",
+          isLoading ? "opacity-0" : "opacity-100"
+        )}
         style={{
-          opacity: isLoading ? 0 : 1,
-          transition: 'opacity 200ms ease-in-out',
           transform: to([x, y], (xVal, yVal) => `translate3d(${xVal}px, ${yVal}px, 0) scale(${scale})`),
           cursor: scale > MIN_SCALE ? 'grab' : 'zoom-in',
         }}

@@ -3,6 +3,7 @@ import { LightboxCaptionPanel } from "@/components/LightboxCaptionPanel";
 import { LightboxControls } from "@/components/LightboxControls";
 import { LightboxImage } from "@/components/LightboxImage";
 import { LightboxThumbnailStrip } from "@/components/LightboxThumbnailStrip";
+import { useImagePreload } from "@/hooks/useImagePreload";
 import { getSupabasePublicUrl } from "@/lib/imageUtils";
 import { type Image } from "@/schemas/image";
 import { animated, useSpring } from "@react-spring/web";
@@ -44,6 +45,9 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   const [isCaptionPanelOpen, setIsCaptionPanelOpen] = useState(false);
 
   const toggleCaptionPanel = () => setIsCaptionPanelOpen((prev) => !prev);
+
+  // Preload adjacent images for smoother navigation
+  useImagePreload(images, currentIndex, 2);
 
   // Detect mobile
   useEffect(() => {
