@@ -27,10 +27,21 @@ export function LightboxControls({
     <>
       {/* Image counter - top left */}
       <div
-        className="absolute top-4 left-4 px-3 py-2 bg-black/60 rounded-sm backdrop-blur-sm transition-opacity duration-300"
+        className="absolute top-4 left-4 flex items-center gap-2 rounded-sm bg-black/60 px-3 py-2 backdrop-blur-sm transition-opacity duration-300"
         onClick={(event) => event.stopPropagation()}
       >
-        <span className="text-sm text-white font-medium">
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onClose();
+          }}
+          className="rounded-full p-1 transition-colors hover:bg-white/10"
+          aria-label="Close lightbox"
+        >
+          <X className="h-4 w-4 text-white" />
+        </button>
+        <span className="text-sm font-medium text-white">
           {currentIndex + 1} / {totalImages}
         </span>
       </div>

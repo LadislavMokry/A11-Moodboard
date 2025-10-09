@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef, useMemo } from 'react';
 import { useGesture } from '@use-gesture/react';
-import { useSpring, animated } from '@react-spring/web';
+import { useSpring, animated, to } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
 import { getSupabasePublicUrl, getSupabaseThumbnail } from '@/lib/imageUtils';
 import { cn } from '@/lib/utils';
@@ -190,7 +190,7 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
         style={{
           opacity: isLoading ? 0 : 1,
           transition: 'opacity 200ms ease-in-out',
-          transform: x.to((xVal) => `translate3d(${xVal}px, ${y.get()}px, 0) scale(${scale})`),
+          transform: to([x, y], (xVal, yVal) => `translate3d(${xVal}px, ${yVal}px, 0) scale(${scale})`),
           cursor: scale > MIN_SCALE ? 'grab' : 'zoom-in',
         }}
         onClick={(event) => event.stopPropagation()}
