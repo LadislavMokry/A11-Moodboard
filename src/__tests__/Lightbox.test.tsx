@@ -109,15 +109,25 @@ describe('Lightbox', () => {
     expect(closeButton).toBeInTheDocument();
   });
 
-    it('calls onClose when the background overlay is clicked and not zoomed', async () => {
-      const onClose = vi.fn();
-      render(<Lightbox images={mockImages} initialIndex={0} onClose={onClose} currentIndex={0} onNext={vi.fn()} onPrev={vi.fn()} />);
+  it('calls onClose when the background overlay is clicked and not zoomed', () => {
+    const onClose = vi.fn();
 
-      const overlay = screen.getByRole('dialog');
-      fireEvent.click(overlay);
+    render(
+      <Lightbox
+        images={mockImages}
+        initialIndex={0}
+        currentIndex={0}
+        onClose={onClose}
+        onNext={vi.fn()}
+        onPrev={vi.fn()}
+        hideThumbnails
+      />,
+    );
 
-      expect(onClose).toHaveBeenCalledTimes(1);
-    });
+    const overlay = screen.getByRole('dialog');
+    fireEvent.click(overlay);
+
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('calls onNext when next button is clicked', () => {

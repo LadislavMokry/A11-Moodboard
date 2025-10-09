@@ -35,7 +35,7 @@ export const Lightbox = memo(function Lightbox({ images, currentIndex, onClose, 
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement | null>(null);
   const captionPanelRef = useRef<HTMLDivElement>(null);
 
   const [scale, setScale] = useState(1);

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, forwardRef, useMemo, useImperativeHandle } from 'react';
+import { useState, useEffect, useRef, forwardRef, useMemo, useCallback } from 'react';
+import type { MutableRefObject } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { useSpring, animated, to } from '@react-spring/web';
 import { type Image } from '@/schemas/image';
@@ -21,7 +22,7 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const [hasError, setHasError] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
   const fullSrc = getSupabasePublicUrl(image.storage_path);
@@ -164,11 +165,26 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
     setIsLoading(false);
   };
 
-  useImperativeHandle(ref, () => containerRef.current);
+  const setContainerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      containerRef.current = node;
+
+      if (!ref) {
+        return;
+      }
+
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        (ref as unknown as MutableRefObject<HTMLDivElement | null>).current = node;
+      }
+    },
+    [ref],
+  );
 
   return (
     <div
-      ref={containerRef}
+      ref={setContainerRef}
       className="relative flex h-full w-full items-center justify-center p-4 touch-none"
       style={{ contain: 'layout paint' }}
       {...bind()}
