@@ -105,6 +105,17 @@ export function SortableImageGrid({
     const url = getSupabasePublicUrl(image.storage_path);
     const title = image.caption || image.original_filename || "Image";
 
+    if (!isMobile) {
+      try {
+        await copyToClipboard(url);
+        toast.success("Link copied to clipboard");
+      } catch (error) {
+        console.error("Failed to copy image link:", error);
+        toast.error("Failed to copy link");
+      }
+      return;
+    }
+
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
         await navigator.share({ title, url });
@@ -124,7 +135,7 @@ export function SortableImageGrid({
       console.error("Failed to copy image link:", error);
       toast.error("Failed to copy link");
     }
-  }, []);
+  }, [isMobile]);
 
   const activeImage = useMemo(() => (activeId ? orderedImages.find((image) => image.id === activeId) ?? null : null), [activeId, orderedImages]);
 

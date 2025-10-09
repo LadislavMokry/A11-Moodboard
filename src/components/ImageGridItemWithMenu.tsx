@@ -170,7 +170,7 @@ export function ImageGridItemWithMenu({
               }}
             >
               <Share2 className="h-4 w-4" />
-              <span>Share image</span>
+              <span>Copy link</span>
             </DropdownMenu.Item>
           )}
 
