@@ -69,6 +69,7 @@ export const ImageGridItem = memo(function ImageGridItem({
   const isDownloadVariant = hoverVariant === "download";
   const allowSelection = hoverVariant === "default" && selectionMode && showSelectionToggle;
   const allowStandardOverlays = hoverVariant === "default" && showOverlays;
+  const showMenuButton = allowStandardOverlays && !selectionMode && Boolean(onMenuClick);
 
   console.log(`ImageGridItem (${image.id}): State`, { isFullLoaded, isGif });
 
@@ -384,7 +385,7 @@ export const ImageGridItem = memo(function ImageGridItem({
         </div>
       )}
 
-      {allowStandardOverlays && !selectionMode && (
+      {showMenuButton && (
         <button
           className={cn(
             "absolute right-2 top-2 rounded-sm bg-black/60 p-1.5 backdrop-blur-sm transition-opacity duration-150 hover:bg-black/80",

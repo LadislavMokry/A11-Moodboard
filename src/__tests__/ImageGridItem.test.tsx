@@ -80,7 +80,7 @@ describe('ImageGridItem', () => {
     const { container } = render(<ImageGridItem image={mockImage} />);
 
     const menuButton = container.querySelector('button[aria-label="Image options"]');
-    expect(menuButton).toBeInTheDocument();
+    expect(menuButton).not.toBeInTheDocument();
   });
 
   it('calls onClick when image is clicked', () => {
