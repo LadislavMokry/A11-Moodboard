@@ -1,11 +1,9 @@
 import { getSupabasePublicUrl, getSupabaseThumbnail } from "@/lib/imageUtils";
 import { cn } from "@/lib/utils";
 import { type Image } from "@/schemas/image";
-import type { DraggableAttributes } from "@dnd-kit/core";
+import type { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
 import { Check, MoreVertical, Download } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type TouchEvent } from "react";
-
-type SyntheticListenerMap = Record<string, Function> | undefined;
 
 const FALLBACK_IMAGE_SRC =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='960'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%23f4f4f5'/%3E%3Cstop offset='1' stop-color='%23e5e5e5'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' x2='1' y1='1' y2='0'%3E%3Cstop offset='0' stop-color='%23ff01eb' stop-opacity='.12'/%3E%3Cstop offset='1' stop-color='%23ff01eb' stop-opacity='.04'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='640' height='960' fill='url(%23a)'/%3E%3Cpath d='M0 960h640V0z' fill='url(%23b)'/%3E%3C/svg%3E";
@@ -16,7 +14,7 @@ interface ImageGridItemProps {
   onMenuClick?: (e: React.MouseEvent) => void;
   setRef?: (node: HTMLDivElement | null) => void;
   dragAttributes?: DraggableAttributes;
-  dragListeners?: SyntheticListenerMap;
+  dragListeners?: DraggableSyntheticListeners;
   style?: CSSProperties;
   className?: string;
   isDragging?: boolean;
@@ -75,7 +73,6 @@ export const ImageGridItem = memo(function ImageGridItem({
 
   // Touch handling for mobile
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
-  const [isLongPress, setIsLongPress] = useState(false);
   const [preventClick, setPreventClick] = useState(false);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -96,7 +93,7 @@ export const ImageGridItem = memo(function ImageGridItem({
 
   const [currentSrc, setCurrentSrc] = useState<string>(shouldUseOriginal ? srcFull : src720);
   const [currentSrcSet, setCurrentSrcSet] = useState<string | undefined>(shouldUseOriginal ? undefined : srcSet);
-  const [retryStep, setRetryStep] = useState(0);
+  const [, setRetryStep] = useState(0);
 
   // Effect to handle image loading, including cached assets and fallback application
   useEffect(() => {
@@ -160,7 +157,6 @@ export const ImageGridItem = memo(function ImageGridItem({
     (e: TouchEvent<HTMLDivElement>) => {
       if (!showOverlays) {
         setTouchStartPos(null);
-        setIsLongPress(false);
         setPreventClick(false);
         if (longPressTimerRef.current) {
           clearTimeout(longPressTimerRef.current);
@@ -171,11 +167,9 @@ export const ImageGridItem = memo(function ImageGridItem({
 
       const touch = e.touches[0];
       setTouchStartPos({ x: touch.clientX, y: touch.clientY });
-      setIsLongPress(false);
       setPreventClick(false);
 
       longPressTimerRef.current = setTimeout(() => {
-        setIsLongPress(true);
         if (!selectionMode && navigator.share) {
           const imageUrl = getSupabasePublicUrl(image.storage_path);
           navigator

@@ -1,10 +1,8 @@
 import { cn } from "@/lib/utils";
 import { type Image } from "@/schemas/image";
-import type { DraggableAttributes } from "@dnd-kit/core";
+import type { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { ImageGridItem } from "./ImageGridItem";
-
-type SyntheticListenerMap = Record<string, Function> | undefined;
 
 interface MasonryGridProps {
   images: Image[];
@@ -17,7 +15,7 @@ interface MasonryGridProps {
   onToggleSelection?: (imageId: string) => void;
   setItemRef?: (imageId: string, node: HTMLDivElement | null) => void;
   dragAttributes?: DraggableAttributes;
-  dragListeners?: SyntheticListenerMap;
+  dragListeners?: DraggableSyntheticListeners;
   dragStyle?: CSSProperties;
   isDragging?: boolean;
   dataTestId?: string;

@@ -1,12 +1,10 @@
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { cn } from "@/lib/utils";
 import { type Image } from "@/schemas/image";
-import type { DraggableAttributes } from "@dnd-kit/core";
+import type { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { ImageGridItem } from "./ImageGridItem";
 import { ImageGridItemWithMenu } from "./ImageGridItemWithMenu";
-
-type SyntheticListenerMap = Record<string, Function> | undefined;
 
 interface BoardMasonryGridProps {
   images: Image[];
@@ -19,7 +17,7 @@ interface BoardMasonryGridProps {
   onToggleSelection?: (imageId: string) => void;
   setItemRef?: (imageId: string, node: HTMLDivElement | null) => void;
   dragAttributes?: DraggableAttributes;
-  dragListeners?: SyntheticListenerMap;
+  dragListeners?: DraggableSyntheticListeners;
   dragStyle?: CSSProperties;
   isDragging?: boolean;
   dataTestId?: string;

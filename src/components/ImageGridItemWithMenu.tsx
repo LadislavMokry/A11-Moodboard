@@ -1,12 +1,10 @@
 import { type Image } from "@/schemas/image";
-import type { DraggableAttributes } from "@dnd-kit/core";
+import type { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Edit2, MoreVertical, Trash2 } from "lucide-react";
 import { useMemo, useState, type CSSProperties } from "react";
 import { ImageGridItem } from "./ImageGridItem";
 import { Download, Share2 } from "lucide-react";
-
-type SyntheticListenerMap = Record<string, Function> | undefined;
 
 interface ImageGridItemWithMenuProps {
   image: Image;
@@ -15,7 +13,7 @@ interface ImageGridItemWithMenuProps {
   onDelete?: () => void;
   setRef?: (node: HTMLDivElement | null) => void;
   dragAttributes?: DraggableAttributes;
-  dragListeners?: SyntheticListenerMap;
+  dragListeners?: DraggableSyntheticListeners;
   style?: CSSProperties;
   className?: string;
   isDragging?: boolean;
