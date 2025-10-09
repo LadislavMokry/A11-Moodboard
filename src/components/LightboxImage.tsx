@@ -44,6 +44,7 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
     y: 0,
     config: { tension: 300, friction: 30 },
   }));
+  const panStartRef = useRef({ x: 0, y: 0 });
 
   // Reset zoom, pan and loading state when image changes
   useEffect(() => {
@@ -108,12 +109,20 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
       },
 
       // Drag to pan (only when zoomed)
-      onDrag: ({ offset: [ox, oy], event }) => {
+      onDrag: ({ first, movement: [mx, my], event }) => {
         if (scale <= MIN_SCALE) return;
         event.preventDefault();
+        event.stopPropagation();
 
-        const constrained = constrainPan(ox, oy);
-        api.start({ x: constrained.x, y: constrained.y });
+        if (first) {
+          panStartRef.current = { x: x.get(), y: y.get() };
+        }
+
+        const targetX = panStartRef.current.x + mx;
+        const targetY = panStartRef.current.y + my;
+
+        const constrained = constrainPan(targetX, targetY);
+        api.start({ x: constrained.x, y: constrained.y, immediate: true });
         onPanChange(constrained.x, constrained.y);
       },
 
@@ -130,7 +139,7 @@ export const LightboxImage = forwardRef<HTMLDivElement, LightboxImageProps>(func
       },
     },
     {
-      drag: { from: () => [x.get(), y.get()] },
+      drag: { preventScroll: true },
       pinch: { scaleBounds: { min: MIN_SCALE, max: MAX_SCALE }, from: () => [scale, 0] },
     },
   );
