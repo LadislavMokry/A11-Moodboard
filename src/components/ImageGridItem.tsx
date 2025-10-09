@@ -71,17 +71,6 @@ export const ImageGridItem = memo(function ImageGridItem({
 
   console.log(`ImageGridItem (${image.id}): State`, { isFullLoaded, isGif });
 
-  // Preload full-res image on hover for faster lightbox opening
-  const preloadRef = useRef<HTMLImageElement | null>(null);
-  useEffect(() => {
-    if (effectiveIsHovered && !isGif && onClick) {
-      if (!preloadRef.current) {
-        preloadRef.current = new window.Image();
-      }
-      preloadRef.current.src = srcFull;
-    }
-  }, [effectiveIsHovered, srcFull, isGif, onClick]);
-
   // Touch handling for mobile
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [preventClick, setPreventClick] = useState(false);
@@ -97,6 +86,17 @@ export const ImageGridItem = memo(function ImageGridItem({
   const src720 = getSupabaseThumbnail(image.storage_path, 720);
   const src1080 = getSupabaseThumbnail(image.storage_path, 1080);
   const srcFull = getSupabasePublicUrl(image.storage_path);
+
+  // Preload full-res image on hover for faster lightbox opening
+  const preloadRef = useRef<HTMLImageElement | null>(null);
+  useEffect(() => {
+    if (effectiveIsHovered && !isGif && onClick) {
+      if (!preloadRef.current) {
+        preloadRef.current = new window.Image();
+      }
+      preloadRef.current.src = srcFull;
+    }
+  }, [effectiveIsHovered, srcFull, isGif, onClick]);
 
   const srcSet = `${src360} 360w, ${src720} 720w, ${src1080} 1080w`;
   const sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
